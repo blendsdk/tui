@@ -6,7 +6,7 @@
 ## Overview
 
 - **Type:** library (SDK)
-- **Description:** SDK for building Turbo Vision-style terminal (TUI) applications in TypeScript. The **foundation** package: RD-01 scaffolding + the RD-02 **capability detection core** (`resolveCapabilities`/`resolveCapabilitiesAsync` under `src/engine/capability/`). Renderer, input, and host subsystems land in later RDs and re-export from the single public entry point. No drawing/input runtime yet.
+- **Description:** SDK for building Turbo Vision-style terminal (TUI) applications in TypeScript. The **foundation** package: RD-01 scaffolding, the RD-02 **capability detection core** (`resolveCapabilities`/`resolveCapabilitiesAsync` under `src/engine/capability/`), and the RD-06 **input decoder** (pure byte→event `decode`/`flush`/`createDecoderState` + `createKeymap` under `src/engine/input/`). Renderer and host subsystems land in later RDs and re-export from the single public entry point. No drawing runtime yet.
 
 ## Toolchain
 
@@ -32,7 +32,8 @@
 
 ```
 src/engine/      Source. Single public entry point: src/engine/index.ts (re-exports public API).
-src/engine/capability/   RD-02 capability detection core (profile, defaults, env, table, query, detect, index).
+src/engine/capability/   RD-02 capability detection core (profile, defaults, env, table, query, detect, index) + responses.ts (RD-06-shared query-response classifier).
+src/engine/input/        RD-06 input decoder (events, keys, decoder, mouse, paste, keymap, index).
 test/            ALL tests live here — never colocated with source.
 scripts/         Build/policy scripts (check-no-native-deps.mjs — the dependency-policy guard).
 .github/workflows/ci.yml   CI matrix: 3 OS × Node 18/20/22 (runs lint/verify/check:deps/audit/pack).
@@ -66,3 +67,4 @@ _archive/        Archived Ink/React prototype — reference/inspiration only, no
 
 <!-- analyze_project: generated Toolchain, Commands, Project structure, Conventions, Git conventions, Special rules -->
 <!-- analyze_project: refreshed 2026-06-27 — Overview + Project structure for the RD-02 capability subsystem (src/engine/capability/). Toolchain/Commands unchanged. -->
+<!-- analyze_project: refreshed 2026-06-27 — Overview + Project structure for the RD-06 input subsystem (src/engine/input/ + capability/responses.ts). Toolchain/Commands unchanged. -->
