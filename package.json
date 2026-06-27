@@ -1,30 +1,42 @@
 {
-  "name": "turbo-hello",
-  "version": "1.0.0",
-  "description": "A Borland Turbo Vision-style 'Hello World' terminal UI built with Ink + TypeScript",
+  "name": "@blendsdk/tui",
+  "version": "0.1.0",
+  "description": "SDK for Turbo Vision-style terminal apps (foundation)",
+  "license": "MIT",
   "type": "module",
-  "bin": {
-    "turbo-hello": "dist/index.js"
-  },
-  "scripts": {
-    "build": "tsc",
-    "start": "tsx src/index.tsx",
-    "dev": "tsx src/index.tsx",
-    "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/app/*.test.ts",
-    "verify": "npm run typecheck && npm run test && npm run build"
-  },
-  "dependencies": {
-    "ink": "^5.1.0",
-    "react": "^18.3.1"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.0",
-    "@types/react": "^18.3.12",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
-  },
   "engines": {
     "node": ">=18"
+  },
+  "sideEffects": false,
+  "types": "./dist/engine/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/engine/index.d.ts",
+      "import": "./dist/engine/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test \"src/**/*.{spec,impl}.test.ts\"",
+    "lint": "eslint . && prettier --check .",
+    "lint:fix": "eslint . --fix && prettier --write .",
+    "check:deps": "node scripts/check-no-native-deps.mjs",
+    "verify": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0"
   }
 }

@@ -3,18 +3,16 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": false,
-    "sourceMap": true
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["src/**/*.test.ts"]

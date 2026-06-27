@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 11:01
-> **Progress**: 3/20 tasks (15%)
+> **Last Updated**: 2026-06-27 11:20
+> **Progress**: 12/20 tasks (60%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -51,7 +51,7 @@ Commits: use **/gitcm** (or **/gitcmp**) per the exec_plan skill — this plan c
 **Deliverables**:
 - [x] Git repo initialised (already present — `.git` existed; `git init` idempotent)
 - [x] Prototype browsable under `_archive/prototype-2026-06-27/`; no prototype code under `src/`
-- [ ] Commit via /gitcm
+- [x] Commit (49bae66 — plain commit; `/gitcm` not available this session)
 
 **Verify**: working tree clean; `ls src/` shows only `engine/`.
 
@@ -83,9 +83,9 @@ Commits: use **/gitcm** (or **/gitcmp**) per the exec_plan skill — this plan c
 | 1.3.2 | `npm run verify` exits 0 locally | — |
 
 **Deliverables**:
-- [ ] `import { VERSION } from '@blendsdk/tui'` works post-build; `.d.ts` present (AC-1)
-- [ ] `npm pack --dry-run` shows only `dist/` + `package.json` + `README` + `LICENSE` (AC-3)
-- [ ] Zero runtime `dependencies` (AC-4); commit via /gitcm
+- [x] `import { VERSION } from '@blendsdk/tui'` works post-build; `.d.ts` present (AC-1)
+- [x] `npm pack --dry-run` shows only `dist/` + `package.json` + `README` + `LICENSE` (AC-3)
+- [x] Zero runtime `dependencies` (AC-4); commit via /gitcm (committed at phase boundary below)
 
 **Verify**: `npm run verify`
 
@@ -171,12 +171,12 @@ Commits: use **/gitcm** (or **/gitcmp**) per the exec_plan skill — this plan c
 - [x] 0.1.3 Create empty `src/engine/` (2026-06-27)
 
 ### Phase 1: Package, Build & Public Entry
-- [ ] 1.1.1 Write packaging spec tests (ST-1…ST-7)
-- [ ] 1.1.2 Red phase — spec tests fail
-- [ ] 1.2.1 Implement package.json/tsconfig/LICENSE/engine entry + VERSION
-- [ ] 1.2.2 Green phase — spec tests pass
-- [ ] 1.3.1 Write version impl tests
-- [ ] 1.3.2 `npm run verify` exits 0
+- [x] 1.1.1 Write packaging spec tests (ST-1…ST-7) (2026-06-27)
+- [x] 1.1.2 Red phase — spec tests fail (2026-06-27: ERR_MODULE_NOT_FOUND on ./index.js — entry/build/fields absent)
+- [x] 1.2.1 Implement package.json/tsconfig/LICENSE/engine entry + VERSION (2026-06-27)
+- [x] 1.2.2 Green phase — spec tests pass (2026-06-27: 7/7 ST pass after build)
+- [x] 1.3.1 Write version impl tests (2026-06-27)
+- [x] 1.3.2 `npm run verify` exits 0 (2026-06-27: typecheck + 9 tests + build all green)
 
 ### Phase 2: Toolchain — Test/Lint/CI & Dependency Guard
 - [ ] 2.1.1 Write toolchain spec tests (ST-8…ST-12)
