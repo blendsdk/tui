@@ -15,6 +15,8 @@
  * Responses are parsed as data only — no `eval`, no code execution (AC-8).
  */
 import type { CapabilityProfile, DeepPartial, TerminalQuery } from './profile.js';
+import { matchResponse } from './responses.js';
+import type { RuntimeHint } from './responses.js';
 
 /** Default layer-2 timeout in milliseconds (PL-11). */
 export const DEFAULT_QUERY_TIMEOUT_MS = 200;
@@ -29,26 +31,6 @@ const QUERY_REQUESTS: readonly string[] = [
   '\x1b[>q', // XTVERSION
   '\x1b[?2026$p', // Synchronized-output mode (DECRQM ?2026)
 ];
-
-// Control-byte constants used by the grammar matchers.
-const ESC = 0x1b;
-const CSI_INTRODUCER = 0x5b; // '['
-const DCS_INTRODUCER = 0x50; // 'P'
-const ST_FINAL = 0x5c; // '\' (the second byte of the ST terminator ESC \)
-const BEL = 0x07;
-
-/** A recognised, consumed response sequence and the hint it contributed. */
-interface GrammarMatch {
-  /** Index just past the consumed sequence. */
-  readonly end: number;
-  /** Capability hint extracted from the sequence (may be empty). */
-  readonly hint: RuntimeHint;
-}
-
-/** The mutable capability hints layer 2 can currently determine. */
-interface RuntimeHint {
-  sync2026?: boolean;
-}
 
 /** The result of a layer-2 run: parsed capabilities + bytes to forward. */
 export interface QueryResult {
@@ -149,7 +131,7 @@ function parseResponses(bytes: Uint8Array): QueryResult {
 
   let i = 0;
   while (i < bytes.length) {
-    const match = matchGrammar(bytes, i);
+    const match = matchResponse(bytes, i);
     if (match === null) {
       passthrough.push(bytes[i]);
       i += 1;
@@ -162,101 +144,4 @@ function parseResponses(bytes: Uint8Array): QueryResult {
   }
 
   return { parsed, passthrough: Uint8Array.from(passthrough) };
-}
-
-/**
- * Attempt to match a known response grammar at `start`. Returns the match (with
- * its end index and hint) or `null` when the bytes there are not a complete,
- * recognised response.
- */
-function matchGrammar(bytes: Uint8Array, start: number): GrammarMatch | null {
-  if (bytes[start] !== ESC) {
-    return null;
-  }
-  const introducer = bytes[start + 1];
-  if (introducer === CSI_INTRODUCER) {
-    return matchCsi(bytes, start);
-  }
-  if (introducer === DCS_INTRODUCER) {
-    return matchDcs(bytes, start);
-  }
-  return null;
-}
-
-/**
- * Match a CSI response: `ESC [` then parameter bytes (0x30–0x3f), intermediate
- * bytes (0x20–0x2f), and a final byte (0x40–0x7e). Only the primary/secondary
- * DA (`…c`) and the `?2026` DECRPM (`…$y`) grammars are recognised; any other
- * CSI is left for passthrough.
- */
-function matchCsi(bytes: Uint8Array, start: number): GrammarMatch | null {
-  let j = start + 2;
-
-  const paramsStart = j;
-  while (j < bytes.length && bytes[j] >= 0x30 && bytes[j] <= 0x3f) {
-    j += 1;
-  }
-  const params = decodeAscii(bytes, paramsStart, j);
-
-  const intermediatesStart = j;
-  while (j < bytes.length && bytes[j] >= 0x20 && bytes[j] <= 0x2f) {
-    j += 1;
-  }
-  const intermediates = decodeAscii(bytes, intermediatesStart, j);
-
-  if (j >= bytes.length) {
-    return null; // incomplete: no final byte yet
-  }
-  const final = bytes[j];
-  if (final < 0x40 || final > 0x7e) {
-    return null; // not a valid CSI final byte
-  }
-  const end = j + 1;
-
-  // Primary DA (`?…c`) / Secondary DA (`>…c`): recognised and consumed for
-  // demultiplexing; no concrete field is derived in RD-02 (refined by RD-03).
-  if (final === 0x63 && (params.startsWith('?') || params.startsWith('>'))) {
-    return { end, hint: {} };
-  }
-
-  // Synchronized-output report: `ESC [ ? 2026 ; <value> $ y` (DECRPM).
-  if (final === 0x79 && intermediates === '$' && params.startsWith('?')) {
-    const fields = params.slice(1).split(';');
-    if (fields[0] !== '2026') {
-      return null; // a DECRPM for a mode we did not query → passthrough
-    }
-    // value 0 = mode not recognised; 1/2/3/4 = recognised (supported).
-    const recognised = fields[1] !== undefined && fields[1] !== '0';
-    return { end, hint: recognised ? { sync2026: true } : {} };
-  }
-
-  return null;
-}
-
-/**
- * Match a DCS response (XTVERSION): `ESC P … ST`, where ST is `ESC \` or BEL.
- * Recognised and consumed for demultiplexing; no concrete field is derived in
- * RD-02.
- */
-function matchDcs(bytes: Uint8Array, start: number): GrammarMatch | null {
-  let j = start + 2;
-  while (j < bytes.length) {
-    if (bytes[j] === ESC && bytes[j + 1] === ST_FINAL) {
-      return { end: j + 2, hint: {} };
-    }
-    if (bytes[j] === BEL) {
-      return { end: j + 1, hint: {} };
-    }
-    j += 1;
-  }
-  return null; // incomplete: no terminator yet
-}
-
-/** Decode a byte range as an ASCII string (response grammars are ASCII). */
-function decodeAscii(bytes: Uint8Array, start: number, end: number): string {
-  let out = '';
-  for (let k = start; k < end; k += 1) {
-    out += String.fromCharCode(bytes[k]);
-  }
-  return out;
 }
