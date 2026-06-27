@@ -24,7 +24,7 @@ it as RDs move stages (the **roadmap** skill owns the full protocol).
 
 | RD | Title | Depends On | Stage | Plan |
 | -- | ----- | ---------- | ----- | ---- |
-| RD-01 | [Scaffolding & Toolchain](../requirements/RD-01-scaffolding-and-toolchain.md) | — | 📋 Plan Created | [rd-01-scaffolding-and-toolchain](rd-01-scaffolding-and-toolchain/00-index.md) |
+| RD-01 | [Scaffolding & Toolchain](../requirements/RD-01-scaffolding-and-toolchain.md) | — | ✅ Implemented | [rd-01-scaffolding-and-toolchain](rd-01-scaffolding-and-toolchain/00-index.md) |
 | RD-02 | [Capability Model & Auto-Config](../requirements/RD-02-capability-model.md) | RD-01 | 📝 Requirements Drafted | — |
 | RD-03 | [Capability Probe & Survey Harness](../requirements/RD-03-capability-probe.md) | RD-02, RD-04, RD-06, RD-07 | 📝 Requirements Drafted | — |
 | RD-04 | [Rendering Engine](../requirements/RD-04-rendering-engine.md) | RD-01, RD-02 | 📝 Requirements Drafted | — |
@@ -48,5 +48,5 @@ Per the requirements set's phased plan:
 
 ## Notes
 
-- **RD-01** is the only RD with a plan so far (this run). Next suggested: RD-02, then RD-06.
-- This environment is **not yet a remote git repo**; RD-01's CI cells (AC-2) and CI publish-dry-run (AC-7) are **deferred-to-remote** (see RD-01 plan, PL-3). The 🔒 Verified stage for RD-01 depends on a remote existing.
+- **RD-01** is **✅ Implemented** (2026-06-27): clean slate, ESM package, toolchain, CI workflow, packaging e2e — `npm run verify` 19/19, lint clean, `npm audit` 0 vulns locally. Next suggested: RD-02, then RD-06.
+- This environment is a **local git repo with no remote**; RD-01's CI cells (AC-2) and CI publish-dry-run (AC-7) are **deferred-to-remote** (see RD-01 plan, PL-3). RD-01 advances to **🔒 Verified** only once a remote exists and the 9 CI cells pass.
