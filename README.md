@@ -130,8 +130,9 @@ process.stdout.write(serialize(next, prev, { caps })); // only the box + text em
 Output adapts to the detected terminal: box/half-block glyphs fall back to ASCII
 (`+ - | #`) when unsupported, non-UTF-8 glyphs become `?`, and the frame is
 wrapped in synchronized-output markers (`?2026`) when available. Color is encoded
-through an injectable `StyleEncoder` seam — RD-04 ships a minimal truecolor/mono
-default; RD-05 supplies the full depth-aware encoder with no API change.
+through an injectable `StyleEncoder` seam — the RD-05 depth-aware encoder
+(truecolor→256→16→mono) is the default; an app can still inject its own (see
+_Color & styling_).
 
 Every text-accepting path routes through `sanitize()` (the injection boundary):
 `buffer.text()`, the OSC features (`hyperlink`, `setClipboard`, `setTitle`,
@@ -146,6 +147,48 @@ notify('Build', 'done ✓', caps); // → the terminal's best notification proto
 setClipboard('copied text', caps); // → OSC 52 (base64), when supported
 cursor.hide() + cursor.to(1, 1) + cursor.show(); // 1-based absolute move
 ```
+
+### Color & styling (RD-05)
+
+The color layer turns app-specified colors into the **right** ANSI for the
+terminal you actually have — `encode(color, role, depth)` downsamples
+**truecolor → 256 → 16 → mono** instead of assuming 24-bit, which is what fixes
+"colors all wrong over SSH from a Mac." Nearest-color mapping uses a deterministic
+redmean weighted distance; corner colors (pure black/white) are exact.
+
+```ts
+import { encode, encodeStyle, PALETTE } from '@blendsdk/tui';
+
+encode('#0000a8', 'bg', 'truecolor'); // '\x1b[48;2;0;0;168m'
+encode('#0000a8', 'bg', '256'); // '\x1b[48;5;19m'  (nearest cube index)
+encode('#0000a8', 'bg', '16'); // '\x1b[44m'        (nearest ANSI blue)
+encode('#0000a8', 'bg', 'mono'); // ''              (attributes only)
+```
+
+`encodeStyle(fg, bg, attrs, caps)` is the seam the renderer uses: it merges
+attributes + fg + bg into one SGR for `caps.colorDepth` and is the `serialize()`
+default, so **rendering downsamples with zero configuration**. Attributes
+(`bold|dim|italic|underline|blink|reverse|strike`, the RD-04 `Attr` bits) are
+always emitted — at `mono` depth no color is sent but `reverse`/`bold` still
+convey state, keeping `NO_COLOR` UIs legible.
+
+```ts
+import { Attr, ScreenBuffer } from '@blendsdk/tui';
+const buf = new ScreenBuffer(80, 24, { fg: 'default', bg: 'default' });
+buf.text(2, 1, 'Saved', { fg: PALETTE.brightGreen, bg: 'default', attrs: Attr.bold });
+// serialize(buf, prev, { caps }) now downsamples brightGreen to the detected depth.
+```
+
+Colors are **validated**: a malformed color (`encode('#zzz', …)`) throws
+`InvalidColorError` (a `TuiError`) and emits no bytes, so a bad color can never leak
+into the escape stream; encoders only ever emit numeric SGR. Inside the render loop
+the encoder degrades a bad cell color to no-color rather than crashing. The DOS-16
+`PALETTE` and a typed `defaultTheme` (the classic Borland look) ship as primitives
+for the Turbo Vision style. `styleKey(fg, bg, attrs)` gives a stable per-style key
+for run-merging.
+
+> `NO_COLOR`/`FORCE_COLOR` are already resolved into `caps.colorDepth` by RD-02, so
+> the color layer just honors the detected depth.
 
 ### Host & lifecycle (RD-07)
 
