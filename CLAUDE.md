@@ -6,7 +6,7 @@
 ## Overview
 
 - **Type:** library (SDK)
-- **Description:** SDK for building Turbo Vision-style terminal (TUI) applications in TypeScript. The **foundation** package: RD-01 scaffolding, the RD-02 **capability detection core** (`resolveCapabilities`/`resolveCapabilitiesAsync` under `src/engine/capability/`), the RD-06 **input decoder** (pure byte→event `decode`/`flush`/`createDecoderState` + `createKeymap` under `src/engine/input/`), the RD-04 **rendering engine** (width-correct `ScreenBuffer` + pure damage-diff `serialize`, glyph fallback, `sanitize`, OSC features, `cursor` under `src/engine/render/`), and the RD-07 **host & lifecycle** subsystem (`createHost` native `tty` host — raw mode, alt-screen, signals, suspend/resume, guaranteed restore on every exit path, behind an injectable `RuntimeAdapter`, under `src/engine/host/`). All subsystems re-export from the single public entry point.
+- **Description:** SDK for building Turbo Vision-style terminal (TUI) applications in TypeScript. The **foundation** package: RD-01 scaffolding, the RD-02 **capability detection core** (`resolveCapabilities`/`resolveCapabilitiesAsync` under `src/engine/capability/`), the RD-06 **input decoder** (pure byte→event `decode`/`flush`/`createDecoderState` + `createKeymap` under `src/engine/input/`), the RD-04 **rendering engine** (width-correct `ScreenBuffer` + pure damage-diff `serialize`, glyph fallback, `sanitize`, OSC features, `cursor` under `src/engine/render/`), the RD-07 **host & lifecycle** subsystem (`createHost` native `tty` host — raw mode, alt-screen, signals, suspend/resume, guaranteed restore on every exit path, behind an injectable `RuntimeAdapter`, under `src/engine/host/`), and the RD-08 **safety** subsystem (the essentials gate `evaluateEssentials`/`assertEssentials` + `detectTty`, the screen-safe `createLogger`, pure `redactEvent`/`dumpCaps`, the typed `TuiError` model, and the canonical `sanitize` injection boundary, under `src/engine/safety/`). All subsystems re-export from the single public entry point.
 
 ## Toolchain
 
@@ -35,7 +35,8 @@ src/engine/      Source. Single public entry point: src/engine/index.ts (re-expo
 src/engine/capability/   RD-02 capability detection core (profile, defaults, env, table, query, detect, index) + responses.ts (RD-06-shared query-response classifier).
 src/engine/input/        RD-06 input decoder (events, keys, decoder, mouse, paste, keymap, index).
 src/engine/render/       RD-04 rendering engine (types, width, buffer, ansi, glyphs, serialize, sanitize, cursor, osc, index).
-src/engine/host/         RD-07 host & lifecycle (types, streams, platform, modes, host, restore, signals, index) — native tty host behind an injectable RuntimeAdapter.
+src/engine/host/         RD-07 host & lifecycle (types, streams, platform, modes, host, restore, signals, index) — native tty host behind an injectable RuntimeAdapter. streams.ts also exports the additive detectTty() pre-start TTY probe (RD-08 PF-001).
+src/engine/safety/       RD-08 safety (sanitize, errors, redact, logger, essentials, index) — essentials gate, screen-safe logger, redaction, typed errors, and the canonical injection boundary.
 test/            ALL tests live here — never colocated with source.
 scripts/         Build/policy scripts (check-no-native-deps.mjs — the dependency-policy guard).
 .github/workflows/ci.yml   CI matrix: 3 OS × Node 18/20/22 (runs lint/verify/check:deps/audit/pack).
