@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
 > **Last Updated**: 2026-06-27
-> **Progress**: 0/24 tasks (0%)
+> **Progress**: 7/24 tasks (29%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -150,13 +150,13 @@ skill — this plan contains no raw git commands. **No new runtime dependencies.
 > After each task mark it `[x]` with a timestamp, update the Progress header, never batch.
 
 ### Phase 1: Model, Env, Defaults, Override & Resolve Core
-- [ ] 1.1.1 Write detect spec tests (ST-1…ST-8, ST-10, ST-12)
-- [ ] 1.1.2 Red phase
-- [ ] 1.2.1 Implement profile/defaults/env
-- [ ] 1.2.2 Implement detect + resolveCapabilities (override merge, freeze)
-- [ ] 1.2.3 Green phase
-- [ ] 1.3.1 Write env + merge impl tests
-- [ ] 1.3.2 verify + lint clean
+- [x] 1.1.1 Write detect spec tests (ST-1…ST-8, ST-10, ST-12) — 2026-06-27
+- [x] 1.1.2 Red phase — 2026-06-27 (module absent, import fails)
+- [x] 1.2.1 Implement profile/defaults/env — 2026-06-27
+- [x] 1.2.2 Implement detect + resolveCapabilities (override merge, freeze) — 2026-06-27
+- [x] 1.2.3 Green phase — 2026-06-27 (10/10 spec tests pass)
+- [x] 1.3.1 Write env + merge impl tests — 2026-06-27
+- [x] 1.3.2 verify + lint clean — 2026-06-27 (verify 48 tests pass, eslint+prettier clean)
 
 ### Phase 2: Table, Multiplexer, Reasons & Cache
 - [ ] 2.1.1 Write spec tests (ST-11, ST-17, ST-18, ST-19)
