@@ -71,3 +71,26 @@
 All 17 items carry the user's explicit decision. Zero deferred. The user gave the final
 confirmation — "I have reviewed and confirmed all 17 items" (2026-06-27) — so the gate is open
 and the remaining plan documents may be written.
+
+---
+
+## Runtime Decisions (discovered during exec_plan)
+
+> Decisions made while executing that were not covered by the planning gate. Tagged `(runtime)`.
+
+**RT-1 (runtime) — Keyboard protocol (modes table step 9) is deferred.** During Phase 2 it
+surfaced that enabling the Kitty keyboard protocol (`CSI >…u`) or `modifyOtherKeys` (`CSI >4;…m`)
+makes a capable terminal emit CSI-u key encodings that **RD-06's decoder cannot yet parse** —
+that decoding is `DEF-1`, deferred to Phase B (`plans/00-roadmap.md`). Enabling step 9 now would
+therefore *break* keys on exactly the terminals where caps detect support, and the plan never
+pinned the flag values (`…`). **Decision (user, 2026-06-27): defer step 9.** `enterMode`/`leaveMode`
+implement steps 1–8 only and emit **no** keyboard-protocol bytes, regardless of
+`caps.keyboard.kittyFlags`/`.modifyOtherKeys`. The spec tests (ST-1/1b/2) do not exercise keyboard
+caps, so they are unaffected. Tracked as **DEF-2** below; revisit when RD-06 Phase B lands CSI-u
+decoding (the gating is already present in caps, so it is a one-line re-enable).
+
+## Deferrals (DEF)
+
+| #  | Deferral | Reason | Revisit |
+|----|----------|--------|---------|
+| DEF-2 | Keyboard-protocol enable (modes step 9: Kitty `CSI >…u` / `modifyOtherKeys` `CSI >4;…m`) | RD-06 cannot decode CSI-u key encodings yet (RD-06 DEF-1) | RD-06 Phase B (CSI-u/Kitty decode) |

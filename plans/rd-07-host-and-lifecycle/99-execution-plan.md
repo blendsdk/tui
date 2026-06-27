@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 20:19
-> **Progress**: 3/25 tasks (12%)
+> **Last Updated**: 2026-06-27 20:30
+> **Progress**: 8/25 tasks (32%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -78,8 +78,8 @@ backed by one thin subprocess e2e for the real signal→exit wiring (AR-13).
 | 2.1.5 | Add impl tests: each gate independently (mono, no-mouse, drag-off→no `?1002h`, no-paste, `focus:false`→no `?1004h`, keyboard variants) | `test/host.impl.test.ts` (modes section) |
 
 **Deliverables**:
-- [ ] ST-1, ST-1b, ST-2 green
-- [ ] `npm run verify` green
+- [x] ST-1, ST-1b, ST-2 green
+- [x] `npm run verify` green (238/238)
 
 **Verify**: `npm run verify`
 
@@ -191,11 +191,11 @@ backed by one thin subprocess e2e for the real signal→exit wiring (AR-13).
 - [x] 1.1.3 Implement `realRuntime` adapter (`platform.ts`) — 2026-06-27 20:19
 
 ### Phase 2: Modes
-- [ ] 2.1.1 Spec tests ST-1/1b/2 (`host-modes.spec.test.ts`)
-- [ ] 2.1.2 Verify red
-- [ ] 2.1.3 Implement `enterMode`/`leaveMode` (`modes.ts`)
-- [ ] 2.1.4 Verify green
-- [ ] 2.1.5 Impl tests (mode gating)
+- [x] 2.1.1 Spec tests ST-1/1b/2 (`host-modes.spec.test.ts`) — 2026-06-27 20:30
+- [x] 2.1.2 Verify red — 2026-06-27 20:30
+- [x] 2.1.3 Implement `enterMode`/`leaveMode` (`modes.ts`) — 2026-06-27 20:30 (step 9 deferred, DEF-2/RT-1)
+- [x] 2.1.4 Verify green — 2026-06-27 20:30
+- [x] 2.1.5 Impl tests (mode gating) — 2026-06-27 20:30
 
 ### Phase 3: Orchestrator
 - [ ] 3.1.1 Spec tests ST-7/13/14/15/16 (`host.spec.test.ts`)
