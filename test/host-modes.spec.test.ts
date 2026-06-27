@@ -26,7 +26,10 @@ function assertOrdered(haystack: string, needles: readonly string[]): void {
   let last = -1;
   for (const needle of needles) {
     const at = haystack.indexOf(needle, last + 1);
-    assert.ok(at > last, `expected ${JSON.stringify(needle)} after position ${last}, got ${at} in ${JSON.stringify(haystack)}`);
+    assert.ok(
+      at > last,
+      `expected ${JSON.stringify(needle)} after position ${last}, got ${at} in ${JSON.stringify(haystack)}`,
+    );
     last = at;
   }
 }
