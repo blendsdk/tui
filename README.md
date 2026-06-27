@@ -147,6 +147,56 @@ setClipboard('copied text', caps); // → OSC 52 (base64), when supported
 cursor.hide() + cursor.to(1, 1) + cursor.show(); // 1-based absolute move
 ```
 
+### Host & lifecycle (RD-07)
+
+`createHost()` is the native `tty` host that owns the terminal: it puts stdin in
+raw mode, enters the alternate screen and the mouse / bracketed-paste / focus
+modes the detected `caps` allow, pumps stdin through the RD-06 decoder, hands each
+frame to the RD-04 serializer as one coalesced write, and — above all —
+**guarantees the terminal is restored on every exit path**: normal `stop()`,
+`SIGINT`/`SIGTERM`/`SIGHUP`, suspend/resume, uncaught exceptions, EPIPE, and even a
+synchronous crash during setup.
+
+```ts
+import { createHost, resolveCapabilities, ScreenBuffer, createKeymap } from '@blendsdk/tui';
+
+const { profile: caps } = resolveCapabilities();
+const keymap = createKeymap({ 'ctrl+c': 'quit' });
+
+const host = createHost({
+  caps,
+  onInput: (e) => {
+    if (e.type === 'key' && keymap.lookup(e) === 'quit') void host.stop();
+  },
+  onResize: ({ columns, rows }) => draw(columns, rows),
+  onResume: () => draw(process.stdout.columns ?? 80, process.stdout.rows ?? 24),
+});
+
+await host.start(); // raw mode, alt-screen, modes per caps
+function draw(cols: number, rows: number): void {
+  const frame = new ScreenBuffer(cols, rows, { fg: 'default', bg: 'default' });
+  frame.text(2, 1, 'Hello — Ctrl-C to quit', { fg: '#c0c0c0', bg: 'default' });
+  host.render(frame); // serialize(diff) → single coalesced write
+}
+draw(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
+// SIGINT/SIGTERM/SIGHUP/throw → terminal restored, process exits with the right code.
+```
+
+`render(buffer)` owns the previous frame, the diff, and the write; the app never
+touches `serialize` or the stream. Input arrives as decoded `InputEvent`s through
+`onInput` (terminal query replies are routed away so they can never be read as
+keystrokes); resize is coalesced to one `onResize`; `onSuspend`/`onResume` bracket
+SIGTSTP/SIGCONT with an automatic full repaint on resume. The host owns
+`process.exit` on signal/crash paths (`exitOnSignal: false` opts out, with an
+`onBeforeExit(code)` hook); `stop()` restores without exiting and is idempotent.
+
+Every OS effect (raw mode, signals, exit, timers, the sync `'exit'` backstop) sits
+behind an injectable `RuntimeAdapter`, so an app can run the host headlessly in
+tests; the real adapter is the default. A non-TTY host skips mode setup but still
+writes frames, and exposes `isTTY` for the caller's degrade policy. On Windows the
+host uses the `stdout 'resize'` event, `SIGBREAK`, and VT processing in place of
+the POSIX signals; Windows acceptance awaits a Windows runner.
+
 ### ESM-only — `require()` is not supported
 
 The package declares no CommonJS `require` condition. Importing it from CommonJS

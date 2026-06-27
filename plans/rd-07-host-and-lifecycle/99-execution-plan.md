@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 21:05
-> **Progress**: 25/30 checklist items — Phases 1–4 complete; Phase 5 (public API/e2e/docs) remaining
+> **Last Updated**: 2026-06-27 21:20
+> **Progress**: 30/30 checklist items — ✅ all phases complete; `npm run verify` 273/273, e2e green
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -169,9 +169,9 @@ backed by one thin subprocess e2e for the real signal→exit wiring (AR-13).
 | 5.1.5 | Final `npm run verify` + lint + check:deps + audit; confirm RD-02/04/06 suites green | — |
 
 **Deliverables**:
-- [ ] Public API exported; `import { createHost } from '@blendsdk/tui'` works
-- [ ] ST-12 e2e passes
-- [ ] README updated; `npm run verify` green; lint/check:deps clean; audit 0 vulns
+- [x] Public API exported; `import { createHost } from '@blendsdk/tui'` works
+- [x] ST-12 e2e passes
+- [x] README updated; `npm run verify` green (273/273); lint/check:deps clean; audit 0 vulns
 
 **Verify**: `npm run verify && npm run lint && npm run check:deps` + explicit e2e
 
@@ -219,11 +219,11 @@ backed by one thin subprocess e2e for the real signal→exit wiring (AR-13).
 - [x] 4.2.3 Full verify + check:deps + audit — 2026-06-27 21:05
 
 ### Phase 5: Public API, e2e, docs
-- [ ] 5.1.1 Barrel + `index.ts` re-exports
-- [ ] 5.1.2 ST-12 subprocess e2e (`host-signals.e2e.test.ts`)
-- [ ] 5.1.3 Run e2e explicitly
-- [ ] 5.1.4 README Host section
-- [ ] 5.1.5 Final verify + lint + check:deps + audit
+- [x] 5.1.1 Barrel + `index.ts` re-exports — 2026-06-27 21:20
+- [x] 5.1.2 ST-12 subprocess e2e (`host-signals.e2e.test.ts`) — 2026-06-27 21:20
+- [x] 5.1.3 Run e2e explicitly — 2026-06-27 21:20
+- [x] 5.1.4 README Host section — 2026-06-27 21:20
+- [x] 5.1.5 Final verify + lint + check:deps + audit — 2026-06-27 21:20
 
 ---
 
