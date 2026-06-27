@@ -105,6 +105,48 @@ keymap.lookup({ type: 'key', key: 's', ctrl: true, alt: false, shift: false }); 
 Classic xterm decoding ships now; CSI-u / Kitty keyboard-protocol parsing is a
 later enhancement (the `caps.keyboard.kittyFlags` branch falls back to classic).
 
+### Rendering (RD-04)
+
+Draw into a width-correct `ScreenBuffer`, then `serialize()` the minimal ANSI to
+paint it over the previous frame. `serialize()` is a **pure** function of
+`(current, previous, options)` — bytes are proportional to what changed (a single
+changed cell costs under ~32 bytes), and two identical frames cost nothing. The
+host holds the previous frame and performs the actual write.
+
+```ts
+import { ScreenBuffer, serialize, resolveCapabilities } from '@blendsdk/tui';
+
+const { profile: caps } = resolveCapabilities();
+const style = { fg: '#c0c0c0', bg: '#000080' };
+
+const prev = new ScreenBuffer(80, 24, { fg: 'default', bg: 'default' });
+const next = new ScreenBuffer(80, 24, { fg: 'default', bg: 'default' });
+next.box(0, 0, 20, 5, style, 'double', 'Hello');
+next.text(2, 2, '世界 — wide-aware', style); // CJK occupies two columns each
+
+process.stdout.write(serialize(next, prev, { caps })); // only the box + text emit
+```
+
+Output adapts to the detected terminal: box/half-block glyphs fall back to ASCII
+(`+ - | #`) when unsupported, non-UTF-8 glyphs become `?`, and the frame is
+wrapped in synchronized-output markers (`?2026`) when available. Color is encoded
+through an injectable `StyleEncoder` seam — RD-04 ships a minimal truecolor/mono
+default; RD-05 supplies the full depth-aware encoder with no API change.
+
+Every text-accepting path routes through `sanitize()` (the injection boundary):
+`buffer.text()`, the OSC features (`hyperlink`, `setClipboard`, `setTitle`,
+`notify`), and the window title all strip `ESC`/`BEL`/`ST`/C0/C1 control bytes so
+untrusted text cannot inject an escape sequence. `notify()` picks the best
+available protocol (Kitty OSC 99 → iTerm2 OSC 9 → urxvt OSC 777 → progress → BEL).
+
+```ts
+import { notify, setClipboard, cursor } from '@blendsdk/tui';
+
+notify('Build', 'done ✓', caps); // → the terminal's best notification protocol
+setClipboard('copied text', caps); // → OSC 52 (base64), when supported
+cursor.hide() + cursor.to(1, 1) + cursor.show(); // 1-based absolute move
+```
+
 ### ESM-only — `require()` is not supported
 
 The package declares no CommonJS `require` condition. Importing it from CommonJS

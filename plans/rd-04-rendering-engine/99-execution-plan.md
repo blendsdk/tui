@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 (Phase 3 complete)
-> **Progress**: 19/24 tasks (79%)
+> **Last Updated**: 2026-06-27 (✅ all phases complete)
+> **Progress**: 24/24 tasks (100%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -172,9 +172,9 @@ contains no raw git commands. **No new runtime dependencies.**
 - [x] 3.3.2 verify + lint clean — 2026-06-27
 
 ### Phase 4: Public API & Finalization
-- [ ] 4.1.1 Implement render/index.ts + re-export from engine/index.ts + README
-- [ ] 4.1.2 Full spec suite green; AC-8 public text-path confirmed
-- [ ] 4.2.1 Final full gate (verify/lint/check:deps/audit); AC-1…AC-8 covered; RD-02/RD-06 green
+- [x] 4.1.1 Implement render/index.ts + re-export from engine/index.ts + README — 2026-06-27
+- [x] 4.1.2 Full spec suite green; AC-8 public text-path confirmed — 2026-06-27
+- [x] 4.2.1 Final full gate (verify/lint/check:deps/audit); AC-1…AC-8 covered; RD-02/RD-06 green — 2026-06-27
 
 ---
 

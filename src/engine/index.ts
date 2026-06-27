@@ -3,8 +3,9 @@
  *
  * Re-exports the public API of each landed subsystem so consumers import
  * everything from `@blendsdk/tui`. Currently: the package {@link VERSION}
- * (RD-01), the capability detection core (RD-02), and the input decoder
- * (RD-06). Renderer and host subsystems are added by later RDs.
+ * (RD-01), the capability detection core (RD-02), the input decoder
+ * (RD-06), and the rendering engine (RD-04). The host subsystem is added by
+ * a later RD.
  *
  * The `.js` extension in the import specifiers is required by NodeNext ESM
  * resolution (it resolves to the `.ts` source during development via tsx).
@@ -47,3 +48,35 @@ export type {
   Keymap,
 } from './input/index.js';
 export { ESC_TIMEOUT_MS, PASTE_CAP_BYTES } from './input/index.js';
+
+// RD-04 — rendering engine.
+export {
+  ScreenBuffer,
+  Attr,
+  charWidth,
+  serialize,
+  defaultEncodeStyle,
+  fallbackGlyph,
+  sanitize,
+  hyperlink,
+  setClipboard,
+  setTitle,
+  bell,
+  notify,
+  cursor,
+  CSI,
+  SGR_RESET,
+  SYNC_BEGIN,
+  SYNC_END,
+  cursorTo,
+} from './render/index.js';
+export type {
+  Cell,
+  Style,
+  Color,
+  Ansi16Name,
+  AttrMask,
+  WidthMode,
+  StyleEncoder,
+  RenderOptions,
+} from './render/index.js';
