@@ -57,6 +57,18 @@ implementations** that the later RDs supersede. PL-1, PL-2, and PL-14 resolve th
 - **PL-9…PL-17** are the planner's recommendations, confirmed by the user's explicit
   "Confirm all" (per the gate's final-confirmation rule), not by silence.
 
+### Runtime Decisions (exec_plan)
+
+- **RT-1 (runtime, 2026-06-27):** The plan's `set(x, y, char, style)` signature
+  omits a width mode, yet `set` must compute display width to place wide-glyph
+  lead/continuation cells and clear orphaned partners (the documented PL-17
+  behavior + impl-test "overwrite half a wide glyph clears the orphan"). The only
+  faithful realization is to give `set` an optional `widthMode` parameter
+  (default `'wcwidth'`, RD-02's default mode) that `text()` threads through. No
+  alternative satisfies the documented behavior, so this was recorded and applied
+  rather than blocking. Additive/optional — does not change the documented call
+  sites. Implemented in `src/engine/render/buffer.ts`.
+
 ### Deferred Items
 
 - **DEF-1 (later):** Cursor **shape** (DECSCUSR). No capability field gates it; ship

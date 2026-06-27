@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27
-> **Progress**: 0/24 tasks (0%)
+> **Last Updated**: 2026-06-27 (Phase 1 complete)
+> **Progress**: 7/24 tasks (29%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -145,13 +145,13 @@ contains no raw git commands. **No new runtime dependencies.**
 > After each task mark it `[x]` with a timestamp, update the Progress header, never batch.
 
 ### Phase 1: Cell & Buffer Model + Width
-- [ ] 1.1.1 Write ST-3 spec test (wide glyph width-correctness)
-- [ ] 1.1.2 Red phase (render/ absent)
-- [ ] 1.2.1 Implement render/types.ts (Color/AttrMask/Cell)
-- [ ] 1.2.2 Implement render/width.ts (charWidth + ranges)
-- [ ] 1.2.3 Implement render/buffer.ts (ScreenBuffer) + ST-3 green
-- [ ] 1.3.1 Write buffer + width impl tests
-- [ ] 1.3.2 verify + lint clean
+- [x] 1.1.1 Write ST-3 spec test (wide glyph width-correctness) — 2026-06-27
+- [x] 1.1.2 Red phase (render/ absent) — 2026-06-27
+- [x] 1.2.1 Implement render/types.ts (Color/AttrMask/Cell) — 2026-06-27
+- [x] 1.2.2 Implement render/width.ts (charWidth + ranges) — 2026-06-27
+- [x] 1.2.3 Implement render/buffer.ts (ScreenBuffer) + ST-3 green — 2026-06-27
+- [x] 1.3.1 Write buffer + width impl tests — 2026-06-27
+- [x] 1.3.2 verify + lint clean — 2026-06-27
 
 ### Phase 2: Serializer + Seam + Sync + Glyph Fallback
 - [ ] 2.1.1 Write spec ST-1, ST-2, ST-4, ST-5, ST-9, ST-11, ST-13
