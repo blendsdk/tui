@@ -18,12 +18,19 @@
  */
 import { pathToFileURL } from 'node:url';
 
-import { createHost, createTerminalQuery, detectTty, resolveCapabilities } from '../../src/engine/index.js';
+import {
+  createHost,
+  createTerminalQuery,
+  detectTty,
+  resolveCapabilities,
+  ScreenBuffer,
+} from '../../src/engine/index.js';
 import type { InputEvent, Platform } from '../../src/engine/index.js';
 import { parseArgs, USAGE } from './args.js';
 import { gatherEnvMeta } from './env-meta.js';
 import { runAutoProbes } from './auto-probes.js';
 import { runManualProbes } from './manual-probes.js';
+import { runLiveReadout } from './live-readout.js';
 import { MANUAL_PROBES } from './taxonomy.js';
 import type { ProbeResult } from './report.js';
 
@@ -149,6 +156,10 @@ export async function main(deps: Partial<ProbeDeps> = {}): Promise<void> {
       }
     }
   };
+  async function* eventStream(): AsyncGenerator<InputEvent> {
+    for (;;) yield await nextEvent();
+  }
+  const style = { fg: 'default', bg: 'default' } as const;
 
   const host = createHost({ caps: profile, onInput: pushEvent });
   let auto: Record<string, ProbeResult> = {};
@@ -168,7 +179,15 @@ export async function main(deps: Partial<ProbeDeps> = {}): Promise<void> {
       probes: MANUAL_PROBES,
       caps: profile,
     });
-    // (live readout inserted here in Phase 4)
+    await runLiveReadout({
+      events: eventStream(),
+      render: (lines) => {
+        const buffer = new ScreenBuffer(80, 24, style);
+        buffer.text(0, 0, 'Live input readout — press keys / mouse / paste; q to finish.', style);
+        lines.forEach((line, index) => buffer.text(0, index + 2, line, style));
+        host.render(buffer);
+      },
+    });
   } finally {
     await host.stop();
   }

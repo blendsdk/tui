@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 02:30
-> **Progress**: 28/44 tasks (64%)
+> **Last Updated**: 2026-06-28 03:00
+> **Progress**: 33/44 tasks (75%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -213,11 +213,11 @@ and live-readout probes; phase 5 assembles the report/matrix/`--auto` and the e2
 - [x] 3.3.2 Full verify ✅ (386/386, lint clean, completed: 2026-06-28 02:30)
 
 ### Phase 4: Live input/mouse readout
-- [ ] 4.1.1 Spec tests readout (ST-25/26/27)
-- [ ] 4.1.2 Run spec tests — RED
-- [ ] 4.2.1 `formatEventLine` + `runLiveReadout` + wire
-- [ ] 4.2.2 Run spec tests — GREEN
-- [ ] 4.3.1 Impl tests readout + full verify
+- [x] 4.1.1 Spec tests readout (ST-25/26/27) ✅ (completed: 2026-06-28 02:45)
+- [x] 4.1.2 Run spec tests — RED ✅ (completed: 2026-06-28 02:45)
+- [x] 4.2.1 `formatEventLine` + `runLiveReadout` + wire ✅ (completed: 2026-06-28 02:55)
+- [x] 4.2.2 Run spec tests — GREEN ✅ (3/3, completed: 2026-06-28 02:55)
+- [x] 4.3.1 Impl tests readout + full verify ✅ (393/393, lint clean, completed: 2026-06-28 03:00)
 
 ### Phase 5: Report, recommendation, matrix, --auto, e2e
 - [ ] 5.1.1 Spec tests report (ST-8…ST-11)

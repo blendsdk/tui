@@ -65,9 +65,9 @@ framework mocks, per the testing standards.
 
 | #    | Input / Scenario | Expected Output / Behavior | Source |
 |------|------------------|----------------------------|--------|
-| ST-25 | `formatEventLine` of a `KeyEvent` arrow-up | line names key `up`; a Ctrl+a key includes `ctrl+a` | RD AC-2 |
-| ST-26 | `formatEventLine` of a left-click `MouseEvent` at 0-based (5,3) | line shows action `press`/`click`, button `left`, **1-based** coords `6,4` | RD AC-2 |
-| ST-27 | `formatEventLine` of a `PasteEvent` of `'hello'` | line shows `5 bytes`; the substring `hello` does NOT appear | RD AC-8 / AR-17 |
+| ST-25 | `formatEventLine` of a `KeyEvent` `{key:'up'}`, and `{key:'a',ctrl:true}` | first line contains `up`; second contains `ctrl+a` | RD AC-2 / RT-4 |
+| ST-26 | `formatEventLine` of a `MouseEvent` `{kind:'down',button:0,x:6,y:4}` (RD-06 coords are already 1-based) | line shows `down` and the coordinates `6,4` (displayed as-is, no conversion) | RD AC-2 / RT-4 |
+| ST-27 | `formatEventLine` of a `PasteEvent` `{text:'hello'}` | line shows `5 bytes`; the substring `hello` does NOT appear | RD AC-8 / AR-17 / RT-4 |
 
 ### Report & recommendation (`report.ts`)
 
