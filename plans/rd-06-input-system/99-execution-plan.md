@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 (Phase 2 complete)
-> **Progress**: 14/26 tasks (54%)
+> **Last Updated**: 2026-06-27 (Phase 3 complete)
+> **Progress**: 20/26 tasks (77%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -171,13 +171,13 @@ skill — this plan contains no raw git commands. **No new runtime dependencies.
 - [x] 2.3.2 verify + lint clean — 2026-06-27
 
 ### Phase 3: Mouse, Wheel, Paste, Focus & Query Demux
-- [ ] 3.1.1 Write spec tests ST-3, ST-4, ST-5, ST-6, ST-11, ST-12
-- [ ] 3.1.2 Red phase (mouse/paste/focus/demux absent)
-- [ ] 3.2.1 Implement mouse.ts (SGR mouse + wheel)
-- [ ] 3.2.2 Implement paste.ts + wire focus + demux into decoder (queries channel, PL-9)
-- [ ] 3.2.3 Green phase (ST-3/4/5/6/11/12 pass)
-- [ ] 3.3.1 Write mouse + paste impl tests
-- [ ] 3.3.2 verify + lint clean
+- [x] 3.1.1 Write spec tests ST-3, ST-4, ST-5, ST-6, ST-11, ST-12 — 2026-06-27
+- [x] 3.1.2 Red phase (mouse/paste/focus/demux absent) — 2026-06-27
+- [x] 3.2.1 Implement mouse.ts (SGR mouse + wheel) — 2026-06-27
+- [x] 3.2.2 Implement paste.ts + wire focus + demux into decoder (queries channel, PL-9) — 2026-06-27
+- [x] 3.2.3 Green phase (ST-3/4/5/6/11/12 pass) — 2026-06-27
+- [x] 3.3.1 Write mouse + paste impl tests — 2026-06-27
+- [x] 3.3.2 verify + lint clean — 2026-06-27
 
 ### Phase 4: Keymap, Security Hardening, Public API & Finalization
 - [ ] 4.1.1 Write spec tests ST-7, ST-8, ST-9, ST-13

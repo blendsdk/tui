@@ -15,6 +15,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { matchResponse } from '../src/engine/capability/responses.js';
+import { createDecoderState, decode } from '../src/engine/input/decoder.js';
+import type { FocusEvent } from '../src/engine/input/events.js';
 
 const enc = new TextEncoder();
 
@@ -64,4 +66,34 @@ test("ST-14: matchResponse classifies XTVERSION DCS as 'xtversion'", () => {
 test('ST-14: matchResponse returns null for non-response bytes', () => {
   const bytes = enc.encode('hello');
   assert.equal(matchResponse(bytes, 0), null);
+});
+
+// ---------------------------------------------------------------------------
+// ST-6 — query-response demux: a reply reaches `queries`, never `events` (AC-6)
+// ---------------------------------------------------------------------------
+
+test('ST-6: a DA reply yields one query response and zero events', () => {
+  const r = decode(enc.encode('\x1b[?64;1;2c'), createDecoderState());
+
+  assert.equal(r.queries.length, 1, 'exactly one query response');
+  assert.equal(r.queries[0].kind, 'da1');
+  assert.equal(r.events.length, 0, 'zero app events — the reply cannot leak as a keystroke');
+});
+
+// ---------------------------------------------------------------------------
+// ST-12 — focus in/out (Should-Have, PL-7)
+// ---------------------------------------------------------------------------
+
+test('ST-12: ESC[I → focus in, ESC[O → focus out', () => {
+  const inResult = decode(enc.encode('\x1b[I'), createDecoderState());
+  assert.equal(inResult.events.length, 1);
+  const focusIn = inResult.events[0] as FocusEvent;
+  assert.equal(focusIn.type, 'focus');
+  assert.equal(focusIn.focused, true);
+
+  const outResult = decode(enc.encode('\x1b[O'), createDecoderState());
+  assert.equal(outResult.events.length, 1);
+  const focusOut = outResult.events[0] as FocusEvent;
+  assert.equal(focusOut.type, 'focus');
+  assert.equal(focusOut.focused, false);
 });

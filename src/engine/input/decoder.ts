@@ -14,8 +14,10 @@
  * forward with `state = result.state` (RT-1), which carries both the incomplete
  * bytes and any in-progress bracketed paste.
  *
- * Phase 2 ships the keyboard path; the mouse/paste/focus/query-demux matchers
- * (03-03) are inserted into the scan ordering in Phase 3.
+ * At each scan position the decoder tries token types in priority order (03-03):
+ * in-progress paste, query-response demux, mouse/wheel, focus, bracketed-paste
+ * start, then the keyboard fallback — so query replies, mouse, and paste are
+ * never misread as keys.
  *
  * The `.js` extensions in the import specifiers are required by NodeNext ESM
  * resolution (they resolve to the `.ts` sources during development via tsx).
@@ -24,16 +26,29 @@ import type {
   DecodeOptions,
   DecodeResult,
   DecoderState,
+  FocusEvent,
   InputEvent,
   KeyEvent,
   PasteState,
   QueryResponse,
 } from './events.js';
+import { PASTE_CAP_BYTES } from './events.js';
 import { decodeKey } from './keys.js';
+import { decodeMouse } from './mouse.js';
+import { PASTE_END, PASTE_START, matchMarker, decodePasteText } from './paste.js';
+import { matchResponse } from '../capability/responses.js';
 import { RESPONSE_BUFFER_CAP } from '../capability/query.js';
 
 const ESC = 0x1b;
+const CSI_INTRODUCER = 0x5b; // '['
+const FOCUS_IN = 0x49; // 'I'
+const FOCUS_OUT = 0x4f; // 'O'
 const EMPTY = new Uint8Array(0);
+
+/** Outcome of attempting to decode a focus report at an offset. */
+type FocusDecode =
+  | { readonly status: 'event'; readonly event: FocusEvent; readonly end: number }
+  | { readonly status: 'none' };
 
 /** A fresh, empty decoder state: no carried bytes, no in-progress paste. */
 export function createDecoderState(): DecoderState {
@@ -80,39 +95,138 @@ export function flush(state: DecoderState, options?: DecodeOptions): DecodeResul
 }
 
 /**
- * The core scan loop over a working buffer. Tries each token type in priority
- * order at every position; a complete token is consumed and appended, an
- * incomplete trailing token stops the scan (carried in `rest`), and a recognised
- * but unmapped token is dropped (advanced past, no event).
+ * The core scan loop over a working buffer. At each position it tries the token
+ * types in priority order (03-03): in-progress paste, query-response demux,
+ * mouse/wheel, focus, bracketed-paste start, then the keyboard fallback. A
+ * complete token is consumed and appended; an incomplete trailing token stops
+ * the scan (carried in `rest`); a recognised-but-unmapped token is dropped.
+ *
+ * Query responses are pushed to `queries`, never `events`, so a terminal reply
+ * physically cannot leak as a keystroke (AC-6, PL-9). The in-progress paste is
+ * accumulated into local state and threaded out via the returned `state` (RT-1).
  */
 function scan(buf: Uint8Array, paste: PasteState, options?: DecodeOptions): DecodeResult {
   const events: InputEvent[] = [];
   const queries: QueryResponse[] = [];
+  const cap = options?.pasteCap ?? PASTE_CAP_BYTES;
+
+  // Local, mutable copy of the paste accumulation so decode() never mutates the
+  // caller's state (purity, AC-8).
+  let active = paste.active;
+  let pasteBytes = active ? paste.bytes.slice() : [];
+  let truncated = active ? paste.truncated : false;
 
   let i = 0;
-  while (i < buf.length) {
-    // Phase 3 inserts active-paste / query-demux / mouse / focus / paste-start
-    // matchers here, before the keyboard fallback.
-    const token = decodeKey(buf, i, options);
-    if (token.status === 'incomplete') {
-      break; // incomplete trailing token — carry the remaining bytes
-    }
-    if (token.status === 'drop') {
-      i = token.end; // recognised shape, no key emitted — advance & resync
+  scanLoop: while (i < buf.length) {
+    // 1. In-progress paste: every byte is content until the end marker (AC-5).
+    if (active) {
+      const endMarker = matchMarker(buf, i, PASTE_END);
+      if (endMarker === 'incomplete') {
+        break; // a partial end marker at the buffer end — carry & retry
+      }
+      if (typeof endMarker === 'number') {
+        events.push({ type: 'paste', text: decodePasteText(pasteBytes), truncated });
+        active = false;
+        pasteBytes = [];
+        truncated = false;
+        i = endMarker;
+        continue;
+      }
+      // Accumulate one content byte under the size cap (PL-5, AC-7).
+      if (pasteBytes.length < cap) {
+        pasteBytes.push(buf[i]);
+      } else {
+        truncated = true;
+      }
+      i += 1;
       continue;
     }
-    events.push(token.event);
-    i = token.end;
+
+    // 2. Query-response demux → queries (never events) (AC-6, PL-9).
+    const response = matchResponse(buf, i);
+    if (response !== null) {
+      queries.push({ raw: copyOf(buf.subarray(i, response.end)), kind: response.kind });
+      i = response.end;
+      continue;
+    }
+
+    // 3. Mouse / wheel (SGR 1006).
+    const mouse = decodeMouse(buf, i);
+    if (mouse.status === 'incomplete') {
+      break;
+    }
+    if (mouse.status === 'event') {
+      events.push(mouse.event);
+      i = mouse.end;
+      continue;
+    }
+
+    // 4. Focus in/out (`CSI I` / `CSI O`).
+    const focus = decodeFocus(buf, i);
+    if (focus.status === 'event') {
+      events.push(focus.event);
+      i = focus.end;
+      continue;
+    }
+
+    // 5. Bracketed-paste start marker.
+    const startMarker = matchMarker(buf, i, PASTE_START);
+    if (startMarker === 'incomplete') {
+      break; // a partial start marker at the buffer end — carry & retry
+    }
+    if (typeof startMarker === 'number') {
+      active = true;
+      i = startMarker;
+      continue;
+    }
+
+    // 6. Keyboard fallback (classic xterm grammar).
+    const token = decodeKey(buf, i, options);
+    switch (token.status) {
+      case 'incomplete':
+        break scanLoop; // incomplete trailing token — carry the remaining bytes
+      case 'drop':
+        i = token.end; // recognised shape, no key emitted — advance & resync
+        continue;
+      case 'event':
+        events.push(token.event);
+        i = token.end;
+        continue;
+    }
   }
 
   let rest = copyOf(buf.subarray(i));
   // Carry bound (PL-6, AC-7/AC-8): a trailing incomplete token longer than the
   // shared cap is adversarial garbage — drop it and resync rather than grow.
+  // (Paste content is bounded separately by the paste cap, not carried in rest.)
   if (rest.length > RESPONSE_BUFFER_CAP) {
     rest = EMPTY;
   }
 
-  return { events, queries, rest, state: { carry: rest, paste } };
+  const nextPaste: PasteState = active
+    ? { active: true, bytes: pasteBytes, truncated }
+    : { active: false, bytes: [], truncated: false };
+
+  return { events, queries, rest, state: { carry: rest, paste: nextPaste } };
+}
+
+/**
+ * Decode a focus in/out report: `ESC [ I` → focused, `ESC [ O` → unfocused
+ * (PL-7). Returns `none` when the bytes are not a focus report (the decoder then
+ * tries the bracketed-paste start and keyboard fallbacks).
+ */
+function decodeFocus(buf: Uint8Array, i: number): FocusDecode {
+  if (buf[i] !== ESC || buf[i + 1] !== CSI_INTRODUCER) {
+    return { status: 'none' };
+  }
+  const final = buf[i + 2];
+  if (final === FOCUS_IN) {
+    return { status: 'event', event: { type: 'focus', focused: true }, end: i + 3 };
+  }
+  if (final === FOCUS_OUT) {
+    return { status: 'event', event: { type: 'focus', focused: false }, end: i + 3 };
+  }
+  return { status: 'none' };
 }
 
 /** Concatenate the carried bytes with the new chunk into one working buffer. */
