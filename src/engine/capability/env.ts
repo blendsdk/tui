@@ -18,6 +18,7 @@
  * | `TERM` contains `256color` | soft colorDepth `256` |
  * | `TERM` set (other) | soft colorDepth `16` |
  * | `LC_ALL`/`LC_CTYPE`/`LANG` contains `UTF-8` (ci) | `unicode.utf8 = true` |
+ * | `$TMUX` set, or `TERM` starts `screen`/`tmux` | `multiplexer = true` |
  */
 import type { ColorDepth, DeepPartial, CapabilityProfile } from './profile.js';
 
@@ -58,11 +59,16 @@ export interface EnvSignals {
  * @returns The determined non-colorDepth fields plus the split colorDepth signal.
  */
 export function readEnv(env: NodeJS.ProcessEnv): EnvSignals {
-  const profile: { unicode?: { utf8: boolean } } = {};
+  const profile: { unicode?: { utf8: boolean }; multiplexer?: boolean } = {};
 
-  const utf8 = detectUtf8(env);
-  if (utf8) {
+  if (detectUtf8(env)) {
     profile.unicode = { utf8: true };
+  }
+
+  // Running under tmux/screen → flag the multiplexer (consumers apply a
+  // passthrough policy). Caps stay conservative: nothing rich is asserted here.
+  if (detectMultiplexer(env)) {
+    profile.multiplexer = true;
   }
 
   return { profile, colorDepth: readColorDepth(env) };
@@ -115,4 +121,16 @@ function detectUtf8(env: NodeJS.ProcessEnv): boolean {
     return false;
   }
   return /utf-?8/i.test(effectiveLocale);
+}
+
+/**
+ * Detect a tmux/screen multiplexer: `$TMUX` set, or a `TERM` beginning with
+ * `screen` or `tmux` (the canonical multiplexer TERM prefixes).
+ */
+function detectMultiplexer(env: NodeJS.ProcessEnv): boolean {
+  if (env.TMUX !== undefined) {
+    return true;
+  }
+  const term = env.TERM;
+  return term !== undefined && (term.startsWith('screen') || term.startsWith('tmux'));
 }

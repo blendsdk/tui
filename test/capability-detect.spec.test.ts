@@ -7,9 +7,10 @@
  * implementation. If a test here fails after implementation, the implementation
  * is wrong, not the test.
  *
- * Phase 1 covers ST-1…ST-8, ST-10, ST-12. The table/multiplexer/reason/cache
- * cases (ST-9, ST-11, ST-17, ST-18, ST-19) are appended in Phase 2 once layer 4
- * exists.
+ * Phase 1 covers ST-1…ST-8, ST-10, ST-12; Phase 2 appends the table/multiplexer/
+ * reason/cache cases (ST-9, ST-11, ST-17, ST-18, ST-19) now that layer 4 exists.
+ * (ST-9 is sited here per runtime decision RT-1 in the ambiguity register: it
+ * needs a detected terminal with mouse drag/wheel on, which the table provides.)
  *
  * Detection is driven entirely through injectable inputs (`options.env`,
  * `options.platform`) so every case is hermetic and cross-platform — no real
@@ -139,4 +140,77 @@ test('ST-12: profile and reasons are deep-frozen', () => {
   assert.ok(Object.isFrozen(profile.osc), 'profile.osc frozen');
   assert.ok(Object.isFrozen(profile.keyboard), 'profile.keyboard frozen');
   assert.ok(Object.isFrozen(profile.glyphs), 'profile.glyphs frozen');
+});
+
+// ---------------------------------------------------------------------------
+// Phase 2: known-terminal table, multiplexer, reasons & cache
+// ---------------------------------------------------------------------------
+
+// ST-18 (PL-10): a known terminal (iTerm2 via TERM_PROGRAM) applies its known
+// caps with reason 'table'. Expectations come from the iTerm2 row in 03-02
+// (truecolor, mouse sgr/drag/wheel, OSC hyperlink/clipboard/title/notify).
+test('ST-18: TERM_PROGRAM=iTerm.app applies known caps with reason table', () => {
+  const { profile, reasons } = resolveCapabilities({ env: { TERM_PROGRAM: 'iTerm.app' } });
+
+  assert.equal(profile.colorDepth, 'truecolor');
+  assert.equal(profile.mouse.sgr, true);
+  assert.equal(profile.osc.hyperlink8, true);
+
+  assert.equal(reasons.colorDepth, 'table');
+  assert.equal(reasons.mouse, 'table');
+  assert.equal(reasons.osc, 'table');
+});
+
+// ST-9 (PL-7): a scalar override merges over a DETECTED terminal group without
+// disturbing that group's other detected leaves. iTerm2 detects drag/wheel on;
+// override forces sgr off only.
+test('ST-9: override mouse.sgr over iTerm2 keeps detected drag/wheel', () => {
+  const { profile, reasons } = resolveCapabilities({
+    env: { TERM_PROGRAM: 'iTerm.app' },
+    override: { mouse: { sgr: false } },
+  });
+
+  assert.equal(profile.mouse.sgr, false);
+  assert.equal(profile.mouse.drag, true);
+  assert.equal(profile.mouse.wheel, true);
+  assert.equal(reasons.mouse, 'override');
+});
+
+// ST-11 (PL-3): the reason trace records the winning layer per field — 'env'
+// for a COLORTERM-driven colorDepth, 'table' for a table-driven group, and
+// 'default' for a field no layer touched.
+test('ST-11: reasons record env / table / default across fields', () => {
+  const { reasons } = resolveCapabilities({
+    env: { COLORTERM: 'truecolor', TERM_PROGRAM: 'iTerm.app' },
+  });
+
+  assert.equal(reasons.colorDepth, 'env'); // COLORTERM (soft) outranks the table
+  assert.equal(reasons.mouse, 'table'); // iTerm2 supplies the mouse group
+  assert.equal(reasons.keyboard, 'default'); // no layer touches keyboard
+});
+
+// ST-19 (RD-02 must-have): tmux/screen is detected as a multiplexer with
+// conservative caps; the reason is 'env' (TMUX / TERM prefix).
+test('ST-19: TERM=screen + TMUX set → multiplexer true (reason env)', () => {
+  const { profile, reasons } = resolveCapabilities({
+    env: { TERM: 'screen', TMUX: '/tmp/x' },
+  });
+
+  assert.equal(profile.multiplexer, true);
+  assert.equal(reasons.multiplexer, 'env');
+  // Conservative: no rich color is claimed from a bare `screen` TERM.
+  assert.equal(profile.colorDepth, '16');
+});
+
+// ST-17 (PL-14): the ambient resolution (no options) is cached per process;
+// a second bare call returns the same frozen reference, and `refresh: true`
+// forces a fresh object.
+test('ST-17: ambient resolution is cached; refresh forces a fresh object', () => {
+  const first = resolveCapabilities();
+  const second = resolveCapabilities();
+  assert.equal(second, first, 'second bare call returns the cached reference');
+
+  const refreshed = resolveCapabilities({ refresh: true });
+  assert.notEqual(refreshed, first, 'refresh returns a fresh object');
+  assert.deepEqual(refreshed, first, 'refresh recomputes equal content');
 });

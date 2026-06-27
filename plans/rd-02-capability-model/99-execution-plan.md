@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
 > **Last Updated**: 2026-06-27
-> **Progress**: 7/24 tasks (29%)
+> **Progress**: 14/24 tasks (58%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -159,13 +159,13 @@ skill — this plan contains no raw git commands. **No new runtime dependencies.
 - [x] 1.3.2 verify + lint clean — 2026-06-27 (verify 48 tests pass, eslint+prettier clean)
 
 ### Phase 2: Table, Multiplexer, Reasons & Cache
-- [ ] 2.1.1 Write spec tests (ST-11, ST-17, ST-18, ST-19)
-- [ ] 2.1.2 Red phase
-- [ ] 2.2.1 Implement table + multiplexer
-- [ ] 2.2.2 Wire layer 4 + reasons + cache/refresh
-- [ ] 2.2.3 Green phase
-- [ ] 2.3.1 Write table impl tests
-- [ ] 2.3.2 verify + lint clean
+- [x] 2.1.1 Write spec tests (ST-9, ST-11, ST-17, ST-18, ST-19) — 2026-06-27 (ST-9 sited here per RT-1)
+- [x] 2.1.2 Red phase — 2026-06-27 (ST-9/11/18/19 fail; ST-17 cache already green from Phase 1)
+- [x] 2.2.1 Implement table + multiplexer — 2026-06-27
+- [x] 2.2.2 Wire layer 4 + reasons + cache/refresh — 2026-06-27 (cache from Phase 1)
+- [x] 2.2.3 Green phase — 2026-06-27 (15/15 detect spec tests pass)
+- [x] 2.3.1 Write table impl tests — 2026-06-27
+- [x] 2.3.2 verify + lint clean — 2026-06-27 (verify 64 tests pass, eslint+prettier clean)
 
 ### Phase 3: Runtime-Query Seam & Parser
 - [ ] 3.1.1 Write query spec tests (ST-13…ST-16, stub stream)

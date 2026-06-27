@@ -19,6 +19,7 @@ import type {
   ResolveOptions,
 } from './profile.js';
 import { detectBase, deepMerge } from './detect.js';
+import { lookupTable } from './table.js';
 
 export type {
   CapabilityProfile,
@@ -70,9 +71,10 @@ export function resolveCapabilities(options: ResolveOptions = {}): CapabilityRes
   const env = options.env ?? process.env;
   const platform = options.platform ?? toPlatform(process.platform);
 
-  // Layers 2 (runtime) and 4 (table) are injected by later phases; until then
-  // detection composes layers 3/5 only.
-  const base = detectBase({ env, platform });
+  // Layer 4 (known-terminal table). Layer 2 (runtime query) is injected by a
+  // later phase; until then detection composes layers 3/4/5.
+  const table = lookupTable(env);
+  const base = detectBase({ env, platform, table });
 
   const merged = applyOverride(base, options.override);
   const result = freezeResolution(merged);
