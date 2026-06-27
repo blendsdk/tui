@@ -1,0 +1,30 @@
+{
+  "name": "turbo-hello",
+  "version": "1.0.0",
+  "description": "A Borland Turbo Vision-style 'Hello World' terminal UI built with Ink + TypeScript",
+  "type": "module",
+  "bin": {
+    "turbo-hello": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "tsx src/index.tsx",
+    "dev": "tsx src/index.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/app/*.test.ts",
+    "verify": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "ink": "^5.1.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.12",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
