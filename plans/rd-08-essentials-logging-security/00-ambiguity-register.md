@@ -61,3 +61,12 @@ All rows were resolved by explicit user decision during the make_plan interview
 - **AR-10 (PF-003):** the logger UI-stream guard (AC-7) mechanism is pinned: stderr → fd-number
   compare; file → `{dev,ino}` equality with an `ino !== 0` guard (best-effort where inodes are
   unstable), behind an injectable stat seam so ST-22 is deterministic cross-platform.
+
+### Runtime decisions (during execution)
+
+- **RT-1 (AR-10, runtime):** the file-sink UI-stream guard drops the documented `realpathSync`
+  step. The doc described "`realpath`s + `openSync`s + `fstatSync`s the path", but `realpathSync`
+  throws `ENOENT` on a not-yet-created log file (the common case), and `openSync(path,'a')` already
+  follows symlinks so the fd-based `fstatSync` reads the real `{dev,ino}` — making `realpath`
+  redundant for the guard. The injectable `LoggerFs` seam therefore omits `realpathSync`; the AC-7
+  behavior (throw on UI-stream collision; allow distinct / `ino===0`) is unchanged.

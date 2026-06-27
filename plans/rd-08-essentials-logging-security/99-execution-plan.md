@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 22:40
-> **Progress**: 9/35 tasks (26%)
+> **Last Updated**: 2026-06-27 23:10
+> **Progress**: 19/35 tasks (54%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -109,10 +109,10 @@ RD-02 and RD-07 public contracts are **not** modified (AR-2, AR-5). The `@blends
 | 2.3.2 | Full verification | — |
 
 **Deliverables**:
-- [ ] Typed errors, screen-safe logger, and redaction implemented + exported
-- [ ] No-secret-logging asserted (printable key char never logged; paste → length only)
-- [ ] Disabled logger writes zero bytes (AC-5); UI-stream sink refused (AC-7)
-- [ ] All verification passing
+- [x] Typed errors, screen-safe logger, and redaction implemented + exported
+- [x] No-secret-logging asserted (printable key char never logged; paste → length only)
+- [x] Disabled logger writes zero bytes (AC-5); UI-stream sink refused (AC-7)
+- [x] All verification passing
 
 **Verify**: `npm run verify`
 
@@ -229,16 +229,16 @@ RD-02 and RD-07 public contracts are **not** modified (AR-2, AR-5). The `@blends
 - [x] 1.3.2 Full verification ✅ (completed: 2026-06-27 22:40)
 
 ### Phase 2: Error model, logger & redaction
-- [ ] 2.1.1 Write `safety-redact.spec.test.ts` (ST-14…ST-18)
-- [ ] 2.1.2 Write `safety-logger.spec.test.ts` (ST-19…ST-23)
-- [ ] 2.1.3 Run spec tests — verify FAIL (red)
-- [ ] 2.2.1 Implement `errors.ts` (`TuiError`/`EssentialsNotMetError`/`LoggerConfigError`)
-- [ ] 2.2.2 Implement `redact.ts` (`redactEvent`/`dumpCaps`)
-- [ ] 2.2.3 Implement `logger.ts` (`createLogger`, sinks, gating, UI-stream guard)
-- [ ] 2.2.4 Re-export from `safety/index.ts` + `src/engine/index.ts`
-- [ ] 2.2.5 Run spec tests — verify PASS (green)
-- [ ] 2.3.1 Write `safety-errors/redact/logger.impl.test.ts`
-- [ ] 2.3.2 Full verification
+- [x] 2.1.1 Write `safety-redact.spec.test.ts` (ST-14…ST-18) ✅ (completed: 2026-06-27 22:50)
+- [x] 2.1.2 Write `safety-logger.spec.test.ts` (ST-19…ST-23) ✅ (completed: 2026-06-27 22:50)
+- [x] 2.1.3 Run spec tests — verify FAIL (red) ✅ (completed: 2026-06-27 22:50)
+- [x] 2.2.1 Implement `errors.ts` (`TuiError`/`EssentialsNotMetError`/`LoggerConfigError`) ✅ (completed: 2026-06-27 22:58)
+- [x] 2.2.2 Implement `redact.ts` (`redactEvent`/`dumpCaps`) ✅ (completed: 2026-06-27 22:58)
+- [x] 2.2.3 Implement `logger.ts` (`createLogger`, sinks, gating, UI-stream guard) ✅ (completed: 2026-06-27 22:58)
+- [x] 2.2.4 Re-export from `safety/index.ts` + `src/engine/index.ts` ✅ (completed: 2026-06-27 22:59)
+- [x] 2.2.5 Run spec tests — verify PASS (green) ✅ (completed: 2026-06-27 23:00)
+- [x] 2.3.1 Write `safety-errors/redact/logger.impl.test.ts` ✅ (completed: 2026-06-27 23:08)
+- [x] 2.3.2 Full verification ✅ (completed: 2026-06-27 23:10)
 
 ### Phase 3: Essentials gate
 - [ ] 3.1.1 Write `safety-essentials.spec.test.ts` (ST-1…ST-8)
