@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-27 00:00
-> **Progress**: 0/26 tasks (0%)
+> **Last Updated**: 2026-06-28 00:11
+> **Progress**: 9/26 tasks (35%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -64,9 +64,9 @@ updates one RD-04 impl test). Phase 4 documents and finalizes.
 | 1.3.2 | Full verification | — |
 
 **Deliverables**:
-- [ ] Depth-aware `encode`/`encodeStyle`, redmean `nearest256`/`nearest16`, `styleKey`, `InvalidColorError` implemented + exported
-- [ ] Malformed color throws (AC-6); the seam degrades crash-safe (AC-7); only numeric SGR emitted
-- [ ] All verification passing
+- [x] Depth-aware `encode`/`encodeStyle`, redmean `nearest256`/`nearest16`, `styleKey`, `InvalidColorError` implemented + exported
+- [x] Malformed color throws (AC-6); the seam degrades crash-safe (AC-7); only numeric SGR emitted
+- [x] All verification passing
 
 **Verify**: `npm run verify`
 
@@ -167,15 +167,15 @@ updates one RD-04 impl test). Phase 4 documents and finalizes.
 > header. Never batch updates.
 
 ### Phase 1: Color encoding core
-- [ ] 1.1.1 Write `color-encode.spec.test.ts` (ST-1…ST-14)
-- [ ] 1.1.2 Run spec tests — verify FAIL (red)
-- [ ] 1.2.1 `color.ts` (`Rgb`, `InvalidColorError`, `toRgb`)
-- [ ] 1.2.2 `palette.ts` (`ANSI16_REFERENCE`, `rgb256`)
-- [ ] 1.2.3 `downsample.ts` (`redmean2`, `nearest256`, `nearest16`)
-- [ ] 1.2.4 `encode.ts` (`encode`, `encodeStyle`, `styleKey`)
-- [ ] 1.2.5 `color/index.ts` + top-level re-export; spec tests PASS (green)
-- [ ] 1.3.1 Write `color-encode.impl.test.ts`
-- [ ] 1.3.2 Full verification
+- [x] 1.1.1 Write `color-encode.spec.test.ts` (ST-1…ST-14) ✅ (completed: 2026-06-27 23:58)
+- [x] 1.1.2 Run spec tests — verify FAIL (red) ✅ (completed: 2026-06-27 23:58)
+- [x] 1.2.1 `color.ts` (`Rgb`, `InvalidColorError`, `toRgb`) ✅ (completed: 2026-06-28 00:05)
+- [x] 1.2.2 `palette.ts` (`ANSI16_REFERENCE`, `rgb256`) ✅ (completed: 2026-06-28 00:05)
+- [x] 1.2.3 `downsample.ts` (`redmean2`, `nearest256`, `nearest16`) ✅ (completed: 2026-06-28 00:05)
+- [x] 1.2.4 `encode.ts` (`encode`, `encodeStyle`, `styleKey`) ✅ (completed: 2026-06-28 00:06)
+- [x] 1.2.5 `color/index.ts` + top-level re-export; spec tests PASS (green) ✅ (completed: 2026-06-28 00:07)
+- [x] 1.3.1 Write `color-encode.impl.test.ts` ✅ (completed: 2026-06-28 00:10)
+- [x] 1.3.2 Full verification ✅ (completed: 2026-06-28 00:11)
 
 ### Phase 2: Palette & theme
 - [ ] 2.1.1 Write `color-palette-theme.spec.test.ts` (ST-15, ST-16)

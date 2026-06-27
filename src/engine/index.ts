@@ -5,7 +5,8 @@
  * everything from `@blendsdk/tui`. Currently: the package {@link VERSION}
  * (RD-01), the capability detection core (RD-02), the input decoder
  * (RD-06), the rendering engine (RD-04), the host & lifecycle subsystem
- * (RD-07), and the safety subsystem (RD-08).
+ * (RD-07), the safety subsystem (RD-08), and the color & styling subsystem
+ * (RD-05).
  *
  * The `.js` extension in the import specifiers is required by NodeNext ESM
  * resolution (it resolves to the `.ts` source during development via tsx).
@@ -117,3 +118,7 @@ export type {
   LoggerFs,
   RedactedEvent,
 } from './safety/index.js';
+
+// RD-05 — color & styling (depth-aware encoding, nearest-color, style key).
+export { encode, encodeStyle, styleKey, nearest256, nearest16, InvalidColorError } from './color/index.js';
+export type { ColorRole, Rgb } from './color/index.js';
