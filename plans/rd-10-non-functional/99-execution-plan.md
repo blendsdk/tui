@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 (Phase 4 complete)
-> **Progress**: 22/31 tasks (71%)
+> **Last Updated**: 2026-06-28 (Phase 5 complete)
+> **Progress**: 27/31 tasks (87%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -190,10 +190,10 @@ Spec-first throughout; wall-clock assertions are skippable under CI (AR-2).
 - [x] 4.2.1 Full verify + lint ✅ (verify 518/518, lint clean) (completed: 2026-06-28)
 
 ### Phase 5: Documentation (techdocs)
-- [ ] 5.1.1 Invoke techdocs skill (architecture + API + ADRs)
-- [ ] 5.1.2 Confirm docs present
-- [ ] 5.1.3 docs-presence spec (ST-9, PF-009)
-- [ ] 5.2.1 Full verify + lint
+- [x] 5.1.1 Invoke techdocs skill (architecture + API + ADRs) ✅ (overview, api-design, security, 6 ADRs, 2 guides, .vitepress/config; VitePress not installed per AR-15 runtime) (completed: 2026-06-28)
+- [x] 5.1.2 Confirm docs present ✅ (coexists with acceptance-gate.md) (completed: 2026-06-28)
+- [x] 5.1.3 docs-presence spec (ST-9, PF-009) ✅ (overview + API ref + ≥1 ADR + opt-in marker) (completed: 2026-06-28)
+- [x] 5.2.1 Full verify + lint ✅ (verify 522/522, lint clean — docs Prettier-formatted) (completed: 2026-06-28)
 
 ### Phase 6: CI, Docs & Roadmap
 - [ ] 6.1.1 Informational bench CI step

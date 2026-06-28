@@ -24,6 +24,12 @@ RD-10 requirements doc. Items marked ★ were resolved with a recommended defaul
 | 13 | Supply chain ★  | npm provenance on publish | now / defer | **DEFERRED (DEF-1): no publish/remote-publish yet; document the `npm publish --provenance` intent; verify at first real release** | ✅ |
 | 14 | Performance ★   | Typed-array buffer backing for large screens | implement / out | **Out of scope: RD-10 says "may"; remains the optional RD-04 DEF-2 optimization. Bounded-memory AC is met by existing buffer/paste/carry bounds** | ✅ |
 
+### Runtime decisions (during execution)
+
+| #  | Category | Ambiguity / Gap | Decision | Status |
+|----|----------|-----------------|----------|--------|
+| 15 (runtime) | Docs | techdocs Phase 3 installs VitePress as a dev dep, conflicting with RD-10 success criterion 5 ("only `esbuild` added") + the zero/minimal-dep ethos + `npm audit` 0 high | **Generate the VitePress-compatible markdown set (overview, API reference, ADRs) + a `docs/.vitepress/config.ts`, but do NOT `npm install vitepress` and do NOT add `docs:*` scripts.** The markdown content is the deliverable (AR-5); the dep is intentionally not added, honoring criterion 5 + audit-clean. (User-confirmed.) | ✅ |
+
 ### Deferrals (DEF-n)
 
 - **DEF-1** — npm provenance verification on publish (needs a real publish + CI OIDC). [AR-13]
