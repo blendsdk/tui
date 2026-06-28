@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 (Phase 5 complete)
-> **Progress**: 27/31 tasks (87%)
+> **Last Updated**: 2026-06-28 (Phase 6 complete — ALL DONE)
+> **Progress**: 31/31 tasks (100%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -196,11 +196,11 @@ Spec-first throughout; wall-clock assertions are skippable under CI (AR-2).
 - [x] 5.2.1 Full verify + lint ✅ (verify 522/522, lint clean — docs Prettier-formatted) (completed: 2026-06-28)
 
 ### Phase 6: CI, Docs & Roadmap
-- [ ] 6.1.1 Informational bench CI step
-- [ ] 6.1.2 README bench/RD-10 note
-- [ ] 6.1.3 CLAUDE.md update
-- [ ] 6.1.4 Roadmap → Implemented + DEF-1…3 notes + close RD-09 DEF-4 (PF-007)
-- [ ] 6.1.5 Final full verify + gate + lint + audit + bench
+- [x] 6.1.1 Informational bench CI step ✅ (ubuntu-latest + Node 20, continue-on-error) (completed: 2026-06-28)
+- [x] 6.1.2 README bench/RD-10 note ✅ (Contributing table row + perf note) (completed: 2026-06-28)
+- [x] 6.1.3 CLAUDE.md update ✅ (bench command, bench/ + docs/ + RD-10 tests in structure, RD-10 overview) (completed: 2026-06-28)
+- [x] 6.1.4 Roadmap → Implemented + DEF-1…3 notes + close RD-09 DEF-4 (PF-007) ✅ (completed: 2026-06-28)
+- [x] 6.1.5 Final full verify + gate + lint + audit + bench ✅ (verify 522/522, gate 9 PASS/2 DEFERRED, lint/check:deps clean, audit 0, bench prints) (completed: 2026-06-28)
 
 ---
 

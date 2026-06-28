@@ -43,6 +43,14 @@ jobs:
       - name: Verify (typecheck + unit tests + build)
         run: npm run verify
 
+      # Informational only (RD-10 AR-9): prints median/p95, never gates. Scoped to
+      # a single cell to avoid 9× noise and Windows shell-quoting (PF-008); the
+      # hard 16 ms ceiling is asserted off-CI by test/perf-budget.spec.test.ts.
+      - name: Performance bench (informational — one cell, never fails)
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
+        continue-on-error: true
+        run: npm run bench
+
       - name: End-to-end tests (POSIX only — SIGTERM/SIGHUP, real child processes)
         if: runner.os != 'Windows'
         run: npx tsx --test test/install.e2e.test.ts test/probe.e2e.test.ts test/safety-error-restore.e2e.test.ts test/host-signals.e2e.test.ts test/host-tier3.e2e.test.ts

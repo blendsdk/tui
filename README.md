@@ -426,7 +426,14 @@ through `tsx`.
 | `npm run lint`       | ESLint + Prettier (check only)                               |
 | `npm run lint:fix`   | ESLint `--fix` + Prettier `--write`                          |
 | `npm run check:deps` | Fail if any runtime dependency requires native build steps   |
+| `npm run bench`      | Print frame perf median/p95 (200×50) — informational (RD-10) |
 | `npm pack --dry-run` | Inspect the published file set (`dist/` + metadata only)     |
+
+> **Performance (RD-10).** `npm run bench` reports the 200×50 compose+diff
+> median/p95 (informational; it never fails). The 16 ms frame-budget ceiling is
+> asserted off-CI by `test/perf-budget.spec.test.ts` and auto-skips its hard
+> assertion under `CI` or when `TUI_SKIP_PERF` is set (for slow/throttled
+> machines); CI runs the bench informationally on one matrix cell.
 
 Tests follow a strict split:
 
