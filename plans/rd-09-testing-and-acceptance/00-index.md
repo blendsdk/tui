@@ -76,8 +76,8 @@ npm run gate
 ## Related Files
 
 **New (created by this plan):**
-- `test/fixtures/input-corpus/*.json`, `test/input-corpus.spec.test.ts`, `test/input-corpus.impl.test.ts`
-- `test/golden-screen.spec.test.ts`, `test/golden-screen.impl.test.ts`
+- `test/fixtures/input-corpus/*.json`, `test/input-corpus.spec.test.ts`, `test/input-corpus.impl.test.ts`, `test/input-corpus-helpers.ts`
+- `test/golden-screen.spec.test.ts`, `test/golden-screen.impl.test.ts`, `test/golden-screen-helpers.ts`
 - `test/host-tier3.e2e.test.ts`
 - `test/input-fuzz.spec.test.ts`, `test/input-fuzz.impl.test.ts`
 - `test/render-bytes-damage.spec.test.ts`

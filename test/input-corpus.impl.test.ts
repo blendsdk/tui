@@ -16,7 +16,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createDecoderState, decode, flush } from '../src/engine/index.js';
 import type { InputEvent } from '../src/engine/index.js';
-import { hexToBytes, splitChunks, loadCorpusFiles } from './input-corpus.spec.test.js';
+import { hexToBytes, splitChunks, loadCorpusFiles } from './input-corpus-helpers.js';
 
 test('hexToBytes parses valid lowercase hex', () => {
   assert.deepEqual(Array.from(hexToBytes('1b5b41')), [0x1b, 0x5b, 0x41]);

@@ -31,9 +31,9 @@
     "check:deps": "node scripts/check-no-native-deps.mjs",
     "verify": "npm run typecheck && npm run typecheck:examples && npm run test && npm run build"
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@xterm/headless": "^6.0.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.4.2",

@@ -2,8 +2,17 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 (Phase 1 complete)
-> **Progress**: 8/34 tasks (24%)
+> **Last Updated**: 2026-06-28 (Phase 2 complete)
+> **Progress**: 16/34 tasks (47%)
+>
+> **Runtime deviation (2026-06-28):** shared test helpers were extracted into
+> non-test modules — `test/input-corpus-helpers.ts` and `test/golden-screen-helpers.ts`
+> (mirroring the existing `test/host-doubles.ts` convention) — instead of living
+> inside the `*.spec.test.ts` files. Reason: importing helpers from a `*.spec.test.ts`
+> into a `*.impl.test.ts` re-registered the spec's `test()` calls, running them twice.
+> The helper modules contain no `test()` calls, so each suite registers once. No
+> behaviour change; same public helpers (hexToBytes/splitChunks/loadCorpusFiles;
+> makeTerm/feed/readCell).
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -197,14 +206,14 @@ byte-proportionality benchmark, and the acceptance gate (`docs/acceptance-gate.m
 - [x] 1.3.2 Full verify ✅ (completed: 2026-06-28) — 529/529, build clean
 
 ### Phase 2: Golden Screen
-- [ ] 2.1.1 Add `@xterm/headless` dev dep (verify pure-JS + audit)
-- [ ] 2.1.2 Golden spec (4 depths × 3 cases, ST-8…ST-11)
-- [ ] 2.1.3 Confirm spec status
-- [ ] 2.2.1 Emulator adapter (feed/readCell)
-- [ ] 2.2.2 Resolve failures
-- [ ] 2.2.3 Spec green
-- [ ] 2.3.1 Golden impl tests
-- [ ] 2.3.2 Full verify + check:deps
+- [x] 2.1.1 Add `@xterm/headless` dev dep (verify pure-JS + audit) ✅ (2026-06-28) — v6.0.0, no binding.gyp/.node, check:deps OK, 0 vulns
+- [x] 2.1.2 Golden spec (4 depths × 3 cases, ST-8…ST-11) ✅ (2026-06-28)
+- [x] 2.1.3 Confirm spec status (expected-green: exercises built render/RD-05 chain) ✅ (2026-06-28) — 12/12
+- [x] 2.2.1 Emulator adapter (feed/readCell) ✅ (2026-06-28) — in `golden-screen-helpers.ts` (CJS default-import; cell→mode/value normalization)
+- [x] 2.2.2 Resolve failures (one test-authoring fix: sentinel for the combining-mark spill check; no engine change) ✅ (2026-06-28)
+- [x] 2.2.3 Spec green ✅ (2026-06-28)
+- [x] 2.3.1 Golden impl tests (empty cell, wide-trailing, default colours) ✅ (2026-06-28)
+- [x] 2.3.2 Full verify + check:deps ✅ (2026-06-28) — 487/487, build + check:deps clean
 
 ### Phase 3: Tier-3 Integration
 - [ ] 3.1.1 e2e child scaffold (alt-screen + mouse)
