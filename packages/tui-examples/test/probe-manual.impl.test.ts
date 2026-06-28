@@ -9,7 +9,7 @@ import { test, expect } from 'vitest';
 
 import { renderProbePattern, runManualProbes } from '../capability-probe/manual-probes.js';
 import type { ProbeDescriptor } from '../capability-probe/taxonomy.js';
-import { ScreenBuffer, serialize, resolveCapabilities } from '@blendsdk/tui-core';
+import { ScreenBuffer, serialize, resolveCapabilities } from '@jsvision/core';
 
 const TRUECOLOR = resolveCapabilities({ env: {}, platform: 'linux', override: { colorDepth: 'truecolor' } }).profile;
 

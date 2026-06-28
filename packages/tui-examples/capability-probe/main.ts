@@ -19,8 +19,8 @@
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
-import { createHost, createTerminalQuery, detectTty, resolveCapabilities, ScreenBuffer } from '@blendsdk/tui-core';
-import type { InputEvent, Platform, TerminalQuery } from '@blendsdk/tui-core';
+import { createHost, createTerminalQuery, detectTty, resolveCapabilities, ScreenBuffer } from '@jsvision/core';
+import type { InputEvent, Platform, TerminalQuery } from '@jsvision/core';
 import { parseArgs, USAGE } from './args.js';
 import type { ProbeArgs } from './args.js';
 import { gatherEnvMeta } from './env-meta.js';

@@ -10,7 +10,7 @@ import { test, expect } from 'vitest';
 
 import { runManualProbes, classifyConfirmation } from '../capability-probe/manual-probes.js';
 import type { ProbeDescriptor } from '../capability-probe/taxonomy.js';
-import { resolveCapabilities } from '@blendsdk/tui-core';
+import { resolveCapabilities } from '@jsvision/core';
 
 const CAPS = resolveCapabilities({ env: {}, platform: 'linux' }).profile;
 

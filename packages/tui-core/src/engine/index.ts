@@ -1,8 +1,8 @@
 /**
- * `@blendsdk/tui` — public entry point of the SDK foundation.
+ * `@jsvision/core` — public entry point of the SDK foundation.
  *
  * Re-exports the public API of each landed subsystem so consumers import
- * everything from `@blendsdk/tui`. Currently: the package {@link VERSION}
+ * everything from `@jsvision/core`. Currently: the package {@link VERSION}
  * (RD-01), the capability detection core (RD-02), the input decoder
  * (RD-06), the rendering engine (RD-04), the host & lifecycle subsystem
  * (RD-07), the safety subsystem (RD-08), and the color & styling subsystem

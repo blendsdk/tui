@@ -8,7 +8,7 @@ import { test, expect } from 'vitest';
 
 import { buildReport, deriveRecommendation, renderTable, renderJson } from '../capability-probe/report.js';
 import { gatherEnvMeta } from '../capability-probe/env-meta.js';
-import { resolveCapabilities } from '@blendsdk/tui-core';
+import { resolveCapabilities } from '@jsvision/core';
 
 const META = gatherEnvMeta({
   env: { TERM: 'xterm-256color', COLORTERM: 'truecolor' },

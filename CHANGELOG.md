@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@blendsdk/tui` are documented in this file.
+All notable changes to `jsvision` are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -11,6 +11,12 @@ the deprecation policy.
 
 ### Changed
 
+- **Adopted a dedicated npm scope `@jsvision/*`.** Packages renamed
+  `@blendsdk/tui-core` → **`@jsvision/core`** and `@blendsdk/tui-examples` →
+  **`@jsvision/examples`** (monorepo root → `@jsvision/monorepo`); the GitHub repo
+  moved to `blendsdk/jsvision`. The brand for the SDK is now **jsvision**. This
+  supersedes the interim `@blendsdk/tui-core` naming noted below. Package
+  directories (`packages/tui-core/`, `packages/tui-examples/`) are unchanged.
 - **Monorepo restructure.** The repository is now a yarn 1.x + Turborepo monorepo.
   The published package was **renamed `@blendsdk/tui` → `@blendsdk/tui-core`** and
   moved to `packages/tui-core/`; the dev examples + probe harness moved to the

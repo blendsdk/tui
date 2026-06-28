@@ -11,8 +11,8 @@
  * The `.js` extensions in the import specifiers are required by NodeNext ESM
  * resolution (they resolve to the `.ts` sources during development via tsx).
  */
-import { resolveCapabilitiesAsync } from '@blendsdk/tui-core';
-import type { Platform, TerminalQuery } from '@blendsdk/tui-core';
+import { resolveCapabilitiesAsync } from '@jsvision/core';
+import type { Platform, TerminalQuery } from '@jsvision/core';
 import type { ProbeResult } from './report.js';
 
 /**

@@ -1,4 +1,4 @@
-# @blendsdk/tui — Acceptance Gate (RD-09)
+# jsvision — Acceptance Gate (RD-09)
 
 > **Project go/no-go gate.** If keyboard (3), mouse (4), or scroll (5) cannot work reliably on
 > the mainstream terminal matrix, the project **HALTS** (per RD-09 AR-7).

@@ -1,5 +1,5 @@
 /**
- * The published package version of `@blendsdk/tui`.
+ * The published package version of `@jsvision/core`.
  *
  * Kept in sync with `package.json#version` (PL-6, PL-7). A specification test
  * asserts the two match so a release bump can never silently desync the runtime

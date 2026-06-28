@@ -11,8 +11,8 @@ import { buildReport, deriveRecommendation } from '../capability-probe/report.js
 import { gatherEnvMeta } from '../capability-probe/env-meta.js';
 import { runAutoProbes } from '../capability-probe/auto-probes.js';
 import { PROBES } from '../capability-probe/taxonomy.js';
-import { resolveCapabilities } from '@blendsdk/tui-core';
-import type { TerminalQuery } from '@blendsdk/tui-core';
+import { resolveCapabilities } from '@jsvision/core';
+import type { TerminalQuery } from '@jsvision/core';
 
 const META = gatherEnvMeta({ env: { TERM: 'xterm' }, platform: 'linux', now: () => '2026-06-28T00:00:00.000Z' });
 

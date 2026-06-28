@@ -9,8 +9,8 @@ import { test, expect } from 'vitest';
 import { PassThrough } from 'node:stream';
 
 import { runAutoProbes } from '../capability-probe/auto-probes.js';
-import { createTerminalQuery } from '@blendsdk/tui-core';
-import type { TerminalQuery } from '@blendsdk/tui-core';
+import { createTerminalQuery } from '@jsvision/core';
+import type { TerminalQuery } from '@jsvision/core';
 
 /** A terminal that never responds — relies on the bounded timeout. */
 function silentQuery(): TerminalQuery {

@@ -2,9 +2,9 @@
 techdocs: true
 ---
 
-# @blendsdk/tui — Technical Architecture
+# jsvision — Technical Architecture
 
-> **Project**: @blendsdk/tui
+> **Project**: jsvision
 > **Type**: Library / SDK (terminal UI foundation)
 > **Tech Stack**: TypeScript (ESM-only, NodeNext, strict), Node ≥ 18, zero runtime dependencies
 > **Last Updated**: 2026-06-28
@@ -13,7 +13,7 @@ techdocs: true
 
 ## System Purpose
 
-`@blendsdk/tui` is the foundation package of an SDK for building Turbo Vision-style
+`@jsvision/core` is the foundation package of an SDK for building Turbo Vision-style
 terminal (TUI) applications in TypeScript. It provides the cross-cutting machinery
 a terminal app needs before any widget exists: detecting what the terminal can do,
 decoding raw input bytes into events, composing and diffing a screen into minimal

@@ -4,5 +4,5 @@
     "noEmit": true,
     "rootDir": "."
   },
-  "include": ["capability-probe", "resize-demo"]
+  "include": ["capability-probe", "resize-demo", "keyboard-mouse-playground"]
 }

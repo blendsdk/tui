@@ -14,13 +14,13 @@ The package is **ESM-only** and has **zero runtime dependencies**.
 ## Install
 
 ```bash
-npm install @blendsdk/tui-core
+npm install @jsvision/core
 ```
 
 ## First Use
 
 ```ts
-import { resolveCapabilities, ScreenBuffer, serialize } from '@blendsdk/tui-core';
+import { resolveCapabilities, ScreenBuffer, serialize } from '@jsvision/core';
 
 // 1. Detect what the terminal can do (auto-configuration).
 const { profile: caps } = resolveCapabilities({ env: process.env, platform: process.platform });
@@ -33,8 +33,8 @@ buf.box(0, 0, 20, 3, { fg: 'cyan', bg: 'default' }, 'single', 'hello');
 process.stdout.write(serialize(buf, null, { caps }));
 ```
 
-> `require('@blendsdk/tui-core')` is not supported (no CommonJS condition). Use `import`
-> or a dynamic `await import('@blendsdk/tui-core')`.
+> `require('@jsvision/core')` is not supported (no CommonJS condition). Use `import`
+> or a dynamic `await import('@jsvision/core')`.
 
 ## Working on the Library
 

@@ -9,7 +9,7 @@
  * The `.js` extensions in the import specifiers are required by NodeNext ESM
  * resolution (they resolve to the `.ts` sources during development via tsx).
  */
-import type { CapabilityProfile, ColorDepth, Platform, UnicodeCaps } from '@blendsdk/tui-core';
+import type { CapabilityProfile, ColorDepth, Platform, UnicodeCaps } from '@jsvision/core';
 import type { EnvMeta } from './env-meta.js';
 import { PROBES } from './taxonomy.js';
 
