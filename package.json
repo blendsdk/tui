@@ -29,6 +29,7 @@
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
     "check:deps": "node scripts/check-no-native-deps.mjs",
+    "gate": "node scripts/gate.mjs",
     "verify": "npm run typecheck && npm run typecheck:examples && npm run test && npm run build"
   },
   "devDependencies": {

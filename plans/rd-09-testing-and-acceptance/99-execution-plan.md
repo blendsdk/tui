@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 (Phase 4 complete)
-> **Progress**: 30/34 tasks (88%)
+> **Last Updated**: 2026-06-28 (Phase 5 complete)
+> **Progress**: 37/41 tasks (90%) — denominator corrected to the actual checklist count (41, not the planner's estimate of 34)
 >
 > **Runtime deviation (2026-06-28):** shared test helpers were extracted into
 > non-test modules — `test/input-corpus-helpers.ts` and `test/golden-screen-helpers.ts`
@@ -234,13 +234,13 @@ byte-proportionality benchmark, and the acceptance gate (`docs/acceptance-gate.m
 - [x] 4.3.2 Full verify ✅ (2026-06-28) — 499/499, build + lint clean
 
 ### Phase 5: Acceptance Gate
-- [ ] 5.1.1 `gate.spec.test.ts` (ST-22…ST-24)
-- [ ] 5.1.2 Spec red
-- [ ] 5.2.1 `docs/acceptance-gate.md`
-- [ ] 5.2.2 `scripts/gate.mjs` + `gate` script
-- [ ] 5.2.3 Spec green + `npm run gate` (ST-25)
-- [ ] 5.3.1 No doc↔script drift; deferred prints DEFERRED
-- [ ] 5.3.2 Full verify + gate
+- [x] 5.1.1 `gate.spec.test.ts` (ST-22…ST-24) ✅ (2026-06-28) — imports STEPS/DEFERRED/CRITERIA from gate.mjs; parses the doc table
+- [x] 5.1.2 Spec red (gate.mjs/doc absent → ERR_MODULE_NOT_FOUND) ✅ (2026-06-28)
+- [x] 5.2.1 `docs/acceptance-gate.md` ✅ (2026-06-28) — 11-criterion table, canonical numbering, DEF-1…DEF-4, matrix note
+- [x] 5.2.2 `scripts/gate.mjs` + `gate` script ✅ (2026-06-28) — pure-Node ESM, exports STEPS/DEFERRED/CRITERIA, side-effect-free import
+- [x] 5.2.3 Spec green + `npm run gate` (ST-25) ✅ (2026-06-28) — gate exits 0: 9 PASS, 2 DEFERRED (6, 9)
+- [x] 5.3.1 No doc↔script drift (gate.spec ST-24); deferred prints DEFERRED ✅ (2026-06-28)
+- [x] 5.3.2 Full verify (502/502) + gate (exit 0) ✅ (2026-06-28)
 
 ### Phase 6: Docs & Roadmap
 - [ ] 6.1.1 README RD-09 section
