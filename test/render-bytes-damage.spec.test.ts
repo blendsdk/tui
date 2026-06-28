@@ -1,0 +1,43 @@
+/**
+ * Byte-proportionality benchmark (RD-09 FR-4, plan doc 03-04; gate item 2).
+ *
+ * Specification oracle (ST-20, ST-21): `serialize` is a damage diff, so its output
+ * byte count must be proportional to the number of changed cells. No change emits
+ * nothing; a single-cell change emits far fewer bytes than a full repaint. These
+ * are ratios/relations, not absolute counts or times, so the test is deterministic
+ * and machine-independent (AR-3). Wall-clock timing is deferred to RD-10 (DEF-4).
+ *
+ * The `.js` extension in the import specifier is required by NodeNext ESM
+ * resolution (it resolves to the `.ts` source during development via tsx).
+ */
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { ScreenBuffer, serialize, resolveCapabilities } from '../src/engine/index.js';
+import type { RenderOptions, Style } from '../src/engine/index.js';
+
+const OPTS: RenderOptions = {
+  caps: resolveCapabilities({ env: {}, platform: 'linux', override: { colorDepth: 'truecolor' } }).profile,
+};
+const STYLE: Style = { fg: 'default', bg: 'default' };
+
+/** A deterministic filled 80×24 buffer (every cell holds 'a'). */
+function filledBuffer(): ScreenBuffer {
+  return new ScreenBuffer(80, 24, { fg: 'default', bg: 'default', char: 'a' });
+}
+
+test('ST-20: serializing an unchanged buffer emits no bytes', () => {
+  const base = filledBuffer();
+  assert.equal(serialize(base, base, OPTS).length, 0, 'no change → empty payload');
+});
+
+test('ST-21: a single-cell change emits far fewer bytes than a full repaint', () => {
+  const base = filledBuffer();
+  const one = filledBuffer();
+  one.set(10, 5, 'Z', STYLE); // exactly one changed cell
+
+  const full = serialize(base, null, OPTS).length; // full first paint
+  const single = serialize(one, base, OPTS).length; // minimal diff
+
+  assert.ok(single > 0, 'a real change must emit bytes');
+  assert.ok(single < full / 10, `single-cell diff (${single}) must be ≪ full repaint (${full})`);
+});

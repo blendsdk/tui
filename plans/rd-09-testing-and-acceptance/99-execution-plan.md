@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 (Phase 3 complete)
-> **Progress**: 22/34 tasks (65%)
+> **Last Updated**: 2026-06-28 (Phase 4 complete)
+> **Progress**: 30/34 tasks (88%)
 >
 > **Runtime deviation (2026-06-28):** shared test helpers were extracted into
 > non-test modules — `test/input-corpus-helpers.ts` and `test/golden-screen-helpers.ts`
@@ -224,14 +224,14 @@ byte-proportionality benchmark, and the acceptance gate (`docs/acceptance-gate.m
 - [x] 3.2.3 e2e (5/5) + full verify (487/487) ✅ (2026-06-28)
 
 ### Phase 4: Fuzz & Perf
-- [ ] 4.1.1 Fuzz spec (ST-17, ST-18)
-- [ ] 4.1.2 Byte-proportionality spec (ST-20, ST-21)
-- [ ] 4.1.3 Confirm spec status
-- [ ] 4.2.1 PRNG + seeds + bounded probe
-- [ ] 4.2.2 Resolve throw/unbounded (fix decoder)
-- [ ] 4.2.3 Spec green
-- [ ] 4.3.1 Fuzz impl tests (ST-19 + pinned case)
-- [ ] 4.3.2 Full verify
+- [x] 4.1.1 Fuzz spec (ST-17, ST-18) ✅ (2026-06-28) — per-seed no-throw + bounded state
+- [x] 4.1.2 Byte-proportionality spec (ST-20, ST-21) ✅ (2026-06-28) — no-change empty; single ≪ full/10
+- [x] 4.1.3 Confirm spec status (expected-green: decoder already bounded) ✅ (2026-06-28)
+- [x] 4.2.1 PRNG + seeds + bounded probe ✅ (2026-06-28) — in `input-fuzz-helpers.ts` (mulberry32, SEEDS, makeChunk, stateSize)
+- [x] 4.2.2 Resolve throw/unbounded (none — decoder caps carry at 1024 and paste at the cap) ✅ (2026-06-28)
+- [x] 4.2.3 Spec green ✅ (2026-06-28)
+- [x] 4.3.1 Fuzz impl tests (ST-19 + pinned unterminated-paste-flood case) ✅ (2026-06-28)
+- [x] 4.3.2 Full verify ✅ (2026-06-28) — 499/499, build + lint clean
 
 ### Phase 5: Acceptance Gate
 - [ ] 5.1.1 `gate.spec.test.ts` (ST-22…ST-24)
