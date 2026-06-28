@@ -2,8 +2,8 @@
 
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
-> **Last Updated**: 2026-06-28 (planning complete)
-> **Progress**: 0/28 tasks (0%)
+> **Last Updated**: 2026-06-28 (Phase 1 complete)
+> **Progress**: 3/28 tasks (11%)
 > **CodeOps Skills Version**: 2.0.0
 
 ## Overview
@@ -149,9 +149,9 @@ version-sync script. Each phase ends green and is committed (via /gitcm).
 > Update immediately after each task: `- [x] N.N.N … ✅ (completed: YYYY-MM-DD)`, bump the Progress header.
 
 ### Phase 1: Package-Manager Swap
-- [ ] 1.1.1 Record green baseline (verify + gate pass counts)
-- [ ] 1.1.2 Remove package-lock; yarn install → yarn.lock
-- [ ] 1.1.3 Confirm yarn verify + gate green
+- [x] 1.1.1 Record green baseline (verify + gate pass counts) ✅ (verify 522/522) (completed: 2026-06-28)
+- [x] 1.1.2 Remove package-lock; yarn install → yarn.lock ✅ (completed: 2026-06-28)
+- [x] 1.1.3 Confirm yarn verify + gate green ✅ (verify 522/522, gate PASSED) (completed: 2026-06-28)
 
 ### Phase 2: vitest Migration
 - [ ] 2.1.1 vitest dep + config (unit + e2e projects)

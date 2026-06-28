@@ -571,5 +571,196 @@
       "altScreen": true,
       "bracketedPaste": true
     }
+  },
+  {
+    "terminal": "xterm-256color",
+    "version": null,
+    "os": "linux",
+    "term": "xterm-256color",
+    "colorterm": "truecolor",
+    "termProgram": null,
+    "multiplexer": false,
+    "timestamp": "2026-06-28T16:17:58.236Z",
+    "results": {
+      "color.truecolor": {
+        "supported": true,
+        "method": "auto"
+      },
+      "color.256": {
+        "supported": true,
+        "method": "auto"
+      },
+      "color.swatch.truecolor": {
+        "supported": null,
+        "method": "manual"
+      },
+      "color.swatch.256": {
+        "supported": null,
+        "method": "manual"
+      },
+      "color.swatch.16": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.bold": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.dim": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.italic": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.underline": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.reverse": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.strikethrough": {
+        "supported": null,
+        "method": "manual"
+      },
+      "attr.blink": {
+        "supported": null,
+        "method": "manual"
+      },
+      "glyph.boxDrawing": {
+        "supported": null,
+        "method": "manual"
+      },
+      "glyph.halfBlocks": {
+        "supported": null,
+        "method": "manual"
+      },
+      "glyph.shade": {
+        "supported": null,
+        "method": "manual"
+      },
+      "unicode.utf8": {
+        "supported": true,
+        "method": "auto"
+      },
+      "unicode.cjkWidth": {
+        "supported": null,
+        "method": "manual"
+      },
+      "unicode.combining": {
+        "supported": null,
+        "method": "manual"
+      },
+      "unicode.emoji": {
+        "supported": null,
+        "method": "manual"
+      },
+      "output.sync2026": {
+        "supported": false,
+        "method": "auto"
+      },
+      "output.altScreen": {
+        "supported": true,
+        "method": "auto"
+      },
+      "output.scrollRegion": {
+        "supported": null,
+        "method": "manual"
+      },
+      "output.cursorShape": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.hyperlink8": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.clipboard52": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.title": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.notify9": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.notify777": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.notify99": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.progress9_4": {
+        "supported": null,
+        "method": "manual"
+      },
+      "osc.bell": {
+        "supported": null,
+        "method": "manual"
+      },
+      "input.bracketedPaste": {
+        "supported": true,
+        "method": "auto"
+      },
+      "keyboard.kitty": {
+        "supported": null,
+        "method": "manual"
+      },
+      "keyboard.modifiers": {
+        "supported": null,
+        "method": "manual"
+      },
+      "mouse.sgr": {
+        "supported": true,
+        "method": "auto"
+      },
+      "mouse.click": {
+        "supported": null,
+        "method": "manual"
+      },
+      "mouse.drag": {
+        "supported": null,
+        "method": "manual"
+      },
+      "mouse.wheel": {
+        "supported": null,
+        "method": "manual"
+      },
+      "host.altScreen": {
+        "supported": null,
+        "method": "manual"
+      },
+      "host.resize": {
+        "supported": null,
+        "method": "manual"
+      },
+      "host.suspend": {
+        "supported": null,
+        "method": "manual"
+      },
+      "images.sixel": {
+        "supported": null,
+        "method": "manual"
+      },
+      "images.kitty": {
+        "supported": null,
+        "method": "manual"
+      }
+    },
+    "recommendation": {
+      "colorDepth": "truecolor",
+      "mouse": true,
+      "unicodeWidth": "wcwidth",
+      "altScreen": true,
+      "bracketedPaste": true
+    }
   }
 ]
