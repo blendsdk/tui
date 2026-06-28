@@ -29,7 +29,7 @@ PASS/FAIL/DEFERRED line per criterion, exiting non-zero if any non-deferred crit
 | 3   | Keyboard                               | PASS (auto) + MANUAL   | input-corpus.spec.test.ts (keyboard.json) + probe live readout                                                                                                                          |
 | 4   | Mouse (incl. beyond column 223)        | PASS (auto) + MANUAL   | input-corpus.spec.test.ts (mouse.json) + probe live readout                                                                                                                             |
 | 5   | Scroll                                 | PASS (auto) + MANUAL   | input-corpus.spec.test.ts (wheel.json) + probe live readout                                                                                                                             |
-| 6   | Resize                                 | DEFERRED (DEF-3)       | needs a real PTY for SIGWINCH delivery; probe manual on a real terminal                                                                                                                 |
+| 6   | Resize                                 | DEFERRED (DEF-3)       | MANUAL confirmed via `npm run demo:resize` — ✓ Linux, ✓ macOS (over SSH), ☐ Windows (pending). Automated real-PTY delivery still deferred (DEF-3)                                       |
 | 7   | Paste                                  | PASS (auto)            | input-corpus.spec.test.ts (paste.json) + safety-paste-cap.spec.test.ts                                                                                                                  |
 | 8   | Clean teardown                         | PASS (auto)            | host-tier3.e2e.test.ts + host-signals.e2e.test.ts + safety-error-restore.e2e.test.ts                                                                                                    |
 | 9   | Cross-platform                         | DEFERRED (DEF-1/DEF-2) | CI matrix green (no remote) + macOS/Windows acceptance (no platforms)                                                                                                                   |
@@ -41,12 +41,12 @@ PASS/FAIL/DEFERRED line per criterion, exiting non-zero if any non-deferred crit
 These are recorded DEFERRED and do **not** fail the gate locally (RD-09 AR-14); they are completed
 once a git remote + macOS/Windows runners exist.
 
-| DEF   | Scope                                                          | Blocks criterion                                       |
-| ----- | -------------------------------------------------------------- | ------------------------------------------------------ |
-| DEF-1 | 3-OS CI cells green (no remote yet)                            | 9 Cross-platform                                       |
-| DEF-2 | macOS/Windows acceptance + Tier-4 manual matrix (no platforms) | 9 Cross-platform                                       |
-| DEF-3 | real-PTY SIGWINCH resize delivery                              | 6 Resize                                               |
-| DEF-4 | wall-clock frame-time budgets (owned by RD-10)                 | — (perf; bytes∝damage covers the structural half of 2) |
+| DEF   | Scope                                                                                       | Blocks criterion                                       |
+| ----- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| DEF-1 | 3-OS CI cells green (no remote yet)                                                         | 9 Cross-platform                                       |
+| DEF-2 | macOS/Windows acceptance + Tier-4 manual matrix (no platforms)                              | 9 Cross-platform                                       |
+| DEF-3 | real-PTY SIGWINCH resize delivery (automated). Manual: ✓ Linux, ✓ macOS over SSH, ☐ Windows | 6 Resize                                               |
+| DEF-4 | wall-clock frame-time budgets (owned by RD-10)                                              | — (perf; bytes∝damage covers the structural half of 2) |
 
 ## Accumulating evidence
 
