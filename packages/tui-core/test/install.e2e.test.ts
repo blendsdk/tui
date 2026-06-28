@@ -52,7 +52,7 @@ test('ST-13/ST-14: packed tarball installs; ESM import works, CJS require fails'
     });
 
     // ST-13: the installed package ships its declaration file.
-    const installedDts = join(consumer, 'node_modules', '@blendsdk', 'tui-core', 'dist', 'engine', 'index.d.ts');
+    const installedDts = join(consumer, 'node_modules', '@jsvision', 'core', 'dist', 'engine', 'index.d.ts');
     expect(existsSync(installedDts)).toBeTruthy();
 
     // ST-13: ESM import resolves and yields the version.
