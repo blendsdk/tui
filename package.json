@@ -25,6 +25,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:examples": "tsc -p tsconfig.examples.json",
     "probe": "tsx examples/capability-probe/main.ts",
+    "demo:resize": "tsx examples/resize-demo/main.ts",
     "test": "tsx --test \"test/**/*.{spec,impl}.test.ts\"",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
