@@ -16,10 +16,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { STEPS, DEFERRED, CRITERIA } from '../../../scripts/gate.mjs';
+import { monorepoRoot } from './monorepo-root.js';
 
 const here = dirname(fileURLToPath(import.meta.url)); // packages/tui-core/test/
-const repoRoot = resolve(here, '../../..'); // monorepo root — gate.mjs + docs live there
-const GATE_DOC = join(repoRoot, 'docs', 'acceptance-gate.md');
+const GATE_DOC = join(monorepoRoot, 'docs', 'acceptance-gate.md');
 const ALL_CRITERIA = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 /** One parsed row of the gate doc's criteria table. */

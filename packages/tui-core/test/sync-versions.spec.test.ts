@@ -14,11 +14,10 @@ import { test, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import { join } from 'node:path';
+import { repoPath } from './monorepo-root.js';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const script = resolve(here, '../../..', 'scripts', 'sync-versions.mjs');
+const script = repoPath('scripts', 'sync-versions.mjs');
 
 /** Build a fixture workspace: root @ 9.9.9, one public pkg @ 1.0.0, one private @ 0.0.1. */
 function makeFixture(): string {

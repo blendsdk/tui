@@ -65,7 +65,7 @@ to preserve the exact error class/regex. Zero bare `assert(...)` calls exist.
 - **DEF-1** — Changesets / automated release + per-package CHANGELOG: deferred until a real publish flow is wired (the sync script + single root CHANGELOG suffice now). [AR-8, AR-12]
 - **DEF-2** — npm publish (with provenance) of `@blendsdk/tui-core`: out of scope here; remains RD-10 DEF-1. [AR-14]
 - **DEF-3** — Turbo remote caching: local-only now; revisit if CI cache sharing is wanted. [AR-19]
-- **DEF-4** — Extract the monorepo-governance tests (gate/docs-presence/api-stability/check-deps/toolchain) from `tui-core` into a dedicated root governance-test project, removing the `../../..` root reach. [AR-23]
+- ~~**DEF-4** — Extract the monorepo-governance tests into a dedicated root governance-test project, removing the `../../..` root reach.~~ **✅ RESOLVED (lightweight):** the `../../..` reach is centralized in a single `packages/tui-core/test/monorepo-root.ts` helper (`monorepoRoot`/`repoPath`) imported by all six governance specs. A full root-level test project was assessed and rejected — moving to another `packages/*` dir keeps the same depth, and a non-turbo root vitest path + splitting the mixed `toolchain.spec` add complexity for cosmetic gain. [AR-23]
 
 ### Resolution notes
 

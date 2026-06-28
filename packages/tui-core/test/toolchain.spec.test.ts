@@ -16,11 +16,11 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'nod
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
+import { monorepoRoot } from './monorepo-root.js';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url)); // packages/tui-core/test/
 const repoRoot = resolve(here, '..'); // the tui-core package root (its tsconfig)
-const monorepoRoot = resolve(here, '../../..'); // the monorepo root (shared scripts, CI)
 
 /** Create a fresh temp directory; the caller is responsible for cleanup. */
 function makeTempDir(prefix: string): string {

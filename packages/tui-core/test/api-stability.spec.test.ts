@@ -13,15 +13,11 @@
  */
 import { test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { join } from 'node:path';
+import { repoPath } from './monorepo-root.js';
 
-/** Monorepo root — CHANGELOG.md + README live there (test is in packages/tui-core/test/). */
-const root = fileURLToPath(new URL('../../../', import.meta.url));
-
-/** Read a repo-root file as UTF-8 text. */
+/** Read a monorepo-root file as UTF-8 text. */
 function readRoot(name: string): string {
-  return readFileSync(join(root, name), 'utf8');
+  return readFileSync(repoPath(name), 'utf8');
 }
 
 // ST-8a: CHANGELOG.md exists in Keep-a-Changelog form with Unreleased + 0.1.0.

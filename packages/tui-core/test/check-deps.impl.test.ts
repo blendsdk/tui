@@ -9,13 +9,11 @@ import { test, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import { join } from 'node:path';
+import { repoPath } from './monorepo-root.js';
 
-const here = dirname(fileURLToPath(import.meta.url)); // packages/tui-core/test/
-// The dep-guard script lives at the MONOREPO root, three levels up.
-const repoRoot = resolve(here, '../../..');
-const guardScript = resolve(repoRoot, 'scripts/check-no-native-deps.mjs');
+// The dep-guard script lives at the monorepo root.
+const guardScript = repoPath('scripts', 'check-no-native-deps.mjs');
 
 /** Run the guard against a project root and return its exit status + output. */
 function runGuard(rootDir: string): { status: number | null; output: string } {

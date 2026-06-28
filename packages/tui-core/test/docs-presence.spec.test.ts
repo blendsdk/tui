@@ -10,12 +10,10 @@
  */
 import { test, expect } from 'vitest';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
+import { repoPath } from './monorepo-root.js';
 
-/** Monorepo root — docs/ lives there (this test is in packages/tui-core/test/). */
-const root = fileURLToPath(new URL('../../../', import.meta.url));
-const docs = join(root, 'docs');
+const docs = repoPath('docs');
 
 test('ST-9: the architecture overview is present', () => {
   expect(existsSync(join(docs, 'architecture', 'system-overview.md'))).toBeTruthy();
