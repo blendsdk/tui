@@ -41,3 +41,28 @@ test('ST-21: a single-cell change emits far fewer bytes than a full repaint', ()
   assert.ok(single > 0, 'a real change must emit bytes');
   assert.ok(single < full / 10, `single-cell diff (${single}) must be ≪ full repaint (${full})`);
 });
+
+/**
+ * Bytes for a single-cell update at the same in-bounds coordinate on a buffer of
+ * the given size. `serialize` addresses the changed run by coordinate and never
+ * reads buffer dimensions for it (`serialize.ts:95` — `cursorTo(y+1, runStart+1)`),
+ * so the emitted byte count is independent of screen area.
+ */
+function singleCellDiffBytes(w: number, h: number): number {
+  const base = new ScreenBuffer(w, h, { fg: 'default', bg: 'default', char: 'a' });
+  const next = new ScreenBuffer(w, h, { fg: 'default', bg: 'default', char: 'a' });
+  next.set(3, 3, 'Z', STYLE); // (3,3) is valid in both 8×8 and 200×50
+  return serialize(next, base, OPTS).length;
+}
+
+// RD10-ST-2 (RD-10 AC-2 / FR-2): output ∝ damage, not screen size. The same
+// single-cell update emits a byte-IDENTICAL payload on an 8×8 and a 200×50 buffer
+// — exact equality is the stronger, constant-free oracle (PF-003). The label is
+// namespaced to avoid colliding with this file's RD-09 ST-20/ST-21 (PF-004).
+test('RD10-ST-2: a single-cell update emits identical bytes regardless of screen area', () => {
+  assert.equal(
+    singleCellDiffBytes(8, 8),
+    singleCellDiffBytes(200, 50),
+    'single-cell update bytes are identical regardless of screen area',
+  );
+});

@@ -26,6 +26,7 @@
     "typecheck:examples": "tsc -p tsconfig.examples.json",
     "probe": "tsx examples/capability-probe/main.ts",
     "demo:resize": "tsx examples/resize-demo/main.ts",
+    "bench": "tsx bench/frame-bench.mjs",
     "test": "node scripts/run-tests.mjs",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
