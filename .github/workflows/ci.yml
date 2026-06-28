@@ -1,8 +1,14 @@
-# CI for @blendsdk/tui (RD-01, PL-3, AR-4, AR-23).
+# CI for @blendsdk/tui — build & test only (no deployment).
 #
-# Cross-platform verification matrix: 3 OSes × 3 active-LTS Node versions = 9
-# cells, each running the full local gate. No secrets are referenced (AR-21);
-# publish-with-provenance is deferred to a later release milestone (PL-3).
+# The project is pre-1.0 and far from release, so there is deliberately NO
+# publish/deploy step here (publish-with-provenance comes at a later milestone).
+#
+# Cross-platform matrix: 3 OSes × 3 active-LTS Node versions = 9 cells. Every cell
+# lints, type-checks, runs the unit suite, builds, guards the dependency policy,
+# audits, and checks the package file set. The explicit end-to-end suite
+# (restore-on-exit, pack-and-install, probe) runs on POSIX only — its
+# SIGTERM/SIGHUP cases are POSIX, and Windows acceptance is deferred (RD-09 DEF-2).
+# No secrets are referenced.
 name: CI
 
 on:
@@ -10,8 +16,8 @@ on:
   pull_request:
 
 jobs:
-  verify:
-    name: verify (${{ matrix.os }}, node ${{ matrix.node }})
+  build-test:
+    name: build & test (${{ matrix.os }}, node ${{ matrix.node }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -34,14 +40,18 @@ jobs:
       - name: Lint (ESLint + Prettier)
         run: npm run lint
 
-      - name: Verify (typecheck + test + build)
+      - name: Verify (typecheck + unit tests + build)
         run: npm run verify
 
-      - name: Dependency policy guard
+      - name: End-to-end tests (POSIX only — SIGTERM/SIGHUP, real child processes)
+        if: runner.os != 'Windows'
+        run: npx tsx --test test/install.e2e.test.ts test/probe.e2e.test.ts test/safety-error-restore.e2e.test.ts test/host-signals.e2e.test.ts test/host-tier3.e2e.test.ts
+
+      - name: Dependency policy guard (no native runtime deps)
         run: npm run check:deps
 
       - name: Security audit
         run: npm audit --audit-level=high
 
-      - name: Packaging sanity (file allowlist)
+      - name: Packaging sanity (file allowlist, no publish)
         run: npm pack --dry-run
