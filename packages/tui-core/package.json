@@ -1,0 +1,38 @@
+{
+  "name": "@blendsdk/tui-core",
+  "version": "0.1.0",
+  "description": "Foundation engine for Turbo Vision-style terminal (TUI) apps",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "types": "./dist/engine/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/engine/index.d.ts",
+      "import": "./dist/engine/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:e2e": "vitest run --project e2e",
+    "check:deps": "node ../../scripts/check-no-native-deps.mjs .",
+    "bench": "tsx bench/frame-bench.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@xterm/headless": "^6.0.0",
+    "esbuild": "^0.28.1",
+    "tsx": "^4.19.2",
+    "vitest": "^4.1.9"
+  }
+}

@@ -1,47 +1,34 @@
 {
-  "name": "@blendsdk/tui",
+  "name": "@blendsdk/tui-monorepo",
+  "private": true,
   "version": "0.1.0",
-  "description": "SDK for Turbo Vision-style terminal apps (foundation)",
+  "description": "Monorepo for the @blendsdk/tui terminal UI SDK",
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
-  "sideEffects": false,
-  "types": "./dist/engine/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/engine/index.d.ts",
-      "import": "./dist/engine/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "typecheck:examples": "tsc -p tsconfig.examples.json",
-    "probe": "tsx examples/capability-probe/main.ts",
-    "demo:resize": "tsx examples/resize-demo/main.ts",
-    "bench": "tsx bench/frame-bench.mjs",
-    "test": "node scripts/run-tests.mjs",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix && prettier --write .",
-    "check:deps": "node scripts/check-no-native-deps.mjs",
+    "check:deps": "turbo run check:deps",
+    "verify": "turbo run typecheck build test",
     "gate": "node scripts/gate.mjs",
-    "verify": "npm run typecheck && npm run typecheck:examples && npm run build && npm run test"
+    "sync-versions": "node scripts/sync-versions.mjs",
+    "bench": "yarn workspace @blendsdk/tui-core bench"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "@xterm/headless": "^6.0.0",
-    "esbuild": "^0.28.1",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.4.2",
-    "tsx": "^4.19.2",
+    "turbo": "^2.10.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0"
   },

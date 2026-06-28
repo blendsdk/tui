@@ -1,14 +1,14 @@
-# CI for @blendsdk/tui — build & test only (no deployment).
+# CI for the @blendsdk/tui monorepo — build & test only (no deployment).
 #
 # The project is pre-1.0 and far from release, so there is deliberately NO
 # publish/deploy step here (publish-with-provenance comes at a later milestone).
 #
 # Cross-platform matrix: 3 OSes × 3 active-LTS Node versions = 9 cells. Every cell
-# lints, type-checks, runs the unit suite, builds, guards the dependency policy,
-# audits, and checks the package file set. The explicit end-to-end suite
-# (restore-on-exit, pack-and-install, probe) runs on POSIX only — its
-# SIGTERM/SIGHUP cases are POSIX, and Windows acceptance is deferred (RD-09 DEF-2).
-# No secrets are referenced.
+# installs the workspace (yarn), lints, and runs `turbo run typecheck build test`
+# across the packages, then guards the dependency policy, the lockstep versions, the
+# audit, and the package file set. The end-to-end suites (restore-on-exit, signals,
+# pack-and-install, probe) run on POSIX only — their SIGTERM/SIGHUP cases are POSIX,
+# and Windows acceptance is deferred (RD-09 DEF-2). No secrets are referenced.
 name: CI
 
 on:
@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node: [18, 20, 22]
+        node: [20, 22, 24]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,34 +32,41 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: npm
+          cache: yarn
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Lint (ESLint + Prettier)
-        run: npm run lint
+        run: yarn lint
 
-      - name: Verify (typecheck + unit tests + build)
-        run: npm run verify
+      - name: 'Verify (turbo: typecheck + build + unit tests across packages)'
+        run: yarn verify
 
-      # Informational only (RD-10 AR-9): prints median/p95, never gates. Scoped to
-      # a single cell to avoid 9× noise and Windows shell-quoting (PF-008); the
-      # hard 16 ms ceiling is asserted off-CI by test/perf-budget.spec.test.ts.
+      # Informational only (RD-10 AR-9): prints median/p95, never gates. Scoped to a
+      # single cell to avoid 9× noise and Windows shell-quoting (PF-008); the hard
+      # 16 ms ceiling is asserted off-CI by perf-budget.spec.test.ts.
       - name: Performance bench (informational — one cell, never fails)
-        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         continue-on-error: true
-        run: npm run bench
+        run: yarn bench
 
       - name: End-to-end tests (POSIX only — SIGTERM/SIGHUP, real child processes)
         if: runner.os != 'Windows'
-        run: npx tsx --test test/install.e2e.test.ts test/probe.e2e.test.ts test/safety-error-restore.e2e.test.ts test/host-signals.e2e.test.ts test/host-tier3.e2e.test.ts
+        run: |
+          yarn workspace @blendsdk/tui-core test:e2e
+          yarn workspace @blendsdk/tui-examples test:e2e
 
       - name: Dependency policy guard (no native runtime deps)
-        run: npm run check:deps
+        run: yarn check:deps
 
-      - name: Security audit
-        run: npm audit --audit-level=high
+      - name: Lockstep versions (public packages share the root version)
+        run: yarn sync-versions --check
+
+      - name: Security audit (high/critical)
+        run: |
+          npm install --package-lock-only --ignore-scripts
+          npm audit --audit-level=high
 
       - name: Packaging sanity (file allowlist, no publish)
-        run: npm pack --dry-run
+        run: npm pack --dry-run --workspace @blendsdk/tui-core

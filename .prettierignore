@@ -2,7 +2,7 @@ dist
 node_modules
 _archive
 coverage
-package-lock.json
+.turbo
 
 # CodeOps process artifacts — authored docs, not code; Prettier would churn
 # their hand-built tables. Kept out of the formatting gate.

@@ -9,6 +9,16 @@ the deprecation policy.
 
 ## [Unreleased]
 
+### Changed
+
+- **Monorepo restructure.** The repository is now a yarn 1.x + Turborepo monorepo.
+  The published package was **renamed `@blendsdk/tui` → `@blendsdk/tui-core`** and
+  moved to `packages/tui-core/`; the dev examples + probe harness moved to the
+  private `@blendsdk/tui-examples` package. All public packages share one lockstep
+  version (`yarn sync-versions`).
+- **Node floor raised to `>= 20`** (Node 18 is EOL); the CI matrix is now 20/22/24.
+- **Test runner migrated `node:test` → vitest** (two projects: `unit` + `e2e`).
+
 ## [0.1.0] — 2026-06-28
 
 ### Added

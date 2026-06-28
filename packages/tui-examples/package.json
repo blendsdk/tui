@@ -1,0 +1,26 @@
+{
+  "name": "@blendsdk/tui-examples",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Dev-only runnable examples + probe harness for @blendsdk/tui-core (never published)",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:e2e": "vitest run --project e2e",
+    "probe": "tsx capability-probe/main.ts",
+    "demo:resize": "tsx resize-demo/main.ts"
+  },
+  "dependencies": {
+    "@blendsdk/tui-core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "vitest": "^4.1.9"
+  }
+}

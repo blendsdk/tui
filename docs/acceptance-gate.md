@@ -4,18 +4,20 @@
 > the mainstream terminal matrix, the project **HALTS** (per RD-09 AR-7).
 >
 > This document is the human-readable criteria→evidence map; `scripts/gate.mjs` (run via
-> `npm run gate`) is the runnable aggregator that mirrors it. `test/gate.spec.test.ts` asserts the
-> two never drift. Criterion numbering is canonical RD-09 (1–11).
+> `yarn gate` from the monorepo root) is the runnable aggregator that mirrors it.
+> `packages/tui-core/test/gate.spec.test.ts` asserts the two never drift. Criterion numbering is
+> canonical RD-09 (1–11).
 
 ## How to run
 
 ```bash
-npm run gate
+yarn gate
 ```
 
-Runs the automatable tiers — `npm run verify` (corpus, golden, fuzz, bytes∝damage, all unit
-specs + build), the Tier-3 and signal e2e files, and the probe in `--auto` — and prints a
-PASS/FAIL/DEFERRED line per criterion, exiting non-zero if any non-deferred criterion fails.
+Runs the automatable tiers — `yarn verify` (turbo: corpus, golden, fuzz, bytes∝damage, all unit
+specs + build across packages), the tui-core vitest **e2e** project (Tier-3 + signal + restore +
+install e2e), and the examples probe in `--auto` — and prints a PASS/FAIL/DEFERRED line per
+criterion, exiting non-zero if any non-deferred criterion fails.
 
 > Side effect: the probe step appends to the checked-in `terminal-matrix.json` (RD-03 behavior).
 > CI must not assert a clean working tree _after_ `gate` (or run the probe with `--no-matrix`).

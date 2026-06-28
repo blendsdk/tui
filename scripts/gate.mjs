@@ -9,12 +9,12 @@
  * the DEFERRED set below are the single source of truth the doc table mirrors and
  * `gate.spec.test.ts` (ST-24) asserts against, so the doc and script never drift.
  *
- * Usage: `npm run gate` (or `node scripts/gate.mjs`). Importing this module is
- * side-effect-free (the gate only runs when invoked as the main script), so tests
- * can read `STEPS`/`DEFERRED`/`CRITERIA` directly.
+ * Usage: `yarn gate` (or `node scripts/gate.mjs`), run from the monorepo root.
+ * Importing this module is side-effect-free (the gate only runs when invoked as
+ * the main script), so tests can read `STEPS`/`DEFERRED`/`CRITERIA` directly.
  *
  * Exit codes: 0 = every non-deferred criterion passed; 1 = a required criterion
- * failed. Pure-Node ESM, no shell-isms beyond a win32 shell hop for npm/npx (AR-13).
+ * failed. Pure-Node ESM; yarn is shell-hopped on win32 (AR-13).
  *
  * Note: the probe step writes to the checked-in `terminal-matrix.json` (RD-03
  * behavior); CI must not assert a clean tree after `gate` (or pass `--no-matrix`).
@@ -37,12 +37,15 @@ export const CRITERIA = {
   11: 'Boundary/negative',
 };
 
-/** The automatable steps, each mapped to the criteria it provides evidence for. */
+/**
+ * The automatable steps, each mapped to the criteria it provides evidence for.
+ * Monorepo commands (yarn workspaces + turbo); the e2e step runs tui-core's whole
+ * vitest e2e project (host-tier3 + host-signals + safety-error-restore + install).
+ */
 export const STEPS = [
-  { id: 'verify', cmd: 'npm', args: ['run', 'verify'], criteria: [1, 2, 3, 4, 5, 7, 10, 11] },
-  { id: 'tier3', cmd: 'npx', args: ['tsx', '--test', 'test/host-tier3.e2e.test.ts'], criteria: [8] },
-  { id: 'signals', cmd: 'npx', args: ['tsx', '--test', 'test/host-signals.e2e.test.ts'], criteria: [8] },
-  { id: 'probe', cmd: 'npm', args: ['run', 'probe', '--', '--auto'], criteria: [11] },
+  { id: 'verify', cmd: 'yarn', args: ['verify'], criteria: [1, 2, 3, 4, 5, 7, 10, 11] },
+  { id: 'e2e', cmd: 'yarn', args: ['workspace', '@blendsdk/tui-core', 'test:e2e'], criteria: [8] },
+  { id: 'probe', cmd: 'yarn', args: ['workspace', '@blendsdk/tui-examples', 'probe', '--auto'], criteria: [11] },
 ];
 
 /** Criteria deferred under the local-no-remote boundary; printed DEFERRED, never failing (AR-14). */
