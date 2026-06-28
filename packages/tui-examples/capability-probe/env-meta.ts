@@ -8,7 +8,7 @@
  * The `.js` extensions in the import specifiers are required by NodeNext ESM
  * resolution (they resolve to the `.ts` sources during development via tsx).
  */
-import type { Platform } from '@blendsdk/tui-core';
+import type { Platform } from '@jsvision/core';
 
 /** Terminal/OS/env metadata recorded in the report (no secrets; allowlisted env). */
 export interface EnvMeta {

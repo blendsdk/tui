@@ -85,7 +85,7 @@ void main({
 // ST-23: a real SIGINT during the interactive run restores the terminal.
 test('ST-23: a real SIGINT restores the terminal (leave alt-screen + show cursor)', async () => {
   const work = mkdtempSync(join(tmpdir(), 'rd03-e2e-'));
-  // .mts forces an ESM context so the child's `@blendsdk/tui-core` import resolves
+  // .mts forces an ESM context so the child's `@jsvision/core` import resolves
   // the package's import-only exports (a temp .ts would be treated as CJS).
   const childPath = join(work, 'probe-child.mts');
   writeFileSync(childPath, INTERACTIVE_CHILD);

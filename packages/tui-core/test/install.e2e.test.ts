@@ -4,9 +4,9 @@
  * Immutable oracle: expectations derive from AC-1 / AR-6, not from the
  * implementation. Packs the real tarball, installs it into a throwaway consumer
  * project, and asserts:
- *   - ST-13: ESM `import { VERSION } from '@blendsdk/tui-core'` resolves and the
+ *   - ST-13: ESM `import { VERSION } from '@jsvision/core'` resolves and the
  *     installed package ships `.d.ts` declarations.
- *   - ST-14: CJS `require('@blendsdk/tui-core')` fails with an ESM-related error.
+ *   - ST-14: CJS `require('@jsvision/core')` fails with an ESM-related error.
  *
  * This is heavier than the unit specs (real `npm pack` + `npm install`) and so
  * runs in the vitest `e2e` project (not the unit run); run it explicitly via
@@ -56,13 +56,13 @@ test('ST-13/ST-14: packed tarball installs; ESM import works, CJS require fails'
     expect(existsSync(installedDts)).toBeTruthy();
 
     // ST-13: ESM import resolves and yields the version.
-    writeFileSync(join(consumer, 'esm.mjs'), "import { VERSION } from '@blendsdk/tui-core';\nconsole.log(VERSION);\n");
+    writeFileSync(join(consumer, 'esm.mjs'), "import { VERSION } from '@jsvision/core';\nconsole.log(VERSION);\n");
     const esm = spawnSync(process.execPath, ['esm.mjs'], { cwd: consumer, encoding: 'utf8' });
     expect(esm.status).toBe(0);
     expect(esm.stdout.trim()).toBe('0.1.0');
 
     // ST-14: CJS require fails with an ESM-related error.
-    writeFileSync(join(consumer, 'cjs.cjs'), "require('@blendsdk/tui-core');\n");
+    writeFileSync(join(consumer, 'cjs.cjs'), "require('@jsvision/core');\n");
     const cjs = spawnSync(process.execPath, ['cjs.cjs'], { cwd: consumer, encoding: 'utf8' });
     expect(cjs.status).not.toBe(0);
     expect(

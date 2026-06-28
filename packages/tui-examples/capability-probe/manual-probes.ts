@@ -12,8 +12,8 @@
  * The `.js` extensions in the import specifiers are required by NodeNext ESM
  * resolution (they resolve to the `.ts` sources during development via tsx).
  */
-import { Attr, ScreenBuffer } from '@blendsdk/tui-core';
-import type { CapabilityProfile, Color } from '@blendsdk/tui-core';
+import { Attr, ScreenBuffer } from '@jsvision/core';
+import type { CapabilityProfile, Color } from '@jsvision/core';
 import type { ProbeDescriptor } from './taxonomy.js';
 import type { ProbeResult } from './report.js';
 

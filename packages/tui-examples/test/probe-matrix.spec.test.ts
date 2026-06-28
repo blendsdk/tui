@@ -11,7 +11,7 @@ import { appendToMatrix } from '../capability-probe/matrix.js';
 import type { MatrixFs } from '../capability-probe/matrix.js';
 import { buildReport, deriveRecommendation } from '../capability-probe/report.js';
 import { gatherEnvMeta } from '../capability-probe/env-meta.js';
-import { resolveCapabilities } from '@blendsdk/tui-core';
+import { resolveCapabilities } from '@jsvision/core';
 import type { Report } from '../capability-probe/report.js';
 
 const CAPS = resolveCapabilities({ env: {}, platform: 'linux' }).profile;

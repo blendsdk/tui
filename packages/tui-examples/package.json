@@ -1,8 +1,8 @@
 {
-  "name": "@blendsdk/tui-examples",
+  "name": "@jsvision/examples",
   "private": true,
   "version": "0.1.0",
-  "description": "Dev-only runnable examples + probe harness for @blendsdk/tui-core (never published)",
+  "description": "Dev-only runnable examples + probe harness for @jsvision/core (never published)",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -17,7 +17,7 @@
     "demo:playground": "tsx keyboard-mouse-playground/main.ts"
   },
   "dependencies": {
-    "@blendsdk/tui-core": "*"
+    "@jsvision/core": "*"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

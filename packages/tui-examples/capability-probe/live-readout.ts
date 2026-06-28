@@ -10,7 +10,7 @@
  * The `.js` extensions in the import specifiers are required by NodeNext ESM
  * resolution (they resolve to the `.ts` sources during development via tsx).
  */
-import type { InputEvent } from '@blendsdk/tui-core';
+import type { InputEvent } from '@jsvision/core';
 
 /** Maximum readout lines retained on screen (older lines scroll off). */
 const MAX_LINES = 20;

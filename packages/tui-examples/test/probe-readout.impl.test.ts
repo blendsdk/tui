@@ -7,7 +7,7 @@
 import { test, expect } from 'vitest';
 
 import { formatEventLine, runLiveReadout } from '../capability-probe/live-readout.js';
-import type { InputEvent } from '@blendsdk/tui-core';
+import type { InputEvent } from '@jsvision/core';
 
 test('wheel and focus events format with direction / state', () => {
   expect(formatEventLine({ type: 'wheel', dir: 'up', x: 3, y: 4 })).toBe('wheel: up @ 3,4');

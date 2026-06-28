@@ -1,4 +1,4 @@
-# CI for the @blendsdk/tui monorepo — build & test only (no deployment).
+# CI for the jsvision monorepo — build & test only (no deployment).
 #
 # The project is pre-1.0 and far from release, so there is deliberately NO
 # publish/deploy step here (publish-with-provenance comes at a later milestone).
@@ -54,8 +54,8 @@ jobs:
       - name: End-to-end tests (POSIX only — SIGTERM/SIGHUP, real child processes)
         if: runner.os != 'Windows'
         run: |
-          yarn workspace @blendsdk/tui-core test:e2e
-          yarn workspace @blendsdk/tui-examples test:e2e
+          yarn workspace @jsvision/core test:e2e
+          yarn workspace @jsvision/examples test:e2e
 
       - name: Dependency policy guard (no native runtime deps)
         run: yarn check:deps
@@ -69,4 +69,4 @@ jobs:
           npm audit --audit-level=high
 
       - name: Packaging sanity (file allowlist, no publish)
-        run: npm pack --dry-run --workspace @blendsdk/tui-core
+        run: npm pack --dry-run --workspace @jsvision/core

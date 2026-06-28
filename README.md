@@ -1,4 +1,4 @@
-# @blendsdk/tui
+# jsvision
 
 An SDK for building **Turbo Vision-style terminal applications** in TypeScript.
 
@@ -9,7 +9,7 @@ milestones and re-exported from this package's single public entry point.
 
 > ## 🚧 Under heavy development
 >
-> **`@blendsdk/tui` is pre-1.0 (`0.1.0`) and under heavy active development.** The
+> **`@jsvision/core` is pre-1.0 (`0.1.0`) and under heavy active development.** The
 > public API is still being built out and **may change between minor versions** —
 > pin an exact version if you depend on it. Some capabilities are verified only on
 > Linux/macOS so far (see the [acceptance gate](docs/acceptance-gate.md)). **Not yet
@@ -18,17 +18,17 @@ milestones and re-exported from this package's single public entry point.
 ## Install
 
 ```bash
-npm install @blendsdk/tui-core
+npm install @jsvision/core
 ```
 
 **Requirements:** Node.js **>= 20** (active LTS: 20, 22, 24).
 
 ## Usage
 
-`@blendsdk/tui` is **ESM-only**. Import it from an ES module:
+`@jsvision/core` is **ESM-only**. Import it from an ES module:
 
 ```ts
-import { VERSION } from '@blendsdk/tui-core';
+import { VERSION } from '@jsvision/core';
 
 console.log(VERSION); // "0.1.0"
 ```
@@ -46,7 +46,7 @@ field. Detection is layered with safe fallback — **(1)** explicit override,
 setup.
 
 ```ts
-import { resolveCapabilities } from '@blendsdk/tui-core';
+import { resolveCapabilities } from '@jsvision/core';
 
 // Zero-config: detect from env + known-terminal table + safe defaults.
 const { profile, reasons } = resolveCapabilities();
@@ -69,7 +69,7 @@ injectable `TerminalQuery` seam and the response parser; the real input stream i
 wired in by a later milestone (RD-06). Supply a query via the async resolver:
 
 ```ts
-import { resolveCapabilitiesAsync } from '@blendsdk/tui-core';
+import { resolveCapabilitiesAsync } from '@jsvision/core';
 
 // `query` implements TerminalQuery; resolution is bounded by `timeoutMs`
 // (default 200 ms) and never hangs on a silent terminal.
@@ -85,7 +85,7 @@ chunk-boundary-safe and replayable. Feed each chunk and thread the returned
 **separate `queries` array** so a terminal reply can never leak as a keystroke.
 
 ```ts
-import { createDecoderState, decode, flush, createKeymap } from '@blendsdk/tui-core';
+import { createDecoderState, decode, flush, createKeymap } from '@jsvision/core';
 
 let state = createDecoderState();
 
@@ -119,7 +119,7 @@ changed cell costs under ~32 bytes), and two identical frames cost nothing. The
 host holds the previous frame and performs the actual write.
 
 ```ts
-import { ScreenBuffer, serialize, resolveCapabilities } from '@blendsdk/tui-core';
+import { ScreenBuffer, serialize, resolveCapabilities } from '@jsvision/core';
 
 const { profile: caps } = resolveCapabilities();
 const style = { fg: '#c0c0c0', bg: '#000080' };
@@ -146,7 +146,7 @@ untrusted text cannot inject an escape sequence. `notify()` picks the best
 available protocol (Kitty OSC 99 → iTerm2 OSC 9 → urxvt OSC 777 → progress → BEL).
 
 ```ts
-import { notify, setClipboard, cursor } from '@blendsdk/tui-core';
+import { notify, setClipboard, cursor } from '@jsvision/core';
 
 notify('Build', 'done ✓', caps); // → the terminal's best notification protocol
 setClipboard('copied text', caps); // → OSC 52 (base64), when supported
@@ -162,7 +162,7 @@ terminal you actually have — `encode(color, role, depth)` downsamples
 redmean weighted distance; corner colors (pure black/white) are exact.
 
 ```ts
-import { encode, encodeStyle, PALETTE } from '@blendsdk/tui-core';
+import { encode, encodeStyle, PALETTE } from '@jsvision/core';
 
 encode('#0000a8', 'bg', 'truecolor'); // '\x1b[48;2;0;0;168m'
 encode('#0000a8', 'bg', '256'); // '\x1b[48;5;19m'  (nearest cube index)
@@ -178,7 +178,7 @@ always emitted — at `mono` depth no color is sent but `reverse`/`bold` still
 convey state, keeping `NO_COLOR` UIs legible.
 
 ```ts
-import { Attr, ScreenBuffer } from '@blendsdk/tui-core';
+import { Attr, ScreenBuffer } from '@jsvision/core';
 const buf = new ScreenBuffer(80, 24, { fg: 'default', bg: 'default' });
 buf.text(2, 1, 'Saved', { fg: PALETTE.brightGreen, bg: 'default', attrs: Attr.bold });
 // serialize(buf, prev, { caps }) now downsamples brightGreen to the detected depth.
@@ -206,7 +206,7 @@ frame to the RD-04 serializer as one coalesced write, and — above all —
 synchronous crash during setup.
 
 ```ts
-import { createHost, resolveCapabilities, ScreenBuffer, createKeymap } from '@blendsdk/tui-core';
+import { createHost, resolveCapabilities, ScreenBuffer, createKeymap } from '@jsvision/core';
 
 const { profile: caps } = resolveCapabilities();
 const keymap = createKeymap({ 'ctrl+c': 'quit' });
@@ -259,7 +259,7 @@ detected even when stdout is piped, via `/dev/tty`), because `host.isTTY` is onl
 valid after `start()`.
 
 ```ts
-import { detectTty, assertEssentials, resolveCapabilities, createLogger } from '@blendsdk/tui-core';
+import { detectTty, assertEssentials, resolveCapabilities, createLogger } from '@jsvision/core';
 
 const { profile: caps } = resolveCapabilities();
 const facts = { isTTY: detectTty() };
@@ -270,7 +270,7 @@ const report = assertEssentials(caps, facts, { logger: createLogger({ sink: 'rin
 report.degradations; // e.g. [{ cap: 'mouse', mode: 'keyboard-only', message: '…' }]
 
 // Pure variants for custom flows:
-import { evaluateEssentials, essentialsMet } from '@blendsdk/tui-core';
+import { evaluateEssentials, essentialsMet } from '@jsvision/core';
 evaluateEssentials(caps, facts); // { met, missing, degradations } — never throws
 essentialsMet(caps, facts); // boolean
 ```
@@ -294,7 +294,7 @@ their non-secret coordinates. `dumpCaps()` renders a one-line, secret-free
 capabilities summary from the RD-02 reason trace.
 
 ```ts
-import { redactEvent } from '@blendsdk/tui-core';
+import { redactEvent } from '@jsvision/core';
 redactEvent({ type: 'key', key: 'a', codepoint: 0x61, ctrl: false, alt: false, shift: false });
 // → { type: 'key', printable: true, ctrl: false, alt: false, shift: false }
 ```
@@ -314,7 +314,7 @@ response bytes — so `resolveCapabilitiesAsync()` can refine the profile from l
 responses (e.g. synchronized-output `?2026`), not just env/table heuristics.
 
 ```ts
-import { createTerminalQuery, resolveCapabilitiesAsync } from '@blendsdk/tui-core';
+import { createTerminalQuery, resolveCapabilitiesAsync } from '@jsvision/core';
 
 // The caller owns raw mode; the adapter only reads/writes bytes and never
 // changes terminal state. Always close() it when done to release the listener.
@@ -339,10 +339,10 @@ decoded-input readout — and emits a JSON + table report, accumulating a checke
 guaranteed restore) and never stops on a missing capability.
 
 ```bash
-# the probe harness lives in the private @blendsdk/tui-examples package
-yarn workspace @blendsdk/tui-examples probe                 # interactive survey (appends the matrix)
-yarn workspace @blendsdk/tui-examples probe --auto > out.json  # non-interactive: auto facts only
-yarn workspace @blendsdk/tui-examples probe --out r.json --no-matrix  # standalone JSON; skip matrix
+# the probe harness lives in the private @jsvision/examples package
+yarn workspace @jsvision/examples probe                 # interactive survey (appends the matrix)
+yarn workspace @jsvision/examples probe --auto > out.json  # non-interactive: auto facts only
+yarn workspace @jsvision/examples probe --out r.json --no-matrix  # standalone JSON; skip matrix
 ```
 
 Flags: `--auto` (CI mode, manual items left unverified), `--out <path>` (standalone
@@ -395,14 +395,14 @@ fails with a clear ESM error:
 
 ```js
 // ❌ throws ERR_REQUIRE_ESM
-const { VERSION } = require('@blendsdk/tui-core');
+const { VERSION } = require('@jsvision/core');
 ```
 
-Use `import` (or a dynamic `await import('@blendsdk/tui-core')`) instead.
+Use `import` (or a dynamic `await import('@jsvision/core')`) instead.
 
 ## Versioning & stability
 
-`@blendsdk/tui` follows [Semantic Versioning](https://semver.org/). All notable
+`@jsvision/core` follows [Semantic Versioning](https://semver.org/). All notable
 changes are recorded in [`CHANGELOG.md`](CHANGELOG.md) (Keep a Changelog format).
 
 - **SemVer.** While the package is pre-1.0 it is in active development: the public
@@ -420,12 +420,12 @@ changes are recorded in [`CHANGELOG.md`](CHANGELOG.md) (Keep a Changelog format)
 This repository is a **yarn 1.x + Turborepo monorepo**:
 
 ```
-packages/tui-core/      @blendsdk/tui-core — the published foundation engine
-packages/tui-examples/  @blendsdk/tui-examples — private dev examples + probe harness
+packages/tui-core/      @jsvision/core — the published foundation engine
+packages/tui-examples/  @jsvision/examples — private dev examples + probe harness
 docs/  scripts/  .github/   shared docs, tooling, and CI at the root
 ```
 
-New packages are published as `@blendsdk/tui-<name>` under `packages/tui-<name>/`,
+New packages are published as `@jsvision/<name>` under `packages/<name>/`,
 and all **public** packages share one lockstep version (`yarn sync-versions`).
 
 ## Contributing
@@ -458,8 +458,8 @@ Both run via `yarn test` (vitest `unit` project). Heavier end-to-end tests end i
 `*.e2e.test.ts` and run in the vitest `e2e` project (via `yarn test:e2e` or `yarn gate`):
 
 ```bash
-yarn workspace @blendsdk/tui-core test:e2e      # restore-on-exit, signals, pack + clean-install
-yarn workspace @blendsdk/tui-examples test:e2e  # the probe harness e2e
+yarn workspace @jsvision/core test:e2e      # restore-on-exit, signals, pack + clean-install
+yarn workspace @jsvision/examples test:e2e  # the probe harness e2e
 ```
 
 ## License

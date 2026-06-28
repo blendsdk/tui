@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 
 /**
- * Vitest configuration for the @blendsdk/tui-examples package (the probe harness
+ * Vitest configuration for the @jsvision/examples package (the probe harness
  * tests). Mirrors tui-core's two-project layout (AR-7): a fast `unit` project and
  * an isolated single-fork `e2e` project for the child-spawning `probe.e2e`.
  */

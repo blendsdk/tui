@@ -8,7 +8,7 @@
 import { test, expect } from 'vitest';
 
 import { formatEventLine } from '../capability-probe/live-readout.js';
-import type { KeyEvent, MouseEvent, PasteEvent } from '@blendsdk/tui-core';
+import type { KeyEvent, MouseEvent, PasteEvent } from '@jsvision/core';
 
 // ST-25: key events name the key and modifiers.
 test('ST-25: key events render the key name and modifiers', () => {

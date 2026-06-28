@@ -1,5 +1,5 @@
 {
-  "name": "@blendsdk/tui-core",
+  "name": "@jsvision/core",
   "version": "0.1.0",
   "description": "Foundation engine for Turbo Vision-style terminal (TUI) apps",
   "license": "MIT",

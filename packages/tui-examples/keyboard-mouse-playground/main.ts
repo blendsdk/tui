@@ -1,5 +1,5 @@
 /**
- * Keyboard / mouse playground — a runnable demo of @blendsdk/tui-core.
+ * Keyboard / mouse playground — a runnable demo of @jsvision/core.
  *
  * A full-screen interactive app built ONLY on the foundation: `createHost`
  * (raw mode, alt-screen, input decoding, resize, guaranteed restore) + a
@@ -8,14 +8,14 @@
  * mouse (down/up/move/drag, incl. beyond column 223), wheel, bracketed paste,
  * and focus — plus a live mouse marker, a clickable hit-zone, and a rolling log.
  *
- * Run: `yarn workspace @blendsdk/tui-examples demo:playground`
+ * Run: `yarn workspace @jsvision/examples demo:playground`
  * Quit: `q` or Ctrl-C.
  *
- * The `.js`-less bare specifier resolves to the built `@blendsdk/tui-core`
+ * The `.js`-less bare specifier resolves to the built `@jsvision/core`
  * package (workspace dependency); run via `tsx`.
  */
-import { createHost, ScreenBuffer, resolveCapabilities } from '@blendsdk/tui-core';
-import type { InputEvent, ResizeEvent, Style } from '@blendsdk/tui-core';
+import { createHost, ScreenBuffer, resolveCapabilities } from '@jsvision/core';
+import type { InputEvent, ResizeEvent, Style } from '@jsvision/core';
 
 // --- Turbo-Vision-ish palette ---------------------------------------------
 const DESKTOP: Style = { fg: 'cyan', bg: 'blue' };
@@ -119,7 +119,7 @@ function render(): void {
 
   // Title bar.
   buf.fillRect(0, 0, cols, 1, ' ', { fg: 'black', bg: 'cyan' });
-  buf.text(2, 0, '@blendsdk/tui-core — keyboard & mouse playground', { fg: 'black', bg: 'cyan' });
+  buf.text(2, 0, '@jsvision/core — keyboard & mouse playground', { fg: 'black', bg: 'cyan' });
 
   // Readout panel.
   buf.box(2, 2, 44, 9, PANEL, 'single', ' events ');

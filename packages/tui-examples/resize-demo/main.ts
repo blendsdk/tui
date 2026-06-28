@@ -13,8 +13,8 @@
  * Dev-only example — not part of the published package. The `.js` import specifier
  * is required by NodeNext ESM resolution (it resolves to the `.ts` source via tsx).
  */
-import { createHost, resolveCapabilities, ScreenBuffer } from '@blendsdk/tui-core';
-import type { InputEvent, ResizeEvent, Style } from '@blendsdk/tui-core';
+import { createHost, resolveCapabilities, ScreenBuffer } from '@jsvision/core';
+import type { InputEvent, ResizeEvent, Style } from '@jsvision/core';
 
 const caps = resolveCapabilities().profile;
 const border: Style = { fg: 'brightWhite', bg: 'blue' };

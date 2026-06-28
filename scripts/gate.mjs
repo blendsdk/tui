@@ -44,8 +44,8 @@ export const CRITERIA = {
  */
 export const STEPS = [
   { id: 'verify', cmd: 'yarn', args: ['verify'], criteria: [1, 2, 3, 4, 5, 7, 10, 11] },
-  { id: 'e2e', cmd: 'yarn', args: ['workspace', '@blendsdk/tui-core', 'test:e2e'], criteria: [8] },
-  { id: 'probe', cmd: 'yarn', args: ['workspace', '@blendsdk/tui-examples', 'probe', '--auto'], criteria: [11] },
+  { id: 'e2e', cmd: 'yarn', args: ['workspace', '@jsvision/core', 'test:e2e'], criteria: [8] },
+  { id: 'probe', cmd: 'yarn', args: ['workspace', '@jsvision/examples', 'probe', '--auto'], criteria: [11] },
 ];
 
 /** Criteria deferred under the local-no-remote boundary; printed DEFERRED, never failing (AR-14). */

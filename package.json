@@ -1,8 +1,8 @@
 {
-  "name": "@blendsdk/tui-monorepo",
+  "name": "@jsvision/monorepo",
   "private": true,
   "version": "0.1.0",
-  "description": "Monorepo for the @blendsdk/tui terminal UI SDK",
+  "description": "Monorepo for the jsvision terminal UI SDK",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -22,7 +22,7 @@
     "verify": "turbo run typecheck build test",
     "gate": "node scripts/gate.mjs",
     "sync-versions": "node scripts/sync-versions.mjs",
-    "bench": "yarn workspace @blendsdk/tui-core bench"
+    "bench": "yarn workspace @jsvision/core bench"
   },
   "devDependencies": {
     "eslint": "^9.17.0",

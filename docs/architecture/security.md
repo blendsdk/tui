@@ -5,7 +5,7 @@
 
 ## Threat Model
 
-`@blendsdk/tui` is a client-side terminal library with **no network surface, no
+`@jsvision/core` is a client-side terminal library with **no network surface, no
 persistence, and no telemetry**. The assets it protects are the integrity of the
 terminal session and the host process. The principal threats are untrusted bytes —
 text drawn to the screen and bytes read back from the terminal — being interpreted

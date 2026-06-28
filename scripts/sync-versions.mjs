@@ -4,7 +4,7 @@
  *
  * The root `package.json#version` is the single source of truth. This script
  * writes it to every PUBLIC workspace package under `packages/*`, skipping any
- * package marked `"private": true`. For `@blendsdk/tui-core` it also rewrites the
+ * package marked `"private": true`. For `@jsvision/core` it also rewrites the
  * `VERSION` constant in `src/engine/version.ts`, keeping the packaging spec
  * (`VERSION === package.json#version`) green.
  *

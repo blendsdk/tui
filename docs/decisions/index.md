@@ -1,7 +1,7 @@
 # Architecture Decision Records
 
 This log tracks the significant architecture and design decisions made for
-`@blendsdk/tui`. Each decision is documented with context, options considered, and
+`jsvision`. Each decision is documented with context, options considered, and
 rationale. Most were originally captured in the per-RD ambiguity registers under
 `plans/*/00-ambiguity-register.md`; the ADRs here distil the cross-cutting ones.
 

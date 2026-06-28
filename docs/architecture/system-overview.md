@@ -4,10 +4,10 @@
 
 ## Architecture Style
 
-`@blendsdk/tui` is a **foundation-first, layered library** with a single public
+`@jsvision/core` is a **foundation-first, layered library** with a single public
 entry point (`src/engine/index.ts`). Each subsystem is a self-contained module
 folder under `src/engine/**` that re-exports its public surface through the root
-index; consumers import everything from `@blendsdk/tui` and never reach into a
+index; consumers import everything from `@jsvision/core` and never reach into a
 module's internals.
 
 The style is deliberately **pure-core / thin-shell**: rendering, decoding, colour

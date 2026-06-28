@@ -6,7 +6,7 @@
 
 ## Context
 
-The foundation (`@blendsdk/tui-core`) does **no layout** — widgets/apps address cells
+The foundation (`@jsvision/core`) does **no layout** — widgets/apps address cells
 by `(x, y)` and hand-draw into a `ScreenBuffer` (see the keyboard/mouse playground
 demo). The upcoming UI/widget layer needs _some_ layout system: nesting, resizing,
 and dynamic content make absolute coordinates untenable.
@@ -65,7 +65,7 @@ Ratatui) — and the most-praised modern TUIs are in the build camp.
 
 ## Decision (tentative — DEFERRED)
 
-**Leaning: build a small cell-native layout engine** (`@blendsdk/tui-layout`) —
+**Leaning: build a small cell-native layout engine** (`@jsvision/layout`) —
 flexbox subset first, grid second — rather than adopt Yoga. **Not finalized**; to be
 confirmed via `make_requirements` → `make_plan` when the UI layer starts.
 
@@ -101,5 +101,5 @@ want to own/maintain the engine.
 - Is full flexbox spec fidelity ever required (→ reconsider Taffy)?
 - Spike first: the integer flex-distribution (apportionment) core — ~40 LOC + a golden
   test — to validate the cell-native approach before committing to the full package.
-- Where the engine lives: `packages/tui-layout` (`@blendsdk/tui-layout`) consuming
-  `@blendsdk/tui-core` geometry, consumed by the future widget package.
+- Where the engine lives: `packages/layout` (`@jsvision/layout`) consuming
+  `@jsvision/core` geometry, consumed by the future widget package.

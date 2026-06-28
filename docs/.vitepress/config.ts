@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress';
 
 /**
- * VitePress configuration for the @blendsdk/tui technical documentation set.
+ * VitePress configuration for the jsvision technical documentation set.
  *
  * The sidebar lists only the sections that actually exist (Library/SDK project
  * type): system overview, API reference, security, the ADR log, and the developer
@@ -10,8 +10,8 @@ import { defineConfig } from 'vitepress';
  * vitepress ad-hoc (`npx vitepress dev docs`); the markdown is VitePress-compatible.
  */
 export default defineConfig({
-  title: '@blendsdk/tui — Technical Documentation',
-  description: 'Architecture documentation for the @blendsdk/tui terminal UI foundation',
+  title: 'jsvision — Technical Documentation',
+  description: 'Architecture documentation for the jsvision terminal UI foundation',
 
   themeConfig: {
     nav: [

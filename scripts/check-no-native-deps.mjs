@@ -3,7 +3,7 @@
  * Dependency-policy guard (RD-01, AC-6, AR-2, AR-21).
  *
  * Fails the build if any **runtime** dependency requires native compilation or a
- * platform-specific install step. `@blendsdk/tui` must stay pure-JS and portable
+ * platform-specific install step. `jsvision` must stay pure-JS and portable
  * across Linux/macOS/Windows (a clean install must never invoke node-gyp).
  *
  * Usage: `node scripts/check-no-native-deps.mjs [projectRoot]`
