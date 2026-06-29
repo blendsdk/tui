@@ -49,6 +49,9 @@ export interface RenderRoot {
  * the absolute clip rect (view rect ∩ ancestor clip). A throwing `draw()` is logged and its
  * subtree skipped (AR-42).
  */
+/** Per-view compose context cached on a full compose, reused by partial recompose. */
+type ComposeContext = { origin: Point; clip: Rect };
+
 function composeView(
   buffer: ScreenBuffer,
   view: View,
@@ -56,8 +59,10 @@ function composeView(
   clip: Rect,
   theme: Theme,
   logger: Logger,
+  cache: Map<View, ComposeContext>,
 ): void {
   if (!view.state.visible) return;
+  cache.set(view, { origin: absOrigin, clip }); // remember where this view composed (for partial recompose)
 
   const viewRect: Rect = {
     x: absOrigin.x,
@@ -83,9 +88,30 @@ function composeView(
         width: child.bounds.width,
         height: child.bounds.height,
       };
-      composeView(buffer, child, childOrigin, intersect(clip, childRect), theme, logger);
+      composeView(buffer, child, childOrigin, intersect(clip, childRect), theme, logger, cache);
     }
   }
+}
+
+/**
+ * The dirty views with no dirty ancestor — an ancestor's subtree recompose already covers its
+ * dirty descendants, so they are dropped to avoid redundant work.
+ */
+function topmostDirty(dirty: Set<View>): View[] {
+  const out: View[] = [];
+  for (const view of dirty) {
+    let ancestor = view.parent;
+    let covered = false;
+    while (ancestor !== null) {
+      if (dirty.has(ancestor)) {
+        covered = true;
+        break;
+      }
+      ancestor = ancestor.parent;
+    }
+    if (!covered) out.push(view);
+  }
+  return out;
 }
 
 /** Concrete render root. Implements `ViewHost` so views can schedule repaint/reflow through it. */
@@ -102,6 +128,8 @@ class RenderRootImpl implements RenderRoot, ViewHost {
   private needsReflow = false;
   private scheduled = false;
   private lastFrame = '';
+  private readonly dirty = new Set<View>();
+  private readonly cache = new Map<View, ComposeContext>();
 
   constructor(size: Size2D, opts: RenderRootOptions) {
     this.viewport = size;
@@ -130,8 +158,9 @@ class RenderRootImpl implements RenderRoot, ViewHost {
     this.scheduleFlush();
   }
 
-  /** @internal ViewHost — schedule a repaint (Phase 6 refines this to a dirty-set partial recompose). */
-  markRepaint(_view: View): void {
+  /** @internal ViewHost — mark a view's subtree for repaint and schedule a coalesced flush (AR-32). */
+  markRepaint(view: View): void {
+    this.dirty.add(view);
     this.scheduleFlush();
   }
 
@@ -153,13 +182,30 @@ class RenderRootImpl implements RenderRoot, ViewHost {
 
     const previous = this.current.clone(); // faithful snapshot for the damage diff (PA-8)
     if (this.needsReflow) {
+      // Relayout phase: reflow moves bounds, so the cached compose contexts are stale → full compose.
       reflow(this.rootView, this.viewport);
       this.needsReflow = false;
+      this.cache.clear();
+      const origin: Point = { x: this.rootView.bounds.x, y: this.rootView.bounds.y };
+      composeView(
+        this.current,
+        this.rootView,
+        origin,
+        { ...this.rootView.bounds },
+        this.theme,
+        this.logger,
+        this.cache,
+      );
+    } else {
+      // Repaint phase: recompose only the dirty subtrees from their cached compose contexts (AC-7).
+      for (const view of topmostDirty(this.dirty)) {
+        const ctx = this.cache.get(view);
+        if (ctx !== undefined) {
+          composeView(this.current, view, ctx.origin, ctx.clip, this.theme, this.logger, this.cache);
+        }
+      }
     }
-    const origin: Point = { x: this.rootView.bounds.x, y: this.rootView.bounds.y };
-    const clip: Rect = { ...this.rootView.bounds };
-    composeView(this.current, this.rootView, origin, clip, this.theme, this.logger);
-
+    this.dirty.clear();
     this.lastFrame = serialize(this.current, previous, { caps: this.caps });
   }
 

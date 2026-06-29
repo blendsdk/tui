@@ -43,9 +43,11 @@ test('ST-05: overlapping siblings render back-to-front (later overpaints earlier
   const rr = createRenderRoot({ width: 10, height: 3 }, { caps });
   rr.mount(root);
 
-  // Force the two siblings to overlap the same region, then recompose (no reflow).
+  // Force the two siblings to overlap the same region, then recompose the subtree from the root
+  // (the compose walker positions children from their current bounds).
   back.bounds = { x: 0, y: 0, width: 4, height: 3 };
   front.bounds = { x: 0, y: 0, width: 4, height: 3 };
+  root.invalidate();
   rr.flush();
 
   const buf = rr.buffer();

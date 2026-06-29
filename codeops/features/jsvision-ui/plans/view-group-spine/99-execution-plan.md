@@ -125,16 +125,16 @@ The dirty set + injectable scheduler + the two dirty-phases + partial recompose 
 compose contexts; `bind` wired to repaint. Covers AC-7, AC-8, AC-9, AC-10.
 
 ### Session 6A — Spec tests (RED)
-- [ ] T6.1 — Add `view.scheduler.spec.test.ts` (**ST-07** bind→repaint-only-subtree, **ST-08** coalescing one flush, **ST-09** relayout vs repaint, **ST-10** injectable scheduler). (AC-7,8,9,10)
-- [ ] T6.2 — Run tests → scheduler specs **RED**.
+- [x] T6.1 — Add `view.scheduler.spec.test.ts` (**ST-07** bind→repaint-only-subtree, **ST-08** coalescing one flush, **ST-09** relayout vs repaint, **ST-10** injectable scheduler). (AC-7,8,9,10) — 2026-06-29
+- [x] T6.2 — Run tests → scheduler specs **RED**. — 2026-06-29 (ST-07/09 red — partial recompose absent; ST-08/10 already green from Phase 5's coalescing/injectable scheduler)
 
 ### Session 6B — Implementation (GREEN)
-- [ ] T6.3 — `render-root.ts`: dirty set + `needsReflow`; `scheduleFlush`/`flush` (reflow-or-partial branch); `markRepaint`/`markRelayout`; `topmostDirty`; partial `composeSubtree` from cached context (reflow invalidates the cache). Wire `View.invalidate`/`invalidateLayout`/`bind` through the root. (03-04, AR-32,33, PA-8)
-- [ ] T6.4 — Run tests → scheduler specs **GREEN**.
+- [x] T6.3 — `render-root.ts`: dirty set + per-view compose-context cache; `flush` reflow-or-partial branch; `markRepaint` (dirty.add); `topmostDirty`; partial `composeView` from cached context (reflow clears the cache → full compose). (03-04, AR-32,33, PA-8) — 2026-06-29
+- [x] T6.4 — Run tests → scheduler specs **GREEN**. — 2026-06-29 (ST-05 trigger updated: mark root dirty to recompose the subtree from current bounds — the oracle is unchanged)
 
 ### Session 6C — Impl tests & hardening
-- [ ] T6.5 — `view.scheduler.impl.test.ts` (`{relayout:true}` reflows; onMount→bind→one extra coalesced frame; pre-mount invalidate no-op; reflow busts the cache). (07 §impl)
-- [ ] T6.6 — `yarn verify` + `lint` green. **/gitcm** — `feat(view): coalescing scheduler + partial recompose (repaint/relayout phases)`.
+- [x] T6.5 — `view.scheduler.impl.test.ts` (`{relayout:true}` reflows; onMount→bind→one extra coalesced frame; pre-mount invalidate no-op; reflow refreshes the cache → new bounds). (07 §impl) — 2026-06-29
+- [x] T6.6 — `yarn verify` + `lint` green. **/gitcmp** — `feat(view): coalescing scheduler + partial recompose (repaint/relayout phases)`. — 2026-06-29 (verify 8/8, ui 134 tests, lint clean)
 
 ---
 
@@ -187,9 +187,9 @@ the cross-cutting guarantees. Covers AC-12, AC-17, AC-18, AC-20 (+ AC-19 e2e).
 - [x] 5C Impl tests & harden: T5.6–T5.7 ✅ commit — 2026-06-29
 
 **Phase 6 — Coalescing scheduler + partial recompose**
-- [ ] 6A Spec (RED): T6.1–T6.2
-- [ ] 6B Impl (GREEN): T6.3–T6.4
-- [ ] 6C Impl tests & harden: T6.5–T6.6 ✅ commit
+- [x] 6A Spec (RED): T6.1–T6.2 — 2026-06-29
+- [x] 6B Impl (GREEN): T6.3–T6.4 — 2026-06-29
+- [x] 6C Impl tests & harden: T6.5–T6.6 ✅ commit — 2026-06-29
 
 **Phase 7 — Dynamic children + packaging + demo + gate**
 - [ ] 7A Spec (RED): T7.1–T7.2
