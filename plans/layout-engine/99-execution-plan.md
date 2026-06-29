@@ -44,16 +44,16 @@ Completes a **single container → parent-relative rects**: padding inset, `just
 placement, cross-axis sizing + `align`. Covers AC-7, AC-8, AC-9.
 
 ### Session 2A — Spec tests (RED)
-- [ ] T2.1 — Add `layout.align.spec.test.ts` (ST-07 padding, ST-08 justify, ST-09 align). (AC-7,8,9)
-- [ ] T2.2 — Run tests → align specs **RED** (Phase-1 specs stay green).
+- [x] T2.1 — Add `layout.align.spec.test.ts` (ST-07 padding, ST-08 justify, ST-09 align). (AC-7,8,9) <!-- 2026-06-29 -->
+- [x] T2.2 — Run tests → align specs **RED** (Phase-1 specs stay green). <!-- 2026-06-29 (ST-08/09 RED; ST-07 already satisfied by the Phase-1 content-box inset) -->
 
 ### Session 2B — Implementation (GREEN)
-- [ ] T2.3 — `layout.ts`: padding → content box; `justify` offsets (`start`/`center`/`end`/`space-between` via `apportion` of leftover); cross-axis size + `align` offsets (`stretch` default vs natural via `naturalSize`). Axis-abstracted (main/cross). (03-02, AR-24,25,29)
-- [ ] T2.4 — Run tests → **GREEN**.
+- [x] T2.3 — `layout.ts`: padding → content box; `justify` offsets (`start`/`center`/`end`/`space-between` via `apportion` of leftover); cross-axis size + `align` offsets (`stretch` default vs natural via `naturalSize`). Axis-abstracted (main/cross). (03-02, AR-24,25,29) <!-- 2026-06-29 (padding inset already wired in Phase 1; added mainAxisOffsets + crossPlacement) -->
+- [x] T2.4 — Run tests → **GREEN**. <!-- 2026-06-29 -->
 
 ### Session 2C — Impl tests & hardening
-- [ ] T2.5 — `layout.align.impl.test.ts` (`space-between` single child = start, odd-leftover `center` floors, non-stretch cross clamp, uniform vs per-side padding). (07 §impl)
-- [ ] T2.6 — `yarn verify` + `lint` green. **/gitcm** (`feat(layout): justify, cross-axis align, padding`).
+- [x] T2.5 — `layout.align.impl.test.ts` (`space-between` single child = start, odd-leftover `center` floors, non-stretch cross clamp, uniform vs per-side padding). (07 §impl) <!-- 2026-06-29 (+ overflow free-clamp PF-004, space-between-on-base-gap PF-006) -->
+- [x] T2.6 — `yarn verify` + `lint` green. **/gitcm** (`feat(layout): justify, cross-axis align, padding`). <!-- 2026-06-29 (layout.ts 208 lines) -->
 
 ---
 
@@ -99,9 +99,9 @@ Validates the assembled public surface and the cross-cutting guarantees. Covers 
 - [x] 1C Impl tests & harden: T1.7–T1.8 ✅ commit
 
 **Phase 2 — Cross-axis, justify, align, padding**
-- [ ] 2A Spec (RED): T2.1–T2.2
-- [ ] 2B Impl (GREEN): T2.3–T2.4
-- [ ] 2C Impl tests & harden: T2.5–T2.6 ✅ commit
+- [x] 2A Spec (RED): T2.1–T2.2
+- [x] 2B Impl (GREEN): T2.3–T2.4
+- [x] 2C Impl tests & harden: T2.5–T2.6 ✅ commit
 
 **Phase 3 — Recursion, overflow, col, degenerate**
 - [ ] 3A Spec (RED): T3.1–T3.2

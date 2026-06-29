@@ -8,14 +8,13 @@
  * then `solveTrack`), places them along the main axis, sizes/aligns them on the
  * cross axis, and recurses.
  *
- * Phase 1 scope: main-axis sizing + `gap` + recursion, with `justify` fixed to
- * `start` and `align` to `stretch` (the defaults). `justify`/`align`/non-zero
- * `padding` placement land in Phase 2; `col`/overflow/degenerate hardening in
- * Phase 3.
+ * Covers main-axis sizing + `gap` + `padding` content-box inset, `justify`
+ * main-axis placement, cross-axis sizing + `align`, and recursion. `col`,
+ * overflow, and degenerate-viewport hardening land in Phase 3.
  */
-import { solveTrack, type TrackItem } from './apportion.js';
+import { apportion, solveTrack, type TrackItem } from './apportion.js';
 import { naturalSize } from './measure.js';
-import type { LayoutBox, LayoutResult, Rect, ResolvedProps, Size2D } from './types.js';
+import type { Align, Direction, Justify, LayoutBox, LayoutResult, Rect, ResolvedProps, Size2D } from './types.js';
 import { crossOf, mainOf, normalizeProps, sizeFromAxis, toCells } from './types.js';
 
 /**
@@ -58,21 +57,22 @@ function layoutContainer(box: LayoutBox, rect: Rect, result: LayoutResult): void
   // Children are sized/measured against the container's content box.
   const childAvailable: Size2D = { width: content.width, height: content.height };
   const mainSizes = solveMainSizes(box.children, contentMain, props, childAvailable);
+  const mainOffsets = mainAxisOffsets(mainSizes, props.gap, contentMain, props.justify);
 
-  // Phase 1: justify = start (sequential run from offset 0, `gap` between children).
-  let mainOffset = 0;
   for (let i = 0; i < box.children.length; i++) {
     const child = box.children[i];
     const main = mainSizes[i];
-    // Phase 1: align = stretch — child fills the content cross extent at offset 0.
-    const cross = contentCross;
-    const crossOffset = 0;
+    const { size: cross, offset: crossOffset } = crossPlacement(
+      child,
+      childAvailable,
+      direction,
+      props.align,
+      contentCross,
+    );
 
-    const childRect = assembleRect(content, mainOffset, crossOffset, main, cross, direction);
+    const childRect = assembleRect(content, mainOffsets[i], crossOffset, main, cross, direction);
     result.set(child, childRect);
     layoutContainer(child, childRect, result);
-
-    mainOffset += main + props.gap;
   }
 }
 
@@ -113,6 +113,70 @@ function solveMainSizes(
     return { kind: 'fixed', size: mainOf(naturalSize(child, available), direction) };
   });
   return solveTrack(contentMain, items, props.gap);
+}
+
+/**
+ * Compute each child's main-axis offset from the run of main sizes, honoring
+ * `justify` (AR-24). `free = max(0, contentMain − used)` is the leftover space
+ * when no `fr` child absorbed it; the `max(0, …)` clamp is load-bearing for
+ * overflow (AR-28): when children overflow, `free` is 0 and every `justify`
+ * runs from offset 0, so children extend past the far edge — never a negative
+ * offset past the near edge.
+ *
+ * - `start` → run at 0; `end` → run at `free`; `center` → run at `floor(free/2)`;
+ * - `space-between` → distribute `free` into the inter-child gaps (integer-exact
+ *   via `apportion`) on top of the base `gap`; a single child behaves like `start`.
+ */
+function mainAxisOffsets(mainSizes: readonly number[], gap: number, contentMain: number, justify: Justify): number[] {
+  const n = mainSizes.length;
+  const offsets = new Array<number>(n).fill(0);
+  const baseGapTotal = n > 1 ? gap * (n - 1) : 0;
+  const used = mainSizes.reduce((sum, s) => sum + s, 0) + baseGapTotal;
+  const free = Math.max(0, contentMain - used);
+
+  if (justify === 'space-between' && n > 1) {
+    const extra = apportion(free, new Array<number>(n - 1).fill(1));
+    let offset = 0;
+    for (let i = 0; i < n; i++) {
+      offsets[i] = offset;
+      offset += mainSizes[i] + gap + (i < n - 1 ? extra[i] : 0);
+    }
+    return offsets;
+  }
+
+  let offset = justify === 'end' ? free : justify === 'center' ? Math.floor(free / 2) : 0;
+  for (let i = 0; i < n; i++) {
+    offsets[i] = offset;
+    offset += mainSizes[i] + gap;
+  }
+  return offsets;
+}
+
+/**
+ * Resolve a child's cross-axis size and offset for the container's `align`
+ * (AR-25). `stretch` (default) fills the content cross extent at offset 0; the
+ * others take the child's natural cross size (clamped to the content cross
+ * extent) positioned at the near edge / centered / far edge.
+ */
+function crossPlacement(
+  child: LayoutBox,
+  available: Size2D,
+  direction: Direction,
+  align: Align,
+  contentCross: number,
+): { size: number; offset: number } {
+  if (align === 'stretch') {
+    return { size: contentCross, offset: 0 };
+  }
+  const natural = crossOf(naturalSize(child, available), direction);
+  const size = Math.min(natural, contentCross);
+  if (align === 'center') {
+    return { size, offset: Math.floor((contentCross - size) / 2) };
+  }
+  if (align === 'end') {
+    return { size, offset: contentCross - size };
+  }
+  return { size, offset: 0 }; // 'start'
 }
 
 /**
