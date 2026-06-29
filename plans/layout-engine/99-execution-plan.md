@@ -81,13 +81,13 @@ nails the edges. Covers AC-10,11,12,13,14,15.
 Validates the assembled public surface and the cross-cutting guarantees. Covers AC-16,17,18.
 
 ### Session 4A — Spec + verification
-- [ ] T4.1 — `layout.packaging.spec.test.ts` (ST-16 purity/no-mutation/repeatable; ST-17 all symbols+types import from `@jsvision/ui` + `check:deps`; ST-18 security: degenerate→zero rects not throw, bounded finite traversal). (AC-16,17,18)
-- [ ] T4.2 — Confirm `layout`, `LayoutBox`, `LayoutProps`, `Size`, `Rect` (+ unchanged `apportion`/`solveTrack`/`TrackItem`) are listed in **both** `layout/index.ts` and the explicit named re-exports at `src/index.ts:19-20` (layout is not `export *`); JSDoc on every public symbol.
-- [ ] T4.3 — `yarn workspace @jsvision/ui check:deps` passes (no native/third-party deps).
+- [x] T4.1 — `layout.packaging.spec.test.ts` (ST-16 purity/no-mutation/repeatable; ST-17 all symbols+types import from `@jsvision/ui` + `check:deps`; ST-18 security: degenerate→zero rects not throw, bounded finite traversal). (AC-16,17,18) <!-- 2026-06-29 -->
+- [x] T4.2 — Confirm `layout`, `LayoutBox`, `LayoutProps`, `Size`, `Rect` (+ unchanged `apportion`/`solveTrack`/`TrackItem`) are listed in **both** `layout/index.ts` and the explicit named re-exports at `src/index.ts:19-20` (layout is not `export *`); JSDoc on every public symbol. <!-- 2026-06-29 (all 13 symbols/types in both barrels) -->
+- [x] T4.3 — `yarn workspace @jsvision/ui check:deps` passes (no native/third-party deps). <!-- 2026-06-29 -->
 
 ### Session 4B — Final gate
-- [ ] T4.4 — Full `yarn verify` (typecheck + build + tests, all packages) green; `yarn lint` clean; no dead code; no file > 500 lines.
-- [ ] T4.5 — Update `plans/00-roadmap.md` RD-02 row → stage `Done` (roadmap skill). **/gitcmp** (`feat(layout): packaging + acceptance gate — RD-02 complete`).
+- [x] T4.4 — Full `yarn verify` (typecheck + build + tests, all packages) green; `yarn lint` clean; no dead code; no file > 500 lines. <!-- 2026-06-29 (8/8 turbo tasks; max layout file 217 lines) -->
+- [x] T4.5 — Update `plans/00-roadmap.md` RD-02 row → stage `Done` (roadmap skill). **/gitcmp** (`feat(layout): packaging + acceptance gate — RD-02 complete`). <!-- 2026-06-29 -->
 
 ---
 
@@ -109,8 +109,8 @@ Validates the assembled public surface and the cross-cutting guarantees. Covers 
 - [x] 3C Impl tests & harden: T3.5–T3.6 ✅ commit
 
 **Phase 4 — Packaging & final gate**
-- [ ] 4A Spec + verification: T4.1–T4.3
-- [ ] 4B Final gate: T4.4–T4.5 ✅ commit + push
+- [x] 4A Spec + verification: T4.1–T4.3
+- [x] 4B Final gate: T4.4–T4.5 ✅ commit + push
 
 ## Estimates
 
