@@ -85,16 +85,16 @@ View tree → `LayoutBox` tree (+ box→view map) → RD-02 `layout()` → paren
 pump lands in Phase 5/6.)
 
 ### Session 4A — Spec tests (RED)
-- [ ] T4.1 — Add `view.reflow.spec.test.ts` (**ST-02** bounds writeback + parent-relative, **ST-03** visible:false omitted + siblings refill). (AC-2,3)
-- [ ] T4.2 — Run tests → reflow specs **RED**.
+- [x] T4.1 — Add `view.reflow.spec.test.ts` (**ST-02** bounds writeback + parent-relative, **ST-03** visible:false omitted + siblings refill). (AC-2,3) — 2026-06-29
+- [x] T4.2 — Run tests → reflow specs **RED**. — 2026-06-29 (`reflow` undefined)
 
 ### Session 4B — Implementation (GREEN)
-- [ ] T4.3 — `reflow.ts`: `reflow(root, viewport)` — build fresh `LayoutBox` tree + `Map<LayoutBox,View>` (skip `visible:false`), call `layout()`, write rects to `view.bounds`. (03-04, AR-33,41, PA-7)
-- [ ] T4.4 — Run tests → reflow specs **GREEN**.
+- [x] T4.3 — `reflow.ts`: `reflow(root, viewport)` — build fresh `LayoutBox` tree + `Map<LayoutBox,View>` (skip `visible:false`), call `layout()`, write rects to `view.bounds`. (03-04, AR-33,41, PA-7) — 2026-06-29 (+ fires `onMount` for mounted/visible views post-layout)
+- [x] T4.4 — Run tests → reflow specs **GREEN**. — 2026-06-29
 
 ### Session 4C — Impl tests & hardening
-- [ ] T4.5 — `view.reflow.impl.test.ts` (nested hidden subtree omitted, `measure` deferral, fresh tree per pass, degenerate viewport → zero bounds no throw). (07 §impl)
-- [ ] T4.6 — `yarn verify` + `lint` green. **/gitcm** — `feat(view): reflow pass — view tree → RD-02 layout → bounds`.
+- [x] T4.5 — `view.reflow.impl.test.ts` (nested hidden subtree omitted, `measure` deferral, fresh tree per pass, degenerate viewport → zero bounds no throw). (07 §impl) — 2026-06-29
+- [x] T4.6 — `yarn verify` + `lint` green. **/gitcmp** — `feat(view): reflow pass — view tree → RD-02 layout → bounds`. — 2026-06-29 (verify 8/8, lint clean)
 
 ---
 
@@ -177,9 +177,9 @@ the cross-cutting guarantees. Covers AC-12, AC-17, AC-18, AC-20 (+ AC-19 e2e).
 - [x] 3C Impl tests & harden: T3.6–T3.7 ✅ commit — 2026-06-29
 
 **Phase 4 — Reflow pass**
-- [ ] 4A Spec (RED): T4.1–T4.2
-- [ ] 4B Impl (GREEN): T4.3–T4.4
-- [ ] 4C Impl tests & harden: T4.5–T4.6 ✅ commit
+- [x] 4A Spec (RED): T4.1–T4.2 — 2026-06-29
+- [x] 4B Impl (GREEN): T4.3–T4.4 — 2026-06-29
+- [x] 4C Impl tests & harden: T4.5–T4.6 ✅ commit — 2026-06-29
 
 **Phase 5 — Render root + compose walker**
 - [ ] 5A Spec (RED): T5.1–T5.2

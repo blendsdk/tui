@@ -22,3 +22,4 @@ export type { ViewState, DrawContext, ThemeRoleName, RenderRootOptions } from '.
 // and the theme-role→Style adapter. Not part of the curated `@jsvision/ui` public surface.
 export { makeDrawContext } from './draw-context.js';
 export { themeRoleToStyle } from './theme-style.js';
+export { reflow } from './reflow.js';
