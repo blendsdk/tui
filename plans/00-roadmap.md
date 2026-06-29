@@ -25,7 +25,7 @@ foundation RDs of the same number.
 
 | ID | Title | RD | Plan | Stage | Status | Last Updated | Notes / Blocker |
 |----|-------|----|------|-------|--------|--------------|-----------------|
-| RD-01 | Reactive core — `signal`/`computed`/`effect` + `Show`/`For` | [RD-01](../requirements/RD-01-reactive-core.md) | [reactive-core](reactive-core/00-index.md) | Executing | 🔄 | 2026-06-29 | Phase 0 pillar (XL). UI-independent; every widget property binds to it. RD preflighted (AR-13…AR-18); plan = 4 phases / 11 sessions, spec-first, 20 ST↔AC. Plan preflighted ([report](reactive-core/00-preflight-report.md)): 6 findings (4 MINOR, 2 obs), all resolved; new PA-6. **exec_plan in progress** (Phase 1 — graph foundation). |
+| RD-01 | Reactive core — `signal`/`computed`/`effect` + `Show`/`For` | [RD-01](../requirements/RD-01-reactive-core.md) | [reactive-core](reactive-core/00-index.md) | Done | ✅ | 2026-06-29 | Phase 0 pillar (XL). UI-independent; every widget property binds to it. **Shipped** in `packages/ui/src/reactive/` — 20 ST (ST-01…ST-20) + impl tests green (55 ui tests), `yarn verify`/`check:deps`/`lint` clean, all public symbols importable from `@jsvision/ui`, every file ≤ 500 lines w/ JSDoc. exec_plan complete (4 phases / 4 commits). |
 | RD-02 | Layout engine — cell-native flex `row`/`col` | — | — | Backlog | ⬜ | 2026-06-29 | Phase 0 pillar (XL). ADR-008 Accepted; apportionment core spike **landed** (`packages/ui/src/layout/`) + golden-tested — de-risked. |
 | RD-03 | View/Group spine + `DrawContext` + theming | — | — | Backlog | ⬜ | 2026-06-29 | Phase 0. Retained tree, draw composition into parent buffer, named theme roles. |
 | RD-04 | Event loop + focus + modality + commands | — | — | Backlog | ⬜ | 2026-06-29 | Phase 0. Async pump, 3-phase dispatch, `await execView`. |
@@ -74,5 +74,14 @@ foundation RDs of the same number.
   MINOR + 2 observations), all resolved: ST-15 leak check made behavioral (PF-001), `For` duplicate-key
   output pinned via new **PA-6** (PF-002), `Show` flip driver specified (PF-003), `EqualsOption` export
   reconciled (PF-004), 2 clarity fixes (PF-005/006).
-- **Recommended next:** `exec_plan` for **reactive-core** (Phase 1A writes the spec tests, RED-first),
-  or draft **RD-02 (layout containers)** in parallel — it shares no code with RD-01.
+- **2026-06-29** — **RD-01 executed & shipped** → stage `Done` ✅. `exec_plan reactive-core` ran all
+  4 phases spec-first (RED→GREEN→impl) across 4 commits: P1 graph foundation (signal/effect/scheduler/
+  owner), P2 lazy memoized computeds + glitch-free diamond, P3 Show/For combinators, P4 packaging +
+  gate. Lands `packages/ui/src/reactive/` (12 files, ≤ 500 lines each, full JSDoc, zero native deps).
+  All 20 specification tests ST-01…ST-20 green + impl tests (55 ui tests total); `yarn verify` /
+  `check:deps` / `lint` clean; every public symbol + type importable from `@jsvision/ui`. Two
+  scheduler subtleties resolved during exec (recorded in the impl): resolve **all** of a CHECK node's
+  sources before running it (glitch-free diamond), and don't mark observers on a computed's first
+  compute; the runaway guard relies on a self-writing effect's mid-run re-mark surviving.
+- **Recommended next:** draft **RD-02 (layout containers)** or **RD-03 (view/group spine)** — RD-03
+  binds the reactive `effect`→widget-dirty seam (AR-09) on top of this now-shipped core.

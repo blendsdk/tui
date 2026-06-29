@@ -92,13 +92,13 @@ Covers AC-12, AC-13, AC-19, AC-20. Depends on Phases 1–2 (uses `computed`, `ef
 Covers AC-14, AC-15. Validates the assembled public surface and the cross-cutting guarantees.
 
 ### Session 4A — Spec + verification
-- [ ] T4.1 — `reactive.packaging.spec.test.ts` (ST-14 all symbols+types import from `@jsvision/ui`; ST-15 security: runaway bounds, disposal releases subscriptions, observer-set sizes return to baseline over mount/unmount cycles). (AC-14,15)
-- [ ] T4.2 — Confirm every public symbol/type re-exported through `reactive/index.ts` → `src/index.ts`; JSDoc on every public symbol.
-- [ ] T4.3 — `yarn workspace @jsvision/ui check:deps` passes (only `@jsvision/core` + Node).
+- [x] T4.1 — `reactive.packaging.spec.test.ts` (ST-14 all symbols+types import from `@jsvision/ui`; ST-15 security: runaway bounds, disposal releases subscriptions behaviorally over 50 mount/unmount cycles). (AC-14,15) <!-- 2026-06-29 -->
+- [x] T4.2 — Confirmed every public symbol/type re-exported through `reactive/index.ts` → `src/index.ts` (`export *`); JSDoc on every public symbol. <!-- 2026-06-29 -->
+- [x] T4.3 — `yarn workspace @jsvision/ui check:deps` passes (only `@jsvision/core` + Node). <!-- 2026-06-29 -->
 
 ### Session 4B — Final gate
-- [ ] T4.4 — Full `yarn verify` (typecheck + build + tests, all packages) green; `yarn lint` clean; no dead code; no file > 500 lines.
-- [ ] T4.5 — Update `plans/00-roadmap.md` RD-01 row → stage `Executing`/`Done` as appropriate (roadmap skill). **/gitcmp** (`feat(reactive): packaging + acceptance gate — RD-01 complete`).
+- [x] T4.4 — Full `yarn verify` (typecheck + build + tests, all packages) green (core 474 / examples 49 / ui 55); `yarn lint` clean; no dead code; no file > 500 lines (max scheduler 280). <!-- 2026-06-29 -->
+- [x] T4.5 — Updated `plans/00-roadmap.md` RD-01 row → stage `Done` ✅ + journal entry (roadmap skill). **/gitcmp** (`feat(reactive): packaging + acceptance gate — RD-01 complete`). <!-- 2026-06-29 -->
 
 ---
 
@@ -120,8 +120,8 @@ Covers AC-14, AC-15. Validates the assembled public surface and the cross-cuttin
 - [x] 3C Impl tests & harden: T3.6–T3.7 ✅ commit
 
 **Phase 4 — Packaging & final gate**
-- [ ] 4A Spec + verification: T4.1–T4.3
-- [ ] 4B Final gate: T4.4–T4.5 ✅ commit + push
+- [x] 4A Spec + verification: T4.1–T4.3
+- [x] 4B Final gate: T4.4–T4.5 ✅ commit + push
 
 ## Estimates
 
