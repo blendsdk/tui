@@ -1,7 +1,7 @@
 # Requirements & Scope — Layout Engine
 
 > **Source**: [RD-02](../../requirements/RD-02-layout-engine.md)
-> **Architecture**: [ADR-008](../../docs/decisions/ADR-008-layout-engine.md) (Accepted)
+> **Architecture**: [ADR-008](../../../../../docs/decisions/ADR-008-layout-engine.md) (Accepted)
 > **CodeOps Skills Version**: 2.0.0
 
 This document restates the RD-02 scope as the implementation contract. The RD is the
