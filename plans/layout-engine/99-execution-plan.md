@@ -63,16 +63,16 @@ Makes the pass **recursive** over the tree, mirrors `row`/`col` via the axis abs
 nails the edges. Covers AC-10,11,12,13,14,15.
 
 ### Session 3A — Spec tests (RED)
-- [ ] T3.1 — Add `layout.tree.spec.test.ts` (ST-10 nesting, ST-11 parent-relative, ST-12 overflow, ST-13 degenerate, ST-14 `col`, ST-15 integer/non-negative). (AC-10–15)
-- [ ] T3.2 — Run tests → tree specs **RED**.
+- [x] T3.1 — Add `layout.tree.spec.test.ts` (ST-10 nesting, ST-11 parent-relative, ST-12 overflow, ST-13 degenerate, ST-14 `col`, ST-15 integer/non-negative). (AC-10–15) <!-- 2026-06-29 -->
+- [x] T3.2 — Run tests → tree specs **RED**. <!-- 2026-06-29 (ST-10/11 RED — parent-relativity at depth≥2; ST-12/13/14/15 already green from the axis-abstracted impl) -->
 
 ### Session 3B — Implementation (GREEN)
-- [ ] T3.3 — `layout.ts`: recurse into each child with its computed rect, building the full `LayoutResult` map (one entry per box); confirm `col` works through the axis map; overflow (fixed/auto extend past edge, `fr`→0); degenerate viewport → zero rects; integer/≥0 invariants. Split pure helpers into `layout-axis.ts` if approaching 500 lines (PA-1). (03-02, AR-22,27,28)
-- [ ] T3.4 — Run tests → **GREEN**.
+- [x] T3.3 — `layout.ts`: recurse into each child with its computed rect, building the full `LayoutResult` map (one entry per box); confirm `col` works through the axis map; overflow (fixed/auto extend past edge, `fr`→0); degenerate viewport → zero rects; integer/≥0 invariants. Split pure helpers into `layout-axis.ts` if approaching 500 lines (PA-1). (03-02, AR-22,27,28) <!-- 2026-06-29 (recursion now lays out each box in its own LOCAL frame → rects parent-relative; layout.ts 217 lines, no split needed) -->
+- [x] T3.4 — Run tests → **GREEN**. <!-- 2026-06-29 -->
 
 ### Session 3C — Impl tests & hardening
-- [ ] T3.5 — `layout.tree.impl.test.ts` (leaf container no child entries, deep-nesting offset composition, one map entry per box, nested overflow scoped to inner content box). (07 §impl)
-- [ ] T3.6 — `yarn verify` + `lint` green; `layout.ts` ≤ 500 lines. **/gitcm** (`feat(layout): recursive pass + overflow + col + degenerate`).
+- [x] T3.5 — `layout.tree.impl.test.ts` (leaf container no child entries, deep-nesting offset composition, one map entry per box, nested overflow scoped to inner content box). (07 §impl) <!-- 2026-06-29 -->
+- [x] T3.6 — `yarn verify` + `lint` green; `layout.ts` ≤ 500 lines. **/gitcm** (`feat(layout): recursive pass + overflow + col + degenerate`). <!-- 2026-06-29 (88 ui tests; layout.ts 217 lines) -->
 
 ---
 
@@ -104,9 +104,9 @@ Validates the assembled public surface and the cross-cutting guarantees. Covers 
 - [x] 2C Impl tests & harden: T2.5–T2.6 ✅ commit
 
 **Phase 3 — Recursion, overflow, col, degenerate**
-- [ ] 3A Spec (RED): T3.1–T3.2
-- [ ] 3B Impl (GREEN): T3.3–T3.4
-- [ ] 3C Impl tests & harden: T3.5–T3.6 ✅ commit
+- [x] 3A Spec (RED): T3.1–T3.2
+- [x] 3B Impl (GREEN): T3.3–T3.4
+- [x] 3C Impl tests & harden: T3.5–T3.6 ✅ commit
 
 **Phase 4 — Packaging & final gate**
 - [ ] 4A Spec + verification: T4.1–T4.3

@@ -9,8 +9,14 @@
  * cross axis, and recurses.
  *
  * Covers main-axis sizing + `gap` + `padding` content-box inset, `justify`
- * main-axis placement, cross-axis sizing + `align`, and recursion. `col`,
- * overflow, and degenerate-viewport hardening land in Phase 3.
+ * main-axis placement, cross-axis sizing + `align`, `row`/`col` via the axis
+ * abstraction, overflow (fixed/auto extend past the edge, `fr` → 0), degenerate
+ * viewports (zero-size rects, no throw), and recursion.
+ *
+ * Each container lays out its children in its **own local coordinate frame**
+ * (box origin `(0,0)`), so every child rect is **parent-relative** — relative
+ * to its parent's content-box origin, padding included (AR-27). Absolute screen
+ * coordinates are reconstructed by the renderer summing ancestor origins.
  */
 import { apportion, solveTrack, type TrackItem } from './apportion.js';
 import { naturalSize } from './measure.js';
@@ -36,20 +42,26 @@ export function layout(root: LayoutBox, viewport: Size2D): LayoutResult {
     height: toCells(viewport.height),
   };
   result.set(root, rootRect);
-  layoutContainer(root, rootRect, result);
+  layoutContainer(root, { width: rootRect.width, height: rootRect.height }, result);
   return result;
 }
 
 /**
- * Lay out one container's direct children within its assigned rect, then recurse
- * into each child. Records every child's parent-relative rect in `result`.
+ * Lay out one container's direct children within its own local frame (box origin
+ * `(0,0)` and the given size), then recurse into each child. Records every
+ * child's parent-relative rect in `result`.
+ *
+ * @param box The container being laid out.
+ * @param size The container's own width/height (its rect's extent); its position
+ *   within its parent is not needed here — children are placed relative to this
+ *   box's origin, keeping every rect parent-relative (AR-27).
  */
-function layoutContainer(box: LayoutBox, rect: Rect, result: LayoutResult): void {
+function layoutContainer(box: LayoutBox, size: Size2D, result: LayoutResult): void {
   if (box.children.length === 0) {
     return;
   }
   const props = normalizeProps(box.props);
-  const content = contentBox(rect, props);
+  const content = contentBox(size, props);
   const direction = props.direction;
   const contentMain = mainOf(content, direction);
   const contentCross = crossOf(content, direction);
@@ -72,20 +84,22 @@ function layoutContainer(box: LayoutBox, rect: Rect, result: LayoutResult): void
 
     const childRect = assembleRect(content, mainOffsets[i], crossOffset, main, cross, direction);
     result.set(child, childRect);
-    layoutContainer(child, childRect, result);
+    layoutContainer(child, { width: childRect.width, height: childRect.height }, result);
   }
 }
 
 /**
- * Inset a rect by its padding to the content box, each extent clamped to ≥ 0.
+ * The content box in the container's local frame: origin at the top-left padding
+ * inset `(padding.left, padding.top)`, each extent the box size minus padding,
+ * clamped to ≥ 0 (a padding larger than the box collapses content to zero).
  */
-function contentBox(rect: Rect, props: ResolvedProps): Rect {
+function contentBox(size: Size2D, props: ResolvedProps): Rect {
   const { padding } = props;
   return {
-    x: rect.x + padding.left,
-    y: rect.y + padding.top,
-    width: toCells(rect.width - padding.left - padding.right),
-    height: toCells(rect.height - padding.top - padding.bottom),
+    x: padding.left,
+    y: padding.top,
+    width: toCells(size.width - padding.left - padding.right),
+    height: toCells(size.height - padding.top - padding.bottom),
   };
 }
 
