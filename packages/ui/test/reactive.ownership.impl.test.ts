@@ -6,7 +6,16 @@
  */
 import { test, expect, vi } from 'vitest';
 import { TuiError } from '@jsvision/core';
-import { signal, effect, createRoot, onCleanup, ReactiveCycleError } from '../src/reactive/index.js';
+import {
+  signal,
+  effect,
+  createRoot,
+  onCleanup,
+  ReactiveCycleError,
+  runWithOwner,
+  getOwner,
+} from '../src/reactive/index.js';
+import type { Owner } from '../src/reactive/index.js';
 
 test('dispose() twice is a safe no-op (idempotent)', () => {
   let cleanups = 0;
@@ -70,4 +79,78 @@ test('ReactiveCycleError carries iterationLimit 1000 and is a TuiError', () => {
   if (thrown instanceof ReactiveCycleError) {
     expect(thrown.iterationLimit).toBe(1000);
   }
+});
+
+// --- runWithOwner internals & edges (RD-03 PA-1 / AR-43; 07 §impl) ---
+
+test('runWithOwner(null, …) leaves a created computation unowned (dev-warn, never auto-disposed)', () => {
+  const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const previousEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'development';
+  try {
+    const s = signal(0);
+    let runs = 0;
+
+    // Even though we're inside a live outer scope, runWithOwner(null) makes the effect unowned.
+    const disposeOuter = createRoot((dispose) => {
+      runWithOwner(null, () => {
+        effect(() => {
+          s();
+          runs += 1;
+        });
+      });
+      return dispose;
+    });
+
+    expect(runs).toBe(1); // fully functional
+    expect(warnSpy).toHaveBeenCalledTimes(1); // no-owner dev warn (AR-14)
+
+    disposeOuter(); // must NOT dispose the unowned effect
+    s.set(1);
+    expect(runs).toBe(2); // still reacts — it was never linked to the outer scope
+  } finally {
+    process.env.NODE_ENV = previousEnv;
+    warnSpy.mockRestore();
+  }
+});
+
+test('nested runWithOwner restores the previous owner at each level', () => {
+  let o1: Owner | null = null;
+  let o2: Owner | null = null;
+  createRoot((d) => {
+    o1 = getOwner();
+    return d;
+  });
+  createRoot((d) => {
+    o2 = getOwner();
+    return d;
+  });
+
+  const seen: (Owner | null)[] = [];
+  runWithOwner(o1, () => {
+    seen.push(getOwner()); // o1
+    runWithOwner(o2, () => {
+      seen.push(getOwner()); // o2
+    });
+    seen.push(getOwner()); // restored to o1
+  });
+  seen.push(getOwner()); // restored to the ambient (null)
+
+  expect(seen).toEqual([o1, o2, o1, null]);
+});
+
+test('a throw inside runWithOwner still restores the previous owner (finally)', () => {
+  let o: Owner | null = null;
+  createRoot((d) => {
+    o = getOwner();
+    return d;
+  });
+
+  const before = getOwner(); // null at the test top level
+  expect(() =>
+    runWithOwner(o, () => {
+      throw new Error('boom');
+    }),
+  ).toThrow('boom');
+  expect(getOwner()).toBe(before); // restored despite the throw
 });

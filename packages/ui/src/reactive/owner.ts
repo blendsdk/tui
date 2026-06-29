@@ -72,6 +72,33 @@ export function createRoot<T>(fn: (dispose: () => void) => T): T {
 }
 
 /**
+ * Run `fn` with `owner` as the ambient owner scope, restoring the previous owner afterwards
+ * (try/finally; re-entrant and nestable). Unlike {@link createRoot} this creates **no** new
+ * scope — it re-parents creation onto a *chosen, already-existing* owner, so a `createRoot`,
+ * `effect`, `computed`, or `signal` created inside `fn` attaches to `owner` and is disposed with
+ * it (AR-43, PA-1). This is the seam RD-03 needs to nest an imperatively-added child view's scope
+ * under its parent — `createRoot` alone would nest under the *ambient* owner, which is `null` for a
+ * `new View()` constructed outside any scope.
+ *
+ * Sets the **owner** only, not a tracking (observer) context — reads inside `fn` do not subscribe;
+ * an `effect` created inside still tracks normally when it runs. With `owner === null`, created
+ * computations are unowned and dev-warn, consistent with the no-owner policy (AR-14).
+ *
+ * @param owner The owner to make ambient for the duration of `fn` (or `null` for unowned).
+ * @param fn The function to run; its return value is returned by `runWithOwner`.
+ * @returns `fn`'s return value.
+ */
+export function runWithOwner<T>(owner: Owner | null, fn: () => T): T {
+  const previousOwner = getOwner();
+  setOwner(owner);
+  try {
+    return fn();
+  } finally {
+    setOwner(previousOwner);
+  }
+}
+
+/**
  * Register a teardown callback (AR-03). Inside a running computation it joins that
  * computation's cleanups (fired before each re-run and once at disposal); otherwise it joins
  * the current owner's cleanups (fired once at disposal). Outside any computation *and* any

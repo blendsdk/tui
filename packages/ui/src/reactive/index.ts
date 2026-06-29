@@ -28,7 +28,11 @@ export { computed } from './computed.js';
 export type { ComputedOptions } from './computed.js';
 export { effect } from './effect.js';
 export { batch, untrack } from './scheduler.js';
-export { createRoot, onCleanup } from './owner.js';
+export { createRoot, onCleanup, runWithOwner } from './owner.js';
+export { getOwner } from './scheduler.js';
+// `Owner` is re-exported as an opaque token: callers pass it back to runWithOwner/getOwner but
+// its fields stay internal (RD-03 owner-scope nesting, AR-43 / PA-1).
+export type { Owner } from './types.js';
 export { ReactiveCycleError } from './errors.js';
 
 // Structural combinators (RD-01 §combinators).
