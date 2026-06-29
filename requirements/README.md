@@ -40,6 +40,11 @@ map and the programming-model decision.
 | **Tracking context** | The dynamic scope (inside a computed/effect) where signal reads are recorded as dependencies. |
 | **Retained tree** | The persistent widget object graph (vs. immediate-mode redraw); widgets keep identity between frames. |
 | **Disciplined hybrid** | The chosen model: retained tree + signals (attribute reactivity) + `Show`/`For` + callbacks + theme roles. |
+| **View / Group** | The retained-tree base node (`View`, abstract) and its one concrete container (`Group`); custom widgets subclass `View` and override `draw()`. |
+| **DrawContext** | The stateless, view-local, auto-clipped paint API handed to `draw(ctx)`; mirrors core's `ScreenBuffer` and resolves theme roles via `ctx.color(role)`. |
+| **Reflow** | RD-03's pass that builds a `LayoutBox` tree from the view tree, runs RD-02's `layout()`, and writes the resulting parent-relative rects back onto each `view.bounds`. |
+| **Invalidate / coalescing scheduler** | `view.invalidate()` marks a view dirty and schedules one coalesced repaint per tick (scheduler injectable; default `queueMicrotask`); relayout and repaint are distinct dirty-phases. |
+| **Theme role** | A named UI surface (`window`/`button`/`buttonFocused`/…) resolved to a `Style` at draw time; widgets pick the state-dependent role themselves. |
 
 ## Document Index
 
@@ -48,7 +53,8 @@ map and the programming-model decision.
 | **AR** | [Ambiguity Register](00-ambiguity-register.md) | Zero-Ambiguity Gate decisions (audit trail) | — |
 | **RD-01** | [Reactive core](RD-01-reactive-core.md) | Signals, computeds, effects, ownership/disposal, `batch`/`untrack`, and the structural primitives `Show`/`For` | — |
 | **RD-02** | [Layout engine](RD-02-layout-engine.md) | Cell-native flex `row`/`col` engine: `fixed`/`fr`/`auto` sizing, `justify`/`align`, `gap`/`padding`; a pure `layout(boxTree, viewport) → rects` pass on the apportionment spike (ADR-008) | — (ADR-008) |
-| RD-03…RD-09 | *(backlog — see roadmap)* | View/group spine, event loop, app shell, controls, etc. | per phase |
+| **RD-03** | [View/Group spine](RD-03-view-group-spine.md) | Retained `View`/`Group` tree, stateless clipped `DrawContext`, theme-role resolution; closes the reactive seam (per-view scope + `bind` + coalescing scheduler) and owns the layout reflow pass. Logic-deferred `onEvent`/focus → RD-04 | RD-01, RD-02 |
+| RD-04…RD-09 | *(backlog — see roadmap)* | Event loop/focus/modality, app shell, controls, etc. | per phase |
 
 ## Dependency Graph
 
@@ -58,14 +64,22 @@ RD-01 Reactive core ──┐   (UI-independent; the reactivity layer every late
 RD-02 Layout engine ──┤   (UI-independent; pure box-tree → integer rects, on
                       │    ADR-008. Independent of RD-01.)
                       ▼
-            RD-03 View/Group spine (binds signals → widget invalidation;
-                      ▼              produces LayoutBoxes for RD-02 to size)
-            … the rest of the spine + widgets …
+            RD-03 View/Group spine (binds signals → widget invalidation via
+                      │              per-view scope + `bind`; coalescing redraw
+                      │              scheduler; owns the reflow pass → RD-02;
+                      │              retained tree + clipped DrawContext + theme roles.
+                      ▼              Ships the View shape; onEvent/focus LOGIC → RD-04)
+            RD-04 Event loop + focus + modality (extends the final View shape)
+                      ▼
+            … app shell (RD-05) + widgets (RD-06+) …
 ```
 
 RD-01 and RD-02 are the two independent, UI-independent pillars at the root (either can
 be built first); the view/group spine (RD-03) consumes both — it binds signals to widget
-invalidation and feeds widget layout boxes to the layout pass.
+invalidation and feeds widget layout boxes to the layout pass. RD-03 ships the **complete**
+`View`/`Group` shape (including an overridable `onEvent` stub + `focused`/`disabled` state),
+but the event-dispatch and focus-traversal **logic** is RD-04, which extends the same class
+without re-shaping it.
 
 ## Suggested Implementation Order
 

@@ -144,3 +144,70 @@ findings were ever raised. The reactive-core RD is now spec-complete at the edge
 exception, nested-batch, duplicate-key, error-base-class, runaway-limit all pinned) and ready to
 feed the make_plan skill. Re-scan note: the applied edits introduced no new contradictions
 (verified the `.peek()` Must/Should conflict is gone and the Packaging FR now matches AC-14).
+
+---
+---
+
+# Preflight Report — RD-03 (View/Group Spine + DrawContext + Theming)
+
+> **Artifact**: `requirements/RD-03-view-group-spine.md`
+> **Type**: Requirements document (single RD). **Finding IDs PF-001…PF-006 below are scoped to RD-03.**
+> **Date**: 2026-06-29
+> **Reviewer note**: Not a same-session creation — RD-03 pre-existed this session
+> (authored via `add_requirement`). Reviewed against the live `packages/ui` and `packages/core` sources.
+> **Outcome**: ✅ **PASSED** — 2 MAJOR + 3 MINOR resolved into the RD; 1 OBSERVATION accepted.
+
+## Codebase reconnaissance (what was verified)
+
+| Claim in RD-03 | Verified against | Result |
+|---|---|---|
+| Reuse `Rect`/`Size2D`/`Padding`/`LayoutProps` | `packages/ui/src/index.ts:21-34` | ✅ all exported |
+| `Show<N>` / `For<T,N>` generic (`N=View`) | `reactive/show.ts:24`, `reactive/for.ts:43` | ✅ generic; return reactive accessors |
+| `ScreenBuffer` `set`/`fillRect`/`text`/`box`/`shadow` | `render/buffer.ts` | ✅ present; `.text()` calls `sanitize` (`:159`) |
+| Theme roles `window`/`button`/`buttonFocused` | `color/theme.ts` | ✅ present (`ThemeRole = {fg,bg,hotkey?}`) |
+| `createLogger`/`serialize`/`Style`/`Theme`/`defaultTheme` exported | `core/src/engine/index.ts` | ✅ |
+| `Point`/`intersect`/`translate`/`contains` not pre-existing | grep `packages/ui`, `core/render` | ✅ no duplication |
+| Owner-scope nests under parent | `reactive/owner.ts:49-72` | ⚠️ nests under *ambient* owner; no re-parent (PF-001) |
+| `serialize()` signature | `render/serialize.ts:31,64` | ⚠️ requires previous buffer + `caps` (PF-002) |
+| `ThemeRoleName` type from core | `color/index.ts` | ⚠️ no such export (PF-003) |
+
+## Findings
+
+| ID | Sev | Dimension | Summary | Resolution → AR |
+|----|-----|-----------|---------|-----------------|
+| PF-001 | 🟠 MAJOR | Codebase Alignment / Dependency Reality | Owner-scope nesting for imperatively-added children not realizable via RD-01's public API (`createRoot` nests under *ambient* owner; no re-parent; `Owner`/`setOwner` internal) | Add additive `runWithOwner(owner, fn)`; create child scopes at add-time → **AR-43** |
+| PF-002 | 🟠 MAJOR | Completeness | `RenderRoot` omitted the required `caps: CapabilityProfile` + previous-buffer that core `serialize(current, previous, {caps})` needs (`serialize.ts:31,64`) | Required `caps` + retained previous buffer (double-buffer swap) → **AR-44** |
+| PF-003 | 🟡 MINOR | Codebase Alignment | `ThemeRoleName` phantom type (core exports none); roles are `{fg,bg,hotkey?}` not `Style` — `color()` needs an adapter | `ThemeRoleName = keyof Theme` + `ThemeRole→Style` adapter → **AR-45** |
+| PF-004 | 🟡 MINOR | Consistency | API sketch self-imports geometry from `'@jsvision/ui'` (own package name) | Changed to relative `../layout/index.js` |
+| PF-005 | 🟡 MINOR | Testability | `bind()` repaint-only contract vs AC-9's relayout distinction; a bound auto-measured prop repaints with stale bounds | `bind` repaints by default; layout-affecting binds opt in → **AR-46** |
+| PF-006 | 🔵 OBSERVATION | Consistency | `DrawContext.fill()` (whole-view) has no `ScreenBuffer` counterpart — convenience, not a mirror | Accepted as-is (wording nit) |
+
+### PF-001 🟠 — Owner-scope nesting for imperatively-added children
+`createRoot` (`owner.ts:63`) → `createChildScope` nests under `getOwner()` at call time (`owner.ts:49-54`); no re-parent op; `Owner`/`setOwner`/`createChildScope` not on the public reactive surface (`reactive/index.ts`). For an imperative `new View()` the ambient owner is `null`, so the child scope does not nest under the parent — the "leak-free by construction" guarantee fails for the imperative / Phase-0-demo path (AC-19, AC-11). The Show/For path works (per-item `createRoot` under the reconcile effect, `for.ts:56`).
+**Decision (user, 2026-06-29):** Add additive RD-01 primitive `runWithOwner(owner, fn)` exported via the reactive surface; scope created at add-time under the parent; wording changed "at construction" → "when added." → **AR-43**.
+*Dropped:* reaching into `../reactive/scheduler.js#setOwner` from RD-03 — depends on un-exported internals, breaks the single-public-entry convention.
+
+### PF-002 🟠 — `RenderRoot` missing `caps` + previous-buffer
+`serialize(current, previous, options)` (`serialize.ts:64`) with `RenderOptions.caps: CapabilityProfile` **non-optional** (`serialize.ts:31-32`). RD's `RenderRootOptions = {theme?, schedule?}` carried no `caps` and no previous-frame retention → AC-16/AC-19 could not call `serialize()`; diff degrades to full repaint.
+**Decision (user, 2026-06-29):** `RenderRootOptions.caps` required; RenderRoot retains the previous `ScreenBuffer` and swaps each flush; `createRenderRoot(size, opts)` non-optional. → **AR-44**.
+
+### PF-003 🟡 — `ThemeRoleName` phantom + `ThemeRole → Style` adapter
+Core exports `ColorRole`/`Theme`/`ThemeRole`, no `ThemeRoleName` (`color/index.ts`); roles are `{fg,bg,hotkey?}` (+`border`/`title`/`pattern` on some), not `Style`. **Decision:** `ThemeRoleName = keyof Theme` (RD-03-owned); `color()` runs a `ThemeRole→Style` adapter (map `fg`/`bg`, default `attrs`, ignore role-only extras). → **AR-45**.
+
+### PF-004 🟡 — Intra-package self-import
+RD-03 lives in `@jsvision/ui`; siblings cross-reference via relative `./`. API sketch changed to `import … from '../layout/index.js'`; reuse intent unchanged.
+
+### PF-005 🟡 — `bind()` repaint-only vs AC-9 relayout
+`bind` defined as `apply` + `invalidate()` (repaint); a bound layout-affecting prop would repaint with stale bounds. **Decision:** `bind` repaints by default; layout-affecting binds opt in (`{ relayout: true }` / `invalidateLayout()` in `apply`). → **AR-46**.
+
+### PF-006 🔵 — `DrawContext.fill()` not a `ScreenBuffer` mirror
+`fill(char, style?)` is a view-local convenience (`fillRect(0,0,size.w,size.h,…)`), not a literal `ScreenBuffer` method. Accepted as-is.
+
+## Dimension scan summary
+All 13 dimensions scanned. Clean: Logical Contradictions, Feasibility, Scope Creep, Ordering & Sequencing, Security Blind Spots (the in-process/output-only analysis is accurate — `ScreenBuffer.text` already routes through `sanitize`). Findings concentrated in Completeness (PF-002), Codebase Alignment / Dependency Reality (PF-001, PF-003), Consistency (PF-004), Testability (PF-005).
+
+## Resolutions (user accepted, 2026-06-29)
+PF-001/002/003/005 resolved into `RD-03-view-group-spine.md` + `00-ambiguity-register.md` (new entries AR-43…AR-46); PF-004 corrected in the API sketch; PF-006 accepted. Re-scan confirmed no regressions (no new contradictions; the `caps`-now-required change propagated to AC-10's example).
+
+## Pass/Fail
+✅ **PREFLIGHT PASSED — all 5 findings resolved** (2 MAJOR, 3 MINOR), 1 OBSERVATION accepted; no CRITICAL raised. RD-03 is ready to feed the make_plan skill — note the one **new dependency** it introduces: a small additive `runWithOwner` primitive on the done RD-01 (AR-43), which the RD-03 plan must include as its first task.
