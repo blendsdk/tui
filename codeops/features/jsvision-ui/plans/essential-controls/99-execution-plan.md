@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
 > **Last Updated**: 2026-07-01
-> **Progress**: 6/24 tasks (25%) — Phase 1 (Foundation) complete
+> **Progress**: 9/24 tasks (38%) — Phases 1–2 (Foundation, Text+Label) complete
 > **CodeOps Skills Version**: 3.1.0
 
 ## Overview
@@ -51,12 +51,12 @@ roles change — ui resolves core from `dist/`).
 
 ## Phase 2 — Text + Label  (03-02 · AC-1/AC-2 · PA-10/PA-14)
 ### 2.1 Spec (→ RED)
-- [ ] **2.1.1** `controls.text-label.spec` (ST-03 Text word-wrap + reactive; ST-04 Label highlight on link-focus + click/`Alt-N` focuses link). Cite `tstatict.cpp`/`tlabel.cpp`. **RED**.
+- [x] **2.1.1** `controls.text-label.spec` (ST-03 Text word-wrap + reactive; ST-04 Label highlight on link-focus + click/`Alt-N` focuses link). Cite `tstatict.cpp`/`tlabel.cpp`. **RED**. _(2026-07-01)_
 ### 2.2 Implementation (→ GREEN)
-- [ ] **2.2.1** Implement `Text` (word-wrap, `staticText`, reactive). (scope `controls`)
-- [ ] **2.2.2** Implement `Label` (postProcess hotkey, `ev.focusView` link, `labelSelected` on link-focus). ST-03/04 GREEN.
+- [x] **2.2.1** Implement `Text` (word-wrap, `staticText`, reactive). (scope `controls`) _(2026-07-01)_
+- [x] **2.2.2** Implement `Label` (postProcess hotkey, `ev.focusView` link, `labelSelected` on link-focus). ST-03/04 GREEN. _(2026-07-01)_
 ### 2.3 Impl tests
-- [ ] **2.3.1** Impl: over-long-word hard-break; hotkey-less label; focusing a disabled link is inert. Verify.
+- [x] **2.3.1** Impl: over-long-word hard-break; hotkey-less label; focusing a disabled link is inert. Verify. _(2026-07-01 — `yarn verify` 8/8 green)_
 
 ## Phase 3 — Button  (03-03 · AC-3 · PA-1/PA-7/PA-8)
 ### 3.1 Spec (→ RED)
@@ -114,9 +114,9 @@ roles change — ui resolves core from `dist/`).
 - [x] 1.2.3 `controls/` skeleton + re-exports _(2026-07-01)_
 - [x] 1.3.1 impl tests + verify _(2026-07-01)_
 ### Phase 2 — Text + Label
-- [ ] 2.1.1 Spec RED (ST-03/04)
-- [ ] 2.2.1 `Text` · 2.2.2 `Label`
-- [ ] 2.3.1 impl tests + verify
+- [x] 2.1.1 Spec RED (ST-03/04) _(2026-07-01)_
+- [x] 2.2.1 `Text` · 2.2.2 `Label` _(2026-07-01)_
+- [x] 2.3.1 impl tests + verify _(2026-07-01)_
 ### Phase 3 — Button
 - [ ] 3.1.1 Spec RED (ST-05/06)
 - [ ] 3.2.1 `Button`

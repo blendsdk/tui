@@ -10,4 +10,5 @@
  * `src/index.ts` re-exports each landed symbol explicitly. The `.js` extension in import specifiers is
  * required by NodeNext ESM resolution.
  */
-export {};
+export { Text } from './text.js';
+export { Label } from './label.js';
