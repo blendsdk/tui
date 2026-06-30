@@ -38,3 +38,8 @@ export * from './reactive/index.js';
 // re-exports (not `export *`), per the layout convention (AC-18). Grows per phase.
 export { View, Group, intersect, translate, contains, createRenderRoot } from './view/index.js';
 export type { Point, ViewState, DrawContext, ThemeRoleName, RenderRoot, RenderRootOptions } from './view/index.js';
+
+// Event loop (RD-04) — host-agnostic dispatch mechanism. Explicit named re-exports, per the layout
+// convention. Grows per phase.
+export { createEventLoop } from './event/index.js';
+export type { EventLoop, EventLoopOptions, CommandEvent, AppEvent, DispatchEvent } from './event/index.js';
