@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md) · **Implements**: jsvision-ui/RD-05 · **Plan**: `plans/app-shell/`
 > **Last Updated**: 2026-06-30
-> **Progress**: 23/48 tasks (48%)
+> **Progress**: 34/48 tasks (71%)
 > **CodeOps Skills Version**: 3.1.0
 
 ## Overview
@@ -109,23 +109,23 @@ AC-1…AC-5. (Refs: 03-01.)
 The window manager + window chrome. Heaviest phase (4 sessions). Covers AC-6…AC-15. (Refs: 03-02, 03-03.)
 
 ### Session 3A — Spec tests (RED)
-- [ ] T3.1 — `app-shell.desktop.spec.test.ts`: **ST-06**…**ST-13** (background/z-order, raise, drag-clamp, free-resize+reflow, zoom toggle, cascade/tile, next/prev/Alt-N, close→next active). (07 §spec; AC-6…13)
-- [ ] T3.2 — `app-shell.window.spec.test.ts`: **ST-14** (frame chrome + close/zoom box clicks), **ST-15** (active/inactive theming flips on raise). (07 §spec; AC-14,15)
-- [ ] T3.3 — Run tests → desktop + window specs **fail (RED)**.
+- [x] T3.1 — `app-shell.desktop.spec.test.ts`: **ST-06**…**ST-13** (background/z-order, raise, drag-clamp, free-resize+reflow, zoom toggle, cascade/tile, next/prev/Alt-N, close→next active). (07 §spec; AC-6…13) ✅ 2026-06-30
+- [x] T3.2 — `app-shell.window.spec.test.ts`: **ST-14** (frame chrome + close/zoom box clicks), **ST-15** (active/inactive theming flips on raise). (07 §spec; AC-14,15) ✅ 2026-06-30
+- [x] T3.3 — Run tests → desktop + window specs **fail (RED)**. ✅ 2026-06-30 (module-not-found RED)
 
 ### Session 3B — Implementation: Window + Frame (GREEN, part 1)
-- [ ] T3.4 — `window/frame.ts`: `drawFrame(ctx,size,state,role)` (border, centered title, number, close `[■]`, zoom `[↑]`/`[↓]`, SE corner) + `frameZoneAt(size,local,flags)` geometry. (03-03; AR-67,74; PA-8)
-- [ ] T3.5 — `window/window.ts`: `Window extends Group` — `focusable = true` (a window is a focus target so raise/`activeWindow()` work — PF-05); reactive `title`, `number`, flags, `position:'absolute'` + `padding:1` content inset, `zoom()`/`close()`, `draw()` (active vs `windowInactive` role via `ctx.role()` border/title — PF-03), `onEvent` (raise-on-down + frame hit-zone → move/resize/close/zoom). (03-03; AR-67,73,74; PA-8,10,16)
+- [x] T3.4 — `window/frame.ts`: `drawFrame(ctx,size,state,role)` (border, centered title, number, close `[■]`, zoom `[↑]`/`[↓]`, SE corner) + `frameZoneAt(size,local,flags)` geometry. (03-03; AR-67,74; PA-8) ✅ 2026-06-30 (close cols 1–3, zoom cols w-4…w-2, number w-6, corner ◢ at w-1,h-1)
+- [x] T3.5 — `window/window.ts`: `Window extends Group` — `focusable = true` (a window is a focus target so raise/`activeWindow()` work — PF-05); reactive `title`, `number`, flags, `position:'absolute'` + `padding:1` content inset, `zoom()`/`close()`, `draw()` (active vs `windowInactive` role via `ctx.role()` border/title — PF-03), `onEvent` (raise-on-down + frame hit-zone → move/resize/close/zoom). (03-03; AR-67,73,74; PA-8,10,16) ✅ 2026-06-30 (runtime note: a `WindowManager` back-reference seam, injected by `addWindow`, replaces a `Window→Desktop` import — no cycle, no cast)
 
 ### Session 3C — Implementation: Desktop (GREEN, part 2)
-- [ ] T3.6 — `desktop/desktop.ts`: **extend the Phase-1 `Desktop` skeleton** (PF-12) — keep its pattern `draw()`/`attachLoop`; add `addWindow`/`removeWindow` (windows are `position:'absolute'`), `raise` (+focus), `activeWindow`, post-process `onEvent` for WM commands. (03-02; AR-67,78,80; PA-7,12,15,16)
-- [ ] T3.7 — `desktop/gestures.ts`: `beginMove`/`beginResize` + the captured `onEvent` (move/resize math sets `target.layout.rect` + clamp to PA-4 + `invalidateLayout`; release on up — PF-01). `desktop/arrange.ts`: `cascade`/`tile` (set each window's `layout.rect`; un-zoom, clamp-to-min, degenerate counts) + `focusNextWindow`/`focusPrevWindow`/`focusWindowNumber`. (03-02; AR-67,74,87; PA-4,5,10,15)
-- [ ] T3.8 — Barrels + `src/index.ts` re-exports (`Desktop`, `Window`); run tests → desktop + window specs **GREEN**.
+- [x] T3.6 — `desktop/desktop.ts`: **extend the Phase-1 `Desktop` skeleton** (PF-12) — keep its pattern `draw()`/`attachLoop`; add `addWindow`/`removeWindow` (windows are `position:'absolute'`), `raise` (+focus), `activeWindow`, post-process `onEvent` for WM commands. (03-02; AR-67,78,80; PA-7,12,15,16) ✅ 2026-06-30 (runtime fix: WM command `handled` short-circuit — the desktop is the focused window's ancestor, hit in BOTH the focus-chain bubble and post sweep; marking handled prevents double-processing)
+- [x] T3.7 — `desktop/gestures.ts`: `beginMove`/`beginResize` + the captured `onEvent` (move/resize math sets `target.layout.rect` + clamp to PA-4 + `invalidateLayout`; release on up — PF-01). `desktop/arrange.ts`: `cascade`/`tile` (set each window's `layout.rect`; un-zoom, clamp-to-min, degenerate counts) + `focusNextWindow`/`focusPrevWindow`/`focusWindowNumber`. (03-02; AR-67,74,87; PA-4,5,10,15) ✅ 2026-06-30
+- [x] T3.8 — Barrels + `src/index.ts` re-exports (`Desktop`, `Window`); run tests → desktop + window specs **GREEN**. ✅ 2026-06-30 (ui 240)
 
 ### Session 3D — Impl tests & hardening
-- [ ] T3.9 — `app-shell.desktop.impl.test.ts`: clamp boundaries; tile grid math + cell-clamp; cascade stagger; un-zoom-before-arrange; capture released when a modal opens. (07 §impl)
-- [ ] T3.10 — `app-shell.window.impl.test.ts`: `frameZoneAt` boundaries; flag gating; reactive title repaint; content inset; close disposes the scope (onCleanup spy). (07 §impl)
-- [ ] T3.11 — `yarn verify` + `lint` green; files ≤ 500 lines. **/gitcm** — `feat(window): Window + Frame chrome + active/inactive theming (RD-05)` + `feat(desktop): window manager — raise/drag/resize/zoom/cascade/tile/switch/close (RD-05)`.
+- [x] T3.9 — `app-shell.desktop.impl.test.ts`: clamp boundaries; tile grid math + cell-clamp; cascade stagger; un-zoom-before-arrange; capture released when a modal opens. (07 §impl) ✅ 2026-06-30
+- [x] T3.10 — `app-shell.window.impl.test.ts`: `frameZoneAt` boundaries; flag gating; reactive title repaint; content inset; close disposes the scope (onCleanup spy). (07 §impl) ✅ 2026-06-30 (ui 251)
+- [x] T3.11 — `yarn verify` + `lint` green; files ≤ 500 lines. **/gitcm** — `feat(window): Window + Frame chrome + active/inactive theming (RD-05)` + `feat(desktop): window manager — raise/drag/resize/zoom/cascade/tile/switch/close (RD-05)`. ✅ 2026-06-30 (verify 8/8, lint + check:deps clean, files ≤ 201 lines)
 
 ---
 
@@ -203,17 +203,17 @@ StatusLine, the one-frame-per-interaction oracle, demos, packaging finalization,
 - [x] 2.7 Verify + lint + commit ✅ 2026-06-30
 
 ### Phase 3 — Desktop + Window/Frame
-- [ ] 3.1 Desktop spec ST-06…13 (RED)
-- [ ] 3.2 Window spec ST-14,15 (RED)
-- [ ] 3.3 Confirm RED
-- [ ] 3.4 `frame.ts` (drawFrame + frameZoneAt)
-- [ ] 3.5 `window.ts` (Window + zoom/close/inset/onEvent)
-- [ ] 3.6 `desktop.ts` (Desktop + raise/add/remove/activeWindow + WM commands)
-- [ ] 3.7 `gestures.ts` + `arrange.ts` (drag/resize/capture + cascade/tile/switch)
-- [ ] 3.8 Barrels + re-exports; confirm GREEN
-- [ ] 3.9 Desktop impl tests
-- [ ] 3.10 Window impl tests
-- [ ] 3.11 Verify + lint + commit
+- [x] 3.1 Desktop spec ST-06…13 (RED) ✅ 2026-06-30
+- [x] 3.2 Window spec ST-14,15 (RED) ✅ 2026-06-30
+- [x] 3.3 Confirm RED ✅ 2026-06-30
+- [x] 3.4 `frame.ts` (drawFrame + frameZoneAt) ✅ 2026-06-30
+- [x] 3.5 `window.ts` (Window + zoom/close/inset/onEvent) ✅ 2026-06-30
+- [x] 3.6 `desktop.ts` (Desktop + raise/add/remove/activeWindow + WM commands) ✅ 2026-06-30
+- [x] 3.7 `gestures.ts` + `arrange.ts` (drag/resize/capture + cascade/tile/switch) ✅ 2026-06-30
+- [x] 3.8 Barrels + re-exports; confirm GREEN ✅ 2026-06-30
+- [x] 3.9 Desktop impl tests ✅ 2026-06-30
+- [x] 3.10 Window impl tests ✅ 2026-06-30
+- [x] 3.11 Verify + lint + commit ✅ 2026-06-30
 
 ### Phase 4 — Menus
 - [ ] 4.1 Menu spec ST-16,17,18 (RED)
