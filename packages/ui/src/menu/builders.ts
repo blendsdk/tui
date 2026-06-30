@@ -29,15 +29,17 @@ export interface ParsedLabel {
 /** A top-level title's placement on the menu bar. */
 export interface TitleLayout {
   index: number;
+  /** The button's left column (the leading pad space), per `TMenuBar::getItemRect`. */
   x: number;
+  /** The full ` text ` button width — display text + one pad column on each side. */
   width: number;
   label: ParsedLabel;
 }
 
-/** Gap (cells) between adjacent menu-bar titles. */
-const TITLE_GAP = 2;
-/** Leading margin before the first title. */
+/** Leading blank column before the first button (`TMenuBar` starts drawing at x = 1). */
 const TITLE_MARGIN = 1;
+/** Pad columns around each bar title — one space on each side (` text `), as `TMenuBar` draws a button. */
+const TITLE_PAD = 2;
 
 /**
  * Parse a `~X~` accelerator out of a label. The char between the first matching tilde pair is the
@@ -62,19 +64,22 @@ function titleOf(node: MenuItem): string {
 }
 
 /**
- * Lay the top-level titles left-to-right from the leading margin with a fixed gap.
+ * Lay the top-level titles left-to-right as abutting ` text ` buttons, exactly like
+ * `TMenuBar::getItemRect` / `draw` (Turbo Vision `tmenubar.cpp`): the first button starts at column
+ * 1, each button spans the display text plus one pad space on each side, and the next button begins
+ * where the previous ended (the pad spaces are the visible gap).
  *
  * @param tops The top-level menu nodes.
- * @returns Each title's index, x, display width, and parsed label.
+ * @returns Each title's index, button left x, full button width, and parsed label.
  */
 export function layoutTitles(tops: readonly MenuItem[]): TitleLayout[] {
   const out: TitleLayout[] = [];
   let x = TITLE_MARGIN;
   tops.forEach((node, index) => {
     const label = parseTilde(titleOf(node));
-    const width = label.text.length;
+    const width = label.text.length + TITLE_PAD;
     out.push({ index, x, width, label });
-    x += width + TITLE_GAP;
+    x += width;
   });
   return out;
 }

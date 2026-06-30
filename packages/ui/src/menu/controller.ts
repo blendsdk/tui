@@ -183,7 +183,10 @@ export function createMenuController(tops: readonly MenuItem[], overlay: Group, 
     const node = tops[index];
     if (node === undefined || node.kind !== 'sub') return;
     const title = layoutTitles(tops)[index];
-    pushLevel(node.items, title?.x ?? 0, 1); // y=1: the row just below the menu bar
+    // TV places the box left = bar-item left, then shifts one column left for a horizontal bar
+    // (`if (size.y == 1) r.a.x--;`, tmnuview.cpp:380), and the top one row below the bar.
+    const anchorX = Math.max(0, (title?.x ?? 1) - 1);
+    pushLevel(node.items, anchorX, 1);
   }
 
   /** Remove every mounted popup (leaving the catcher) and empty the level stack. */

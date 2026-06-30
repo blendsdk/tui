@@ -52,10 +52,13 @@ export class MenuBar extends View {
     ctx.fillRect(0, 0, ctx.size.width, 1, ' ', base);
     for (const title of layoutTitles(this.items)) {
       const style = open && openIndex === title.index ? selected : base;
-      ctx.text(title.x, 0, title.label.text, style);
+      // Each title is a ` text ` button: the whole button (both pad spaces included) carries the
+      // color, and the text is inset one column past the leading pad — exactly as TMenuBar::draw.
+      ctx.fillRect(title.x, 0, title.width, 1, ' ', style);
+      ctx.text(title.x + 1, 0, title.label.text, style);
       if (title.label.hotkeyCol >= 0) {
         const hotChar = title.label.text[title.label.hotkeyCol] ?? '';
-        ctx.text(title.x + title.label.hotkeyCol, 0, hotChar, open ? style : accent);
+        ctx.text(title.x + 1 + title.label.hotkeyCol, 0, hotChar, open ? style : accent);
       }
     }
   }

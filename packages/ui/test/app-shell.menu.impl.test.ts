@@ -78,14 +78,16 @@ test('parseTilde: a label with no ~X~ pair has no hotkey', () => {
 
 // --- Title layout + hit-test (the bar's click mapping) -------------------------------------------
 
-test('layoutTitles + titleIndexAt: File at x=1, Edit after the gap; x maps back to the index', () => {
+test('layoutTitles + titleIndexAt: each title is a ` name ` button (TMenuBar), x maps back to the index', () => {
   const tops = [subMenu('~F~ile', []), subMenu('~E~dit', [])];
   const [file, edit] = layoutTitles(tops);
-  expect(file).toMatchObject({ index: 0, x: 1, width: 4 });
-  expect(edit).toMatchObject({ index: 1, x: 7 }); // 1 + 4 + gap(2)
-  expect(titleIndexAt(tops, 1)).toBe(0);
-  expect(titleIndexAt(tops, 8)).toBe(1);
-  expect(titleIndexAt(tops, 5)).toBeNull(); // in the gap between titles
+  expect(file).toMatchObject({ index: 0, x: 1, width: 6 }); // ` File ` = name(4) + 2 pad columns
+  expect(edit).toMatchObject({ index: 1, x: 7 }); // 1 + 6 — the buttons abut; their pad spaces are the gap
+  expect(titleIndexAt(tops, 0)).toBeNull(); // the leading margin column before the first button
+  expect(titleIndexAt(tops, 1)).toBe(0); // File's leading pad
+  expect(titleIndexAt(tops, 6)).toBe(0); // File's trailing pad still maps to File
+  expect(titleIndexAt(tops, 8)).toBe(1); // inside Edit
+  expect(titleIndexAt(tops, 13)).toBeNull(); // past the last button
 });
 
 // --- Nav skipping + nested open/close -----------------------------------------------------------
