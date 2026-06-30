@@ -8,7 +8,7 @@
  *
  * The `.js` extension in import specifiers is required by NodeNext ESM resolution.
  */
-import type { CapabilityProfile, Theme, Logger, Keymap } from '@jsvision/core';
+import type { CapabilityProfile, Theme, Logger, Keymap, ScreenBuffer } from '@jsvision/core';
 import type { Size2D } from '../layout/index.js';
 import type { View, RenderRoot, AppEvent } from '../view/index.js';
 
@@ -60,4 +60,23 @@ export interface EventLoop {
   execView<R>(view: View): Promise<R>;
   /** Close the top modal, restoring focus and resolving the matching `execView` promise (AR-53). */
   endModal<R>(result: R): void;
+
+  // --- RD-05 additive seams (the loop is composed, not re-shaped) -------------------------------
+  /**
+   * Pointer capture (RD-05 PA-5 / AR-82): while a target is set, **all** mouse/wheel events route to
+   * `view` (target-local `ev.local`) until {@link releaseCapture}, bypassing the hit-test and
+   * suppressing focus-on-click — so a drag/resize keeps tracking past the affordance. Last-writer-
+   * wins if a capture is already set; auto-released when a modal opens/closes or the target unmounts.
+   */
+  setCapture(view: View): void;
+  /** Clear the pointer-capture target; a no-op if none is set (RD-05 PA-5). */
+  releaseCapture(): void;
+  /**
+   * Frame sink (RD-05 PA-6 / AR-84): when set, fired after every coalesced flush (end of a dispatch
+   * tick, on resize, after mount) with the live composed buffer so the host can paint. A **settable
+   * member** (not an `EventLoopOptions` field) because `run()` wires it to `host.render` only after
+   * the host exists — `createApplication` builds the loop first (PA-18 / PF-04). `undefined` until
+   * set ⇒ flushes still happen but push nothing (headless tests/demos read `renderRoot.buffer()`).
+   */
+  onFrame?: (buffer: ScreenBuffer) => void;
 }

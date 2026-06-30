@@ -15,7 +15,7 @@
  * The `.js` extension in import specifiers is required by NodeNext ESM resolution.
  */
 import { createLogger } from '@jsvision/core';
-import type { Logger, Keymap } from '@jsvision/core';
+import type { Logger, Keymap, ScreenBuffer } from '@jsvision/core';
 import type { Size2D } from '../layout/index.js';
 import { createRenderRoot } from '../view/index.js';
 import type { View, RenderRoot, AppEvent, DispatchEvent } from '../view/index.js';
@@ -46,6 +46,11 @@ class EventLoopImpl implements EventLoop {
   private readonly queue: DispatchEvent[] = [];
   /** True while a tick is draining; a re-entrant `runTick` joins the active tick instead (PA-11). */
   private draining = false;
+  /** The pointer-capture target: while set, all mouse/wheel events route here (RD-05 PA-5). */
+  private captureTarget: View | null = null;
+
+  /** Frame sink wired by `run()` after the host exists; `undefined` ⇒ flushes push nothing (PA-6). */
+  onFrame?: (buffer: ScreenBuffer) => void;
 
   constructor(viewport: Size2D, opts: EventLoopOptions) {
     this.logger = opts.logger ?? createLogger();
@@ -72,6 +77,7 @@ class EventLoopImpl implements EventLoop {
   mount(root: View): void {
     this.root = root;
     this.renderRoot.mount(root); // RenderRoot.mount flushes the initial frame once, internally
+    this.onFrame?.(this.renderRoot.buffer()); // deliver the first frame to the host sink (PA-6)
   }
 
   dispatch(event: AppEvent): void {
@@ -84,6 +90,7 @@ class EventLoopImpl implements EventLoop {
     // The one path outside the queue: a reflow with no event cascade, then exactly one frame (AR-54).
     this.renderRoot.resize(size);
     this.renderRoot.flush();
+    this.onFrame?.(this.renderRoot.buffer()); // push the resized frame to the host sink (PA-6)
   }
 
   getFocused(): View | null {
@@ -120,6 +127,7 @@ class EventLoopImpl implements EventLoop {
   execView<R>(view: View): Promise<R> {
     // Open inside a runTick so the modal paints exactly one coalesced frame on open (PA-11/PF-009);
     // the returned Promise resolves later, on endModal. The caller has added `view` to the tree.
+    this.captureTarget = null; // a stale gesture must not capture across modality (PA-5)
     return new Promise<R>((resolve) => {
       this.runTick(() => this.modal.begin(view, resolve));
     });
@@ -127,6 +135,7 @@ class EventLoopImpl implements EventLoop {
 
   endModal<R>(result: R): void {
     // Close inside a runTick so the restore-focus repaint paints one frame (PA-11).
+    this.captureTarget = null; // release any capture as modality changes (PA-5)
     this.runTick(() => this.modal.end(result));
   }
 
@@ -155,6 +164,15 @@ class EventLoopImpl implements EventLoop {
     }
     this.onIdle?.(); // the cascade drained (AR-58)
     this.renderRoot.flush(); // exactly one coalesced frame for the tick (AR-54, AR-64)
+    this.onFrame?.(this.renderRoot.buffer()); // deliver that one frame to the host sink (PA-6/PF-003)
+  }
+
+  setCapture(view: View): void {
+    this.captureTarget = view; // last-writer-wins; routed in `routeContext` → `hitTestRoute` (PA-5)
+  }
+
+  releaseCapture(): void {
+    this.captureTarget = null;
   }
 
   /**
@@ -178,6 +196,10 @@ class EventLoopImpl implements EventLoop {
 
   /** Build the {@link RouteContext} of seams the 3-phase router needs from this loop. */
   private routeContext(): RouteContext {
+    // PA-5: never route to a detached capture target — auto-release if it has unmounted.
+    if (this.captureTarget !== null && !this.captureTarget.mounted) {
+      this.captureTarget = null;
+    }
     const scope = this.scopeRoot();
     return {
       scopeRoot: scope,
@@ -192,6 +214,7 @@ class EventLoopImpl implements EventLoop {
       hitTestRoute: (ev) =>
         hitTestRoute(ev, {
           scopeRoot: scope,
+          captureTarget: this.captureTarget, // RD-05 PA-5: short-circuit to the capture target
           isFocusable: (view) => this.focus.isFocusable(view),
           focusView: (view) => this.focus.focusView(view), // pure mutation (inside the active tick)
           deliver: (view, mouseEv) => this.deliver(view, mouseEv),
