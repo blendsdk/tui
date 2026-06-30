@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md) · **Implements**: jsvision-ui/RD-05 · **Plan**: `plans/app-shell/`
 > **Last Updated**: 2026-06-30
-> **Progress**: 16/48 tasks (33%)
+> **Progress**: 23/48 tasks (48%)
 > **CodeOps Skills Version**: 3.1.0
 
 ## Overview
@@ -90,17 +90,17 @@ Additive core `windowInactive` role; additive loop `setCapture`/`releaseCapture`
 AC-1…AC-5. (Refs: 03-01.)
 
 ### Session 2A — Spec tests (RED)
-- [ ] T2.1 — `app-shell.lifecycle.spec.test.ts`: **ST-01** (composition + layout), **ST-02** (host wiring via fake runtime), **ST-03** (quit→exit code 0/arg), **ST-04** (restore-on-throw), **ST-05** (suspend/resume — host owns reassert+repaint, onResume notify-only). Build the **fake `RuntimeAdapter`** fixture. (07 §spec; AC-1…5; PA-14)
-- [ ] T2.2 — Run tests → lifecycle specs **fail (RED)**.
+- [x] T2.1 — `app-shell.lifecycle.spec.test.ts`: **ST-01** (composition + layout), **ST-02** (host wiring via fake runtime), **ST-03** (quit→exit code 0/arg), **ST-04** (restore-on-throw), **ST-05** (suspend/resume — host owns reassert+repaint, onResume notify-only). Build the **fake `RuntimeAdapter`** fixture. (07 §spec; AC-1…5; PA-14) ✅ 2026-06-30 (`app-shell.fixtures.ts` mirrors core host-doubles — ui-local copy; runtime note: ApplicationOptions forwards `input?`/`output?` to createHost for headless TTY simulation — intra-package, AC-21 holds)
+- [x] T2.2 — Run tests → lifecycle specs **fail (RED)**. ✅ 2026-06-30 (module-not-found RED)
 
 ### Session 2B — Implementation (GREEN)
-- [ ] T2.3 — `app/application.ts`: `createApplication` — resolve viewport (opts→stdout→80×24); build the app-root `Group` `[menuBar? (flow), desktop (flow,fr:1), statusLine? (flow), overlay (absolute, full-viewport rect — Phase 0, `state.visible=false` until a popup mounts — PF-10)]` + layout, composing the Phase-1 `Desktop`/`MenuBar`/`StatusLine` skeletons (PF-12); `createEventLoop(viewport, {caps,theme,logger,keymap,commands,onIdle})`; `mount(appRoot)`; inject the loop seam into desktop/menubar/statusline; register `Commands` + bind `'quit'`. (03-01; AR-71,75; PA-3,7,12,15; PF-10,12)
-- [ ] T2.4 — `app/run.ts`: `run()` — `createHost({caps,onInput→dispatch,onResize→resize,onSuspend,onResume, runtime})` (**single options arg** — PF-07); set `loop.onFrame = host.render` (settable member — PF-04); `host.start()`; paint first frame; await the quit promise; `finally host.stop()` (guaranteed restore). Wire suspend/resume per AR-83 (onResume = notify-only; **no inert flush nudge** — PF-09). (03-01; AR-71,83,86; PA-6,18)
-- [ ] T2.5 — Run tests → lifecycle specs **GREEN** (incl. restore-on-throw + suspend/resume via the fake runtime).
+- [x] T2.3 — `app/application.ts`: `createApplication` — resolve viewport (opts→stdout→80×24); build the app-root `Group` `[menuBar? (flow), desktop (flow,fr:1), statusLine? (flow), overlay (absolute, full-viewport rect — Phase 0, `state.visible=false` until a popup mounts — PF-10)]` + layout, composing the Phase-1 `Desktop`/`MenuBar`/`StatusLine` skeletons (PF-12); `createEventLoop(viewport, {caps,theme,logger,keymap,commands,onIdle})`; `mount(appRoot)`; inject the loop seam into desktop/menubar/statusline; register `Commands` + bind `'quit'`. (03-01; AR-71,75; PA-3,7,12,15; PF-10,12) ✅ 2026-06-30 (quit bound via a hidden preProcess QuitCommandSink — visible:false, still swept; desktop.attachLoop(loop) via structural typing; menu/status attach deferred to Phase 4/5)
+- [x] T2.4 — `app/run.ts`: `run()` — `createHost({caps,onInput→dispatch,onResize→resize,onSuspend,onResume, runtime})` (**single options arg** — PF-07); set `loop.onFrame = host.render` (settable member — PF-04); `host.start()`; paint first frame; await the quit promise; `finally host.stop()` (guaranteed restore). Wire suspend/resume per AR-83 (onResume = notify-only; **no inert flush nudge** — PF-09). (03-01; AR-71,83,86; PA-6,18) ✅ 2026-06-30 (onResize also keeps the overlay rect full-viewport)
+- [x] T2.5 — Run tests → lifecycle specs **GREEN** (incl. restore-on-throw + suspend/resume via the fake runtime). ✅ 2026-06-30 (ST-01…05 green first pass; ui 221)
 
 ### Session 2C — Impl tests & hardening
-- [ ] T2.6 — `app-shell.lifecycle.impl.test.ts`: viewport default resolution; `onFrame` call count = flush count; idempotent `host.stop()`; quit-arg coercion; first-frame paint. (07 §impl)
-- [ ] T2.7 — `yarn verify` + `lint` green; files ≤ 500 lines. **/gitcm** — `feat(app): createApplication + run() lifecycle — host wiring, quit→exit, restore, suspend/resume (RD-05)`.
+- [x] T2.6 — `app-shell.lifecycle.impl.test.ts`: viewport default resolution; `onFrame` call count = flush count; idempotent `host.stop()`; quit-arg coercion; first-frame paint. (07 §impl) ✅ 2026-06-30 (7 impl tests; ui 228)
+- [x] T2.7 — `yarn verify` + `lint` green; files ≤ 500 lines. **/gitcm** — `feat(app): createApplication + run() lifecycle — host wiring, quit→exit, restore, suspend/resume (RD-05)`. ✅ 2026-06-30 (verify 8/8, lint + check:deps clean, files ≤ 175 lines)
 
 ---
 
@@ -194,13 +194,13 @@ StatusLine, the one-frame-per-interaction oracle, demos, packaging finalization,
 - [x] 1.9 Verify + lint + commit ✅ 2026-06-30
 
 ### Phase 2 — Application + run()
-- [ ] 2.1 Lifecycle spec ST-01…05 + fake runtime fixture (RED)
-- [ ] 2.2 Confirm RED
-- [ ] 2.3 `createApplication` (compose + layout + overlay + command wiring)
-- [ ] 2.4 `run()` (host wiring + onFrame→render + quit→exit + restore + suspend/resume)
-- [ ] 2.5 Confirm GREEN
-- [ ] 2.6 Lifecycle impl tests
-- [ ] 2.7 Verify + lint + commit
+- [x] 2.1 Lifecycle spec ST-01…05 + fake runtime fixture (RED) ✅ 2026-06-30
+- [x] 2.2 Confirm RED ✅ 2026-06-30
+- [x] 2.3 `createApplication` (compose + layout + overlay + command wiring) ✅ 2026-06-30
+- [x] 2.4 `run()` (host wiring + onFrame→render + quit→exit + restore + suspend/resume) ✅ 2026-06-30
+- [x] 2.5 Confirm GREEN ✅ 2026-06-30
+- [x] 2.6 Lifecycle impl tests ✅ 2026-06-30
+- [x] 2.7 Verify + lint + commit ✅ 2026-06-30
 
 ### Phase 3 — Desktop + Window/Frame
 - [ ] 3.1 Desktop spec ST-06…13 (RED)
