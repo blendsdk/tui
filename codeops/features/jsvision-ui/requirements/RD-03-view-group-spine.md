@@ -6,6 +6,7 @@
 > **Project**: jsvision UI (`@jsvision/ui`)
 > **Depends On**: RD-01 (Reactive core — done; **+ one small additive primitive `runWithOwner`**, AR-43), RD-02 (Layout engine — done), `@jsvision/core` (render/color/safety — done)
 > **CodeOps Skills Version**: 2.0.0
+> **Downstream extension**: RD-05 (app shell) adds an additive `DrawContext.role<K>(name): Theme[K]` raw-role accessor (so chrome can read role-only extras `pattern`/`border`/`title` that `color()` flattens to `{fg,bg}`) — required by the desktop pattern + frame theming. Designed in `plans/app-shell/03-00-foundation-extensions.md` (Phase 0 / PA-16); `color()` is unchanged.
 
 ---
 

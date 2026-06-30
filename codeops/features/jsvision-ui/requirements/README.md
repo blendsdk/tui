@@ -1,7 +1,7 @@
 # jsvision UI — Requirements Documents
 
 > **Project**: `@jsvision/ui` — a reimagined Turbo Vision-style widget framework for terminal (TUI) applications in TypeScript, built on the `@jsvision/core` engine.
-> **Status**: Draft (RD-01/RD-02/RD-03 shipped, RD-04 drafted; RD-05…RD-09 in backlog — see the roadmap)
+> **Status**: Draft (RD-01/RD-02/RD-03/RD-04 shipped, RD-05 drafted; RD-06…RD-09 in backlog — see the roadmap)
 > **Created**: 2026-06-29
 > **Architecture**: TypeScript (ESM-only, NodeNext, `strict`), zero runtime dependencies; the **disciplined hybrid** model — a retained widget tree with fine-grained signal reactivity (no virtual DOM). Lives in `packages/ui/`.
 > **CodeOps Skills Version**: 2.0.0
@@ -55,7 +55,8 @@ map and the programming-model decision.
 | **RD-02** | [Layout engine](RD-02-layout-engine.md) | Cell-native flex `row`/`col` engine: `fixed`/`fr`/`auto` sizing, `justify`/`align`, `gap`/`padding`; a pure `layout(boxTree, viewport) → rects` pass on the apportionment spike (ADR-008) | — (ADR-008) |
 | **RD-03** | [View/Group spine](RD-03-view-group-spine.md) | Retained `View`/`Group` tree, stateless clipped `DrawContext`, theme-role resolution; closes the reactive seam (per-view scope + `bind` + coalescing scheduler) and owns the layout reflow pass. Logic-deferred `onEvent`/focus → RD-04 | RD-01, RD-02 |
 | **RD-04** | [Event loop + focus + modality + commands](RD-04-event-loop.md) | The host-agnostic dispatch mechanism: `EventLoop` with pure `dispatch(event)`, faithful 3-phase dispatch, the per-group `current` focus chain (Tab/click), top-most-first mouse hit-testing, a typed command layer (registry + key→command keymap), and async modality (`execView`/`endModal`). Drives RD-03's `RenderRoot` one frame per input tick. Concrete `Application`/`run()`/shell → RD-05 | RD-03 (RD-01, RD-02) |
-| RD-05…RD-09 | *(backlog — see roadmap)* | App shell, controls, high-value controls, editor, files package | per phase |
+| **RD-05** | [App shell](RD-05-app-shell.md) | The integration keystone: `Application`/`run()` (real `createHost` ↔ `dispatch` wiring + lifecycle, quit→exit code, guaranteed restore), the `Desktop` window manager (z-order raise · drag · free-resize · zoom · cascade/tile · Alt-N), `Window`/`Frame` (chrome + active/inactive theming), full nested `MenuBar`/`MenuPopup`, and a static `StatusLine`. Composes RD-04's `EventLoop`. `ScrollBar`/`Scroller` + leaf controls → RD-06 | RD-04 (RD-01, RD-02, RD-03) |
+| RD-06…RD-09 | *(backlog — see roadmap)* | Essential controls (+ ScrollBar/Scroller), high-value controls, editor, files package | per phase |
 
 ## Dependency Graph
 
@@ -75,10 +76,12 @@ RD-02 Layout engine ──┤   (UI-independent; pure box-tree → integer rects
                       │              dispatch, per-group current focus chain, mouse
                       │              hit-test, typed commands, execView modality; drives
                       ▼              RD-03's RenderRoot. Implements onEvent; Application → RD-05)
-            RD-05 App shell — Application/run() + Desktop/Window/MenuBar/StatusLine
-                      │              (composes RD-04's EventLoop; wires createHost → dispatch)
-                      ▼
-            … widgets (RD-06+) …
+            RD-05 App shell — Application/run() + Desktop/Window/Frame/MenuBar/StatusLine
+                      │              (composes RD-04's EventLoop; wires createHost → dispatch;
+                      │               window manager: raise/drag/resize/zoom/cascade/tile; full
+                      │               nested menus; static status line; quit→exit; restore-on-exit.
+                      ▼               ScrollBar/Scroller + leaf controls → RD-06)
+            … widgets (RD-06+) — controls, ScrollBar/Scroller, high-value, editor, files …
 ```
 
 RD-01 and RD-02 are the two independent, UI-independent pillars at the root (either can

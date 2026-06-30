@@ -6,6 +6,7 @@
 > **Project**: jsvision UI (`@jsvision/ui`)
 > **Depends On**: — (architecture settled in [ADR-008](../docs/decisions/ADR-008-layout-engine.md); builds on the landed `apportion`/`solveTrack` spike)
 > **CodeOps Skills Version**: 2.0.0
+> **Downstream extension**: RD-05 (app shell) adds an additive `LayoutProps.position:'absolute'` + `rect` placement mode (a child removed from flex flow, placed at an explicit parent-content-relative rect, its children flowing within it) — required by the window manager + menu overlay. Designed in `plans/app-shell/03-00-foundation-extensions.md` (Phase 0 / PA-15); the flex flow path is unchanged.
 
 ---
 

@@ -3,8 +3,8 @@
 > **Feature-Set**: jsvision UI
 > **Status**: In Progress
 > **Created**: 2026-06-29
-> **Last Updated**: 2026-06-30 (RD-04 executed — Done)
-> **Progress**: 4 / 9 done (RD-01 ✅, RD-02 ✅, RD-03 ✅, RD-04 ✅)
+> **Last Updated**: 2026-06-30 (RD-05 app-shell — exec_plan started, Executing)
+> **Progress**: 4 / 9 done (RD-01 ✅, RD-02 ✅, RD-03 ✅, RD-04 ✅); RD-05 🔄 executing
 > **CodeOps Skills Version**: 2.0.0
 
 The `@jsvision/ui` layer — a reimagined Turbo Vision widget framework on
@@ -29,8 +29,8 @@ foundation RDs of the same number.
 | RD-02 | Layout engine — cell-native flex `row`/`col` | [RD-02](../requirements/RD-02-layout-engine.md) | [layout-engine](layout-engine/00-index.md) | Done | ✅ | 2026-06-29 | Phase 0 pillar (XL). ADR-008 Accepted; built on the golden-tested `apportion`/`solveTrack` spike. **Complete**: all 4 phases / 18 spec oracles (ST-01…ST-18 ↔ AC-1…AC-18) + impl tests green. `layout(root, viewport) → parent-relative integer rects`: `row`/`col` via one axis abstraction, `fixed`/`fr`/`auto` sizing (`auto` pre-resolved via `naturalSize`), `justify`/`align`/`gap`/`padding`, overflow (extend past edge, `fr`→0), degenerate→zero rects, recursion in each box's local frame. Pure/no-mutation; `check:deps` clean; files ≤ 217 lines. Symbols re-exported from `@jsvision/ui`. |
 | RD-03 | View/Group spine + `DrawContext` + theming | [RD-03](../requirements/RD-03-view-group-spine.md) | [view-group-spine](view-group-spine/00-index.md) | Done | ✅ | 2026-06-29 | Phase 0 keystone (XL). Retained `View`/`Group` tree, stateless clipped `DrawContext`, theme-role resolution. Closes the reactive seam (per-view owner scope + `bind` + injectable coalescing scheduler, AR-09/AR-02) and owns the RD-02 reflow pass. Ships the **complete** `View` shape (onEvent stub + visible/disabled/focused); dispatch/focus **logic** deferred → RD-04. 20 AC; AR-30…AR-46. **Planned** ([plan](view-group-spine/00-index.md)): 7 phases / 21 sessions / ~29–41 h; PA-1…PA-8 + 2 additive primitives (RD-01 `runWithOwner`, core `ScreenBuffer.clone()`). **Plan preflighted** ([report](view-group-spine/00-preflight-report.md)): 1 MAJOR + 2 MINOR resolved, 1 OBSERVATION recorded. **Complete** ✅ — executed all 7 phases spec-first (RED→GREEN→impl) across 8 commits. Lands `packages/ui/src/view/` (geometry, types, theme-style, draw-context, view, group, reflow, render-root) + 2 additive primitives (`runWithOwner` on reactive, `ScreenBuffer.clone()` on core) + `demo:view`. 22 spec oracles (ST-01…ST-20 + ST-21/22) + impl tests green (ui 142 unit, +3 e2e); `yarn verify`/`check:deps`/`lint` clean; files ≤ 231 lines. Runtime decisions RT-1…RT-5 recorded. |
 | RD-04 | Event loop + focus + modality + commands | [RD-04](../requirements/RD-04-event-loop.md) | [event-loop](event-loop/00-index.md) | Done | ✅ | 2026-06-30 | Phase 0. Host-agnostic dispatch **mechanism** (`EventLoop`/`createEventLoop`): pure `dispatch(event)`, faithful 3-phase (pre/focus/post), per-group `current` focus chain (Tab/click), top-most-first mouse hit-test, typed command layer (registry + key→command keymap), async `execView`/`endModal` modality; drives RD-03's `RenderRoot` one frame per tick. Concrete `Application`/`run()`/shell → RD-05. 20 AC; AR-47…AR-59 (8 user choices + 5 dominant). **RD preflighted** ([report](../requirements/00-preflight-report-RD-04.md)): 3 MAJOR + 4 MINOR + 1 OBSERVATION resolved (all Option A); recorded as AR-60…AR-66. **Planned** ([plan](event-loop/00-index.md)): 5 phases / 15 sessions / ~23–33 h; PA-1…PA-9 (4 user choices) + no cross-package primitive. 20 spec oracles (ST-01…ST-20 ↔ AC-1…AC-20). New `packages/ui/src/event/` (types/dispatch/commands/focus/hit-test/modal/event-loop) + additive `view.ts`/`group.ts` + `demo:events`. **Plan preflighted** ([report](event-loop/00-preflight-report.md)): 2 MAJOR + 3 MINOR + 2 OBSERVATION resolved — single `runTick` shared by every public mutator (PF-001/PA-11), Phase-2 focus-bubble clamped to the modal scope root (PF-002/PA-12), built-in `tab`/`shift+tab`→focus traversal (PF-003/PA-10), + ST-02-wiring/flush-counter/envelope-copy notes; 33 tasks. All `file:line` code claims verified against live source. **Complete** ✅ — executed all 5 phases spec-first (RED→GREEN→impl). Lands `packages/ui/src/event/` (types · dispatch · commands · focus · hit-test · modal · event-loop · index) + additive `view.ts`/`group.ts`/`types.ts` (`focusable`/`preProcess`/`postProcess`, `onEvent(DispatchEvent)`, `Group.current`, contract types) + `demo:events`. 20 spec oracles (ST-01…ST-20) + impl tests green; full gate clean — `yarn verify` (8/8), `test:e2e` (event-demo + core), `check:deps`, `lint`; every `event/` file ≤ 227 lines. The single `runTick` (PA-11), Phase-2 bubble clamp (PA-12), and built-in Tab/Shift-Tab (PA-10) all realized; one runtime fix recorded (a pathological re-entrant impl-test handler caused an infinite cascade — corrected to emit only on key events; the faithful drain-loop has no runaway guard, per design). |
-| RD-05 | App shell — Window/Frame/ScrollBar/Desktop/MenuBar/StatusLine | — | — | Backlog | ⬜ | 2026-06-29 | Phase 0 demo target: a blank windowed desktop + menu/status. |
-| RD-06 | Essential controls + validators | — | — | Backlog | ⬜ | 2026-06-29 | Phase 1. Text/Label/Button/Input/Check/Radio/ListView/Dialog. Demos: `mmenu`, `palette`, `tvforms`. |
+| RD-05 | App shell — Application/Desktop/Window/Frame/MenuBar/StatusLine | [RD-05](requirements/RD-05-app-shell.md) | [app-shell](plans/app-shell/00-index.md) | Executing | 🔄 | 2026-06-30 | Phase 0 integration keystone (XL). The first RD to touch a live TTY: `Application`/`run()` wires `createHost` ↔ RD-04's `dispatch` (quit→exit code, guaranteed restore-on-every-path, suspend/resume); a **full interactive** `Desktop` window manager (z-order **raise**-on-click — the piece RD-04 deferred — + drag-move + free drag-resize + zoom + cascade/tile + Alt-N + close); `Window`/`Frame` chrome with **active/inactive** theming (the one additive `@jsvision/core` `Theme` change); **full nested** `MenuBar`/`MenuPopup` (F10/Alt-hotkey/click activation, ↑↓/Enter/←→/Esc nav, tilde accelerators, enable/disable); a **static** `StatusLine` (+ enable/disable greying). **Drafted** ([RD](requirements/RD-05-app-shell.md)): 8 user choices (AR-67…AR-74) + 7 dominant (AR-75…AR-81); 22 AC; demos = headless `demo:shell` + a real-TTY interactive app. **Scope refined:** `ScrollBar`/`Scroller` deferred to RD-06 (pair with `ListView` virtual scroll — AR-69); rich `Dialog` reuses RD-04 `execView`, also RD-06 (AR-79). **RD preflighted** ([report](requirements/00-preflight-report-RD-05.md)): codebase-grounded audit (14 files, ~20 refs verified; independent challenger on the 3 MAJORs) — 3 MAJOR + 3 MINOR resolved (all Option A), recorded as AR-82…AR-87. Two **additive intra-package `EventLoop` seams** added (pointer `setCapture`/`releaseCapture` for drag/resize tracking — PF-001; an `onFrame` hook so `run()` delivers async frames to `host.render` — PF-003); suspend/resume reworded (core's host owns mode-reassert + repaint, `onResume` notify-only — PF-002); `resize`/`move` dropped from `Commands` (PF-004); exit-code source + cascade/tile edge cases pinned (PF-005/PF-006). **Planned** ([plan](plans/app-shell/00-index.md)): 6 phases (foundation seams+theme role → Application/`run()` → Desktop+Window/Frame → Menus → StatusLine+demos+gate) / 18 sessions / ~34–48 h (incl. a spec-first **Phase 0** for RD-02 absolute placement + RD-03 `DrawContext.role`); PA-1…PA-22 (4 user choices: `windowInactive` role, menu **overlay layer**, optional `viewport?` default, compact WM preset; 10 dominant; + PA-15…PA-22 from the two plan-preflight passes). 22 spec oracles (ST-01…ST-22 ↔ AC-1…AC-22) + FX-01…FX-05 (Phase 0). New `packages/ui/src/{app,desktop,window,menu,status}/` + additive core `windowInactive` role + additive `event/` capture+`onFrame` seams + RD-02 `position:'absolute'` + RD-03 `DrawContext.role` + `examples/shell-demo/`. **Plan preflighted ×2** ([report](plans/app-shell/00-preflight-report.md)): iter-1 PF-01…PF-09 (1 CRITICAL — free-floating/overlapping windows aren't expressible on the flex reflow → RD-02 absolute placement as Phase 0; PA-15…PA-19) → re-baselined to 6 phases / 18 sessions / 48 tasks; iter-2 PF-10…PF-14 (1 CRITICAL — an empty full-viewport overlay would swallow all mouse input; + ST-04/AR-66 restore-on-throw contradiction; + a Phase-2-needs-Phase-3-`Desktop` ordering gap) resolved (all Option A) → PA-20…PA-22. Independent challenger confirmed the critical/major findings against live source. |
+| RD-06 | Essential controls + validators | — | — | Backlog | ⬜ | 2026-06-30 | Phase 1. Text/Label/Button/Input/Check/Radio/ListView/Dialog **+ `ScrollBar`/`Scroller`** (deferred here from RD-05 per AR-69 — they pair with `ListView`'s virtual scroll) **+ the rich `Dialog`** (RD-05 reuses RD-04 `execView`; the rich Dialog widget is here per AR-79). Demos: `mmenu`, `palette`, `tvforms`. |
 | RD-07 | High-value controls | — | — | Backlog | ⬜ | 2026-06-29 | Phase 2. History/Tree/ComboBox/Tabs/Table/Progress/Surface. Demo: **clone `tvdemo`** (north-star). |
 | RD-08 | Editor family | — | — | Backlog | ⬜ | 2026-06-29 | Phase 3 (XL gap-buffer). Editor/Memo/EditWindow/Indicator/Terminal. Demo: `tvedit`. |
 | RD-09 | Files package `@jsvision/files` | — | — | Backlog | ⬜ | 2026-06-29 | Phase R. Relocated fs-bound dialogs: FileDialog/FileList/DirList/ChDir. Demo: `tvdir`. |
@@ -227,5 +227,60 @@ foundation RDs of the same number.
   spec-oracle adaptation applied. One runtime note: a pathological re-entrant impl-test handler
   caused an infinite command cascade — fixed in the test (emit only on key events); the faithful
   drain-loop has no runaway guard, per the plan design.
-- **Recommended next:** **RD-05** (Application / `run()` / app-shell) — wire `createHost` to the
-  loop, default Esc/cancel/ok→modal drivers, broadcast + timer queue, and the audible bell seam.
+- **2026-06-30** — **RD-05 (App shell) drafted** → stage `RD Drafted` ✏️. `add_requirement` authored
+  `requirements/RD-05-app-shell.md` — the Phase-0 **integration keystone** composing RD-04's `EventLoop`
+  into a runnable windowed application: `Application`/`run()` (the first live-TTY `createHost` ↔ `dispatch`
+  wiring, quit→exit code, guaranteed restore-on-every-path, suspend/resume), a full interactive `Desktop`
+  window manager (z-order raise-on-click — the piece RD-04 deferred — drag-move, free drag-resize, zoom,
+  cascade/tile, Alt-N, close), `Window`/`Frame` with active/inactive theming, full nested `MenuBar`/
+  `MenuPopup`, and a static `StatusLine`. 15 decisions locked: **AR-67…AR-74** (8 user choices — WM
+  ambition, menu depth, the Scroller/ScrollBar boundary, demos, `run()`/quit, status-line dynamics,
+  active/inactive theming location, window resize) + **AR-75…AR-81** (7 dominant — composition-over-
+  inheritance, `Commands` constants, tilde hotkeys, raise semantics, `execView` reuse, desktop background,
+  packaging). 22 AC. Scope **refined**: `ScrollBar`/`Scroller` and the rich `Dialog` moved to RD-06
+  (AR-69/AR-79); the **only** cross-package change is one additive active/inactive window role on
+  `@jsvision/core`'s `Theme` (AR-73). Demos = headless `demo:shell` + a real-TTY interactive app (AR-70).
+- **2026-06-30** — **RD-05 preflighted** → stage `RD Preflighted` 🔎. Codebase-grounded audit
+  ([report](requirements/00-preflight-report-RD-05.md)) of the draft against the live RD-03/RD-04/core
+  surfaces (14 files examined, ~20 references verified; an independent challenger re-verified the 3
+  MAJOR findings against the same `file:line` evidence). **3 MAJOR + 3 MINOR resolved (all Option A),
+  recorded as AR-82…AR-87.** The two MAJORs that matter most: RD-04 routes each mouse event only to the
+  top-most hit view (no capture, no bubble), so drag-move / single-cell resize need an **additive
+  pointer-capture seam** (`setCapture`/`releaseCapture` — AR-82/PF-001); and the loop exposes no
+  frame-flushed hook, so async `endModal`/command frames would never paint — fixed by an **additive
+  `onFrame` hook** the `run()` wiring pushes to `host.render` (AR-84/PF-003). Both are intra-package
+  additive seams (the loop is composed, not re-shaped). The third MAJOR corrected a stale claim: core's
+  host already re-asserts modes + full-repaints on SIGCONT before firing `onResume` (notify-only —
+  AR-83/PF-002). MINORs: `resize`/`move` dropped from `Commands` until a keyboard mode exists (AR-85),
+  `run()` exit code defined (`0` / `quit` arg — AR-86), cascade/tile edge cases pinned (AR-87). Most
+  RD-05 references verified accurate as-is (host options, core exports, the genuinely-missing
+  active/inactive Theme role, View/Group surfaces, full EventLoop API, Alt+hotkey decoding).
+- **2026-06-30** — **RD-05 (App shell) planned** → stage `Plan Created` 📋. `make_plan` authored
+  [`plans/app-shell/`](plans/app-shell/00-index.md) (8 docs): register (PA-1…PA-14 + inherited AR-67…AR-87,
+  ✅ GATE PASSED), index, requirements (Source: RD-05), current-state, five component specs
+  (Application/run · Desktop WM · Window/Frame · Menus · StatusLine/Commands/Theme/seams), testing
+  strategy (ST-01…ST-22), and a 6-phase / 16-session / ~30–42 h execution plan. **4 user choices**
+  (PA-1 `windowInactive` core role · PA-2 dedicated menu **overlay layer**, non-modal · PA-3 optional
+  `viewport?` default stdout→80×24 · PA-4 compact WM preset 10×3/title-row-clamp/+1+2) + **10 dominant**
+  (PA-5 capture semantics · PA-6 `onFrame` timing · PA-7 Desktop↔loop seam · PA-8 Frame-as-helper · PA-9
+  MenuBar-owned nav controller · PA-10 gesture state on Desktop · PA-11 file layout · PA-12 command wiring ·
+  PA-13 demos · PA-14 fake-runtime lifecycle tests). One cross-package edit (`windowInactive`); two additive
+  intra-package loop seams (capture + `onFrame`); the loop is composed, not re-shaped. Cascaded into the
+  **jsvision-ui** portfolio row.
+- **2026-06-30** — **RD-05 (App shell) plan preflighted ×2** → stage `Plan Preflighted` 🔬.
+  Codebase-grounded audit of the plan against live RD-02/RD-03/RD-04/core source
+  ([report](plans/app-shell/00-preflight-report.md)). **Iteration 1** — 1 CRITICAL + 4 MAJOR + 2 MINOR
+  + 2 OBS (PF-01…PF-09): the WM's direct-`bounds` mutation can't express free-floating/overlapping
+  windows on the pure-flex reflow (PF-01), and a flex overlay can't host menu popups (PF-02) — both
+  resolved by an additive RD-02 `position:'absolute'` placement mode landed as a spec-first **Phase 0**
+  (+ RD-03 `DrawContext.role` for the desktop pattern/frame colors, PF-03); `onFrame` made a settable
+  `EventLoop` member (PF-04), `Window.focusable` (PF-05), a menu click-catcher (PF-06), + 3 corrections
+  (PF-07/08/09). Recorded as PA-15…PA-19; re-baselined to **6 phases / 18 sessions / 48 tasks**.
+  **Iteration 2** — 1 CRITICAL + 2 MAJOR + 2 MINOR (PF-10…PF-14): the always-present full-viewport
+  overlay would itself win the top-z hit-test and **swallow all mouse input when empty** (PF-10 → gate
+  `overlay.state.visible` on menu state); ST-04/AC-4's "restore on a *handler* throw" contradicts the
+  shipped AR-66 handler-isolation (PF-11 → re-spec ST-04 to the escaping-throw path); and Phase 2's
+  `createApplication`/ST-01 needs `Desktop`/chrome classes only built in Phases 3–5 (PF-12 → seed minimal
+  Phase-1 skeletons). All Option A, recorded as PA-20…PA-22; two text fixes (PF-13/14). An independent
+  challenger confirmed every critical/major finding against `file:line` evidence.
+- **Recommended next:** **`exec_plan app-shell`** — the plan is preflight-clean (spec-first, Phase 0 first).

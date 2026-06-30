@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 4 ✅ Done (RD-01…RD-04) · 5 ⬜ Backlog | 4 / 9 done | 🔄 | 2026-06-30 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 4 ✅ Done (RD-01…RD-04) · RD-05 🔄 Executing · 4 ⬜ Backlog | 4 / 9 done | 🔄 | 2026-06-30 |
 
 ## Archived
 
@@ -23,6 +23,16 @@
 
 ## Notes
 
+- 2026-06-30: **RD-05 app-shell plan preflighted ×2** → 🔬 Plan Preflighted ([report](features/jsvision-ui/plans/app-shell/00-preflight-report.md)).
+  Iter-1 (PF-01…PF-09, 1 CRITICAL) added a spec-first **Phase 0** (RD-02 `position:'absolute'` + RD-03 `DrawContext.role`) and
+  re-baselined to **6 phases / 18 sessions / 48 tasks** (PA-15…PA-19). Iter-2 (PF-10…PF-14, 1 CRITICAL — an empty full-viewport
+  overlay would swallow all mouse input; + ST-04/AR-66 restore-on-throw contradiction; + a Phase-2↔Phase-3 ordering gap) all
+  resolved Option A (PA-20…PA-22); independent challenger confirmed the critical/major findings against live source. Ready for
+  `exec_plan`. Cascaded from the **jsvision-ui** row.
+- 2026-06-30: **RD-05 app-shell planned** → 📋 Plan Created ([`plans/app-shell/`](features/jsvision-ui/plans/app-shell/00-index.md)).
+  6 phases / 16 sessions / ~30–42 h; PA-1…PA-14 (4 user choices + 10 dominant, ✅ GATE PASSED); 22 spec oracles
+  (ST-01…ST-22). One cross-package edit (`windowInactive` core role); two additive intra-package loop seams
+  (pointer capture + `onFrame`). Cascaded from the **jsvision-ui** row.
 - 2026-06-30: **RD-04 event-loop complete** → ✅ Done (all 5 phases executed spec-first; 20 spec
   oracles ST-01…ST-20 + impl tests green; full gate clean — `yarn verify` 8/8, `test:e2e` event-demo
   + core, `check:deps`, `lint`; every `event/` file ≤ 227 lines). Lands `packages/ui/src/event/` +
