@@ -4,7 +4,7 @@
 > was intentionally deferred (cut from a v1 RD scope but meant to be revisited), so nothing is lost
 > between RDs. Created 2026-06-30 at the user's request (amends AR-99 — the per-RD "Won't Have / Deferred"
 > tables remain the **authoritative** source; this doc aggregates them and adds stable `DEF-NN` ids).
-> **Last Updated**: 2026-06-30
+> **Last Updated**: 2026-07-01 (RD-06 planning added DEF-16…DEF-18)
 > **CodeOps Skills Version**: 3.1.0
 
 **How to use:** when a future RD is drafted, scan this register for items whose **Intended owner** is
@@ -32,6 +32,9 @@ that RD (or "unassigned"), pull them into its scope, and flip the row's **Status
 | **DEF-13** | **Timer-queue wrapper** (managed timers) | RD-04 → RD-05 Won't-Have | unassigned (Node native timers serve for now) | Deferred (unbuilt) |
 | **DEF-14** | **Async / resource primitives** (Suspense-style `createResource`, transitions) | RD-01 Won't-Have | unassigned (on real need) | Deferred |
 | **DEF-15** | **Store / nested-proxy reactivity** (deep object reactivity) | RD-01 Won't-Have | unassigned (signals only for now) | Deferred |
+| **DEF-16** | **Input modal focus-trap on invalid** (TV `valid()`-gate vetoes leaving an invalid blocking field) | RD-06 plan · PA-2 | **RD-11** (Dialog's modal `valid()` sweep) | Deferred (RD-06 exposes `valid()`+`invalid`, no trap) |
+| **DEF-17** | **Multi-column cluster layout** (TV `TCluster` flows `size.y` rows per column + `←`/`→` nav) | RD-06 plan · PA-6 | unassigned (on real need) | Deferred (RD-06 is single-column) |
+| **DEF-18** | **`Text` center/right alignment** (TV `TStaticText` leading-`0x03` center marker) | RD-06 plan · PA-14 | unassigned (optional) | Deferred (RD-06 is word-wrap left-aligned) |
 
 > `unassigned` = no gated RD owns it yet; pull it into the first RD that needs it (this register is the
 > safety net). The `RD-07`-targeted rows (DEF-01…DEF-03) are also mirrored in RD-06's Deferred table +

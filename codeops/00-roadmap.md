@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 6 ✅ Done (RD-01…RD-05, RD-10) · 1 ✏️ RD Drafted (RD-06) · 1 🟡 Stub (RD-11) · 3 ⬜ Backlog (RD-07…09) | 6 / 11 done | 🔄 | 2026-06-30 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 6 ✅ Done (RD-01…RD-05, RD-10) · 1 📋 Plan Created (RD-06) · 1 🟡 Stub (RD-11) · 3 ⬜ Backlog (RD-07…09) | 6 / 11 done | 🔄 | 2026-07-01 |
 
 ## Archived
 
@@ -23,6 +23,13 @@
 
 ## Notes
 
+- 2026-07-01: **jsvision-ui RD-06 (Essential controls + validators) planned** → 📋 Plan Created
+  ([`plans/essential-controls/`](features/jsvision-ui/plans/essential-controls/00-index.md)). 12 docs,
+  gate passed (PA-1…PA-14; 3 user choices — the `ev.emit` command primitive, expose-`valid()`-no-trap,
+  `boolean[]`/`number` cluster values). 7 phases / 24 tasks / ~21–35 h, spec-first; grounded in 3 recon
+  passes (UI seams · TV `t*.cpp` · `tvalidat.cpp`+`app.h` palette, hand-verified). One additive core edit
+  (control theme roles, buttons reuse existing) + one additive intra-ui primitive (`ev.emit`/`focusView`).
+  DEF-16…18 added to `DEFERRED.md`. Next: `exec_plan essential-controls`. Cascaded from **jsvision-ui**.
 - 2026-06-30: **jsvision-ui RD-06 (Essential controls + validators) drafted** → ✏️ RD Drafted; **RD-11
   (Containers, scrolling & lists) stubbed** as its sibling. `add_requirement` **split** Phase-1 controls
   (AR-93): RD-06 = leaf controls + validators (Text/Label/Button/Input/CheckGroup/RadioGroup + filter/
