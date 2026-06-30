@@ -90,7 +90,7 @@ Per-group `current` chain, focusable predicate (+ ancestor subtree semantics), T
 the real focus manager. Covers AC-3, AC-4, AC-5, AC-6. (Refs: 03-03.)
 
 ### Session 3A — Spec tests (RED)
-- [ ] T3.1 — Add `event.focus.spec.test.ts` (**ST-03** current chain + getFocused + single focused, **ST-04** Tab/Shift-Tab wrap + skip **+ built-in `tab`/`shift+tab` KeyEvent moves focus & is not also plain-dispatched (PA-10)** — note ST-04's `shift+tab` is a **mechanism-level** synthetic oracle pending core backtab decoding (PF-010/RT-1), plain Tab is end-to-end, **ST-05** predicate + subtree + Group-focusable, **ST-06** focus-flip invalidates exactly old+new, one frame). (AC-3,4,5,6; PA-10, PF-010)
+- [ ] T3.1 — Add `event.focus.spec.test.ts` (**ST-03** current chain + getFocused + single focused, **ST-04** Tab/Shift-Tab wrap + skip **+ built-in `tab`/`shift+tab` KeyEvent moves focus & is not also plain-dispatched (PA-10)** — note ST-04's `shift+tab` uses a synthetic event at the RD-04 layer; it's producible end-to-end since core decodes backtab (PF-010/RT-1, resolved), **ST-05** predicate + subtree + Group-focusable, **ST-06** focus-flip invalidates exactly old+new, one frame). (AC-3,4,5,6; PA-10, PF-010)
 - [ ] T3.2 — Run tests → focus specs **RED**.
 
 ### Session 3B — Implementation (GREEN)

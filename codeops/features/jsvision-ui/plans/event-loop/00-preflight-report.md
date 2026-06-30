@@ -283,8 +283,9 @@ challenger exhausted every decode path. Hardening: confirmed no Alt/Ctrl/modifie
 **User Decision:** Resolved — **Option A**. Built-in `shift+tab` arm kept; cross-layer dependency
 recorded in PA-10 + 03-02 (caveat block) + **RT-1** (core RD-06 follow-up to decode `CSI Z` →
 `{key:'tab', shift:true}`); ST-04's shift+tab labeled mechanism-level (07 + 99 T3.1) until the
-follow-up lands. **Action item carried out of this plan:** open a core RD-06 enhancement to decode
-backtab.
+follow-up lands. **Action item — ✅ DONE:** core RD-06 enhancement landed (commit `d3d409d`) —
+`classifyCsi` decodes `CSI Z` → `{key:'tab', shift:true}` + `input-keyboard.impl` backtab test;
+RT-1 closed. Shift-Tab is now end-to-end once RD-04 ships.
 
 ### 🔵 PF-011 (OBSERVATION) — `FocusEvent` routing is unspecified
 
@@ -314,10 +315,10 @@ sign-off). All four findings resolved:
 |---|---|---|
 | PF-008 | 🟠 MAJOR | **Fixed** — spec-oracle call arg at `view.tree.spec.test.ts:94` type-adapted (assertion preserved); added to 99 T1.3; risk/compat/code-analysis text corrected (02, 01) |
 | PF-009 | 🟠 MAJOR | **Fixed** — `execView` added to the `runTick` set (register PA-11, 01-req, 03-01 map+error table, 03-04 pseudocode+note, 99 T5.3/T5.6, 07 impl test) |
-| PF-010 | 🟠 MAJOR | **Fixed (Option A)** — built-in arm kept; cross-layer dep recorded (PA-10, 03-02 caveat, **RT-1**); ST-04 shift+tab labeled mechanism-level (07, 99 T3.1); **carry-out: open a core RD-06 follow-up to decode `CSI Z`** |
+| PF-010 | 🟠 MAJOR | **Fixed (Option A)** — built-in arm kept; cross-layer dep recorded (PA-10, 03-02, **RT-1**). **Core RD-06 follow-up ✅ DONE** (commit `d3d409d`: `classifyCsi` decodes `CSI Z`→`{key:'tab',shift:true}` + test) — RT-1 closed, Shift-Tab end-to-end |
 | PF-011 | 🔵 OBS | **Noted/Fixed** — paste/focus routing intent documented in 03-02 |
 
 PF-001…PF-007 re-verified present and holding. **Final: ✅ PREFLIGHT PASSED** — 0 unresolved
-🔴/🟠. The plan is codebase-grounded and internally consistent; ready for `exec_plan`. One action
-item leaves this plan: a **core RD-06 enhancement** to decode backtab (`ESC [ Z`) so Shift-Tab works
-end-to-end (RT-1). Roadmap RD-04 plan row stays at 🔬 **Plan Preflighted**.
+🔴/🟠. The plan is codebase-grounded and internally consistent; ready for `exec_plan`. The one
+cross-layer carry-out (RT-1: core decoding backtab `ESC [ Z` for end-to-end Shift-Tab) is **already
+landed** (commit `d3d409d`). Roadmap RD-04 plan row stays at 🔬 **Plan Preflighted**.

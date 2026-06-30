@@ -47,13 +47,12 @@ deliver(view, ev): try { view.onEvent(ev) } catch (e) { logger.error('event', �
   keymap** wins (the keymap step above runs first, PA-1), so an app can repurpose Tab. (Per-view Tab
   interception — e.g. a future multiline control wanting a literal Tab — is an RD-06 concern, out of
   scope here where there are no controls.)
-  > **Cross-layer caveat (PF-010/RT-1).** Plain **Tab** works end-to-end (`0x09` → `{key:'tab'}`).
-  > **Shift-Tab does not yet**: the core RD-06 decoder **drops** real backtab (`ESC [ Z`; CSI final
-  > `Z`/`0x5A` is absent from `keys.ts` `FINAL_KEYS`), so `{key:'tab', shift:true}` is **not
-  > producible from live terminal bytes**. The `shift+tab`→`focus.prev()` arm is correct as a pure
-  > mechanism (a synthetic `dispatch()` exercises it — that's ST-04's shift+tab case, a
-  > *mechanism-level* oracle), but it stays inert end-to-end until a core RD-06 follow-up decodes
-  > `CSI Z` → `{key:'tab', shift:true}` (tracked as RT-1 in the ambiguity register).
+  > **Cross-layer note (PF-010/RT-1, resolved).** Plain **Tab** (`0x09` → `{key:'tab'}`) and
+  > **Shift-Tab** both work end-to-end: core now decodes real backtab `ESC [ Z` → `{key:'tab',
+  > shift:true}` (`keys.ts` `classifyCsi`, commit `d3d409d`) — earlier it dropped CSI final `Z`.
+  > ST-04's shift+tab case still feeds a *synthetic* `{key:'tab', shift:true}` at the RD-04 layer
+  > (as every RD-04 unit test uses synthetic events), but the event is genuinely producible from
+  > live terminal bytes.
 - **Paste / focus events (PF-011):** a `PasteEvent` is intentionally routed through the 3-phase
   machine (it reaches the focused view + pre/post sweeps, like a key). A `FocusEvent` (terminal
   focus in/out — distinct from widget focus) is **not** widget input; RD-04 takes it through the
