@@ -1,8 +1,8 @@
 /**
  * Implementation tests — RD-05 Desktop window-manager internals (Phase 3).
  *
- * Edge cases beyond ST-06…ST-13: drag clamp boundaries; tile grid math + cell-clamp; cascade
- * stagger; un-zoom before arrange; capture released when a modal opens.
+ * Edge cases beyond ST-06…ST-13: drag clamp boundaries; TV tile grid math (no-remainder split +
+ * leftOver extra-row); TV cascade offset; un-zoom before arrange; capture released when a modal opens.
  *
  * Trace: RD-05 03-02 (Error Handling table) · AR-67/AR-87 · PA-4/PA-5.
  */
@@ -81,31 +81,35 @@ test('drag-move clamps the title row to the top edge', () => {
   expect(w.layout.rect.y).toBe(0);
 });
 
-test('tile grid math: 3 windows → 2×2 grid; cells clamp to the minimum on a tiny desktop', () => {
+test('tile grid math: n=3 stacks into 1 col × 3 rows, dividing the desktop with no remainder', () => {
   const app = shellApp(40, 20);
   const a = addWindow(app, 'A', { x: 0, y: 0, width: 12, height: 5 });
   const b = addWindow(app, 'B', { x: 1, y: 1, width: 12, height: 5 });
   const c = addWindow(app, 'C', { x: 2, y: 2, width: 12, height: 5 });
   app.loop.renderRoot.flush();
 
-  app.desktop.tile(); // n=3 → cols=2, rows=2; cell = floor(40/2)×floor(20/2) = 20×10
-  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 20, height: 10 });
-  expect(b.layout.rect).toEqual({ x: 20, y: 0, width: 20, height: 10 });
-  expect(c.layout.rect).toEqual({ x: 0, y: 10, width: 20, height: 10 });
-
-  // A tiny desktop floors the cells at 10×3 (cells may overflow the edge — RD-02 AR-28). 3 windows
-  // on an 8×4 desktop → cols=2, rows=2 ⇒ cell floor(8/2)=4→10 wide, floor(4/2)=2→3 tall.
-  const tiny = shellApp(8, 4);
-  const t1 = addWindow(tiny, 'T1', { x: 0, y: 0, width: 5, height: 3 });
-  addWindow(tiny, 'T2', { x: 0, y: 0, width: 5, height: 3 });
-  addWindow(tiny, 'T3', { x: 0, y: 0, width: 5, height: 3 });
-  tiny.loop.renderRoot.flush();
-  tiny.desktop.tile();
-  expect(t1.layout.rect.width).toBe(10); // floored at MIN_WIDTH
-  expect(t1.layout.rect.height).toBe(3); // floored at MIN_HEIGHT
+  // TV mostEqualDivisors(3) favorY ⇒ 1 col × 3 rows; dividerLoc splits 20 → 0,6,13,20 (no leftover strip).
+  app.desktop.tile();
+  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 40, height: 6 });
+  expect(b.layout.rect).toEqual({ x: 0, y: 6, width: 40, height: 7 });
+  expect(c.layout.rect).toEqual({ x: 0, y: 13, width: 40, height: 7 });
 });
 
-test('cascade staggers +1 row / +2 col per window', () => {
+test('tile leftOver: n=5 → 2 cols, the trailing column taking the extra row (rows+1)', () => {
+  const app = shellApp(40, 20);
+  // n=5: mostEqualDivisors ⇒ cols=2, rows=2, leftOver=1; col 0 holds 2 cells, col 1 holds 3 cells.
+  const ws = [0, 1, 2, 3, 4].map((i) => addWindow(app, `W${i}`, { x: i, y: i, width: 12, height: 5 }));
+  app.loop.renderRoot.flush();
+
+  app.desktop.tile();
+  expect(ws[0].layout.rect).toEqual({ x: 0, y: 0, width: 20, height: 10 }); // col 0, top
+  expect(ws[1].layout.rect).toEqual({ x: 0, y: 10, width: 20, height: 10 }); // col 0, bottom
+  expect(ws[2].layout.rect).toEqual({ x: 20, y: 0, width: 20, height: 6 }); // col 1, 3 rows
+  expect(ws[3].layout.rect).toEqual({ x: 20, y: 6, width: 20, height: 7 });
+  expect(ws[4].layout.rect).toEqual({ x: 20, y: 13, width: 20, height: 7 });
+});
+
+test('cascade offsets window i to (i,i) sized (W−i,H−i), bottom-right pinned to the corner', () => {
   const app = shellApp(40, 20);
   const a = addWindow(app, 'A', { x: 9, y: 9, width: 12, height: 5 });
   const b = addWindow(app, 'B', { x: 9, y: 9, width: 12, height: 5 });
@@ -113,9 +117,9 @@ test('cascade staggers +1 row / +2 col per window', () => {
   app.loop.renderRoot.flush();
 
   app.desktop.cascade();
-  expect({ x: a.layout.rect.x, y: a.layout.rect.y }).toEqual({ x: 0, y: 0 });
-  expect({ x: b.layout.rect.x, y: b.layout.rect.y }).toEqual({ x: 2, y: 1 });
-  expect({ x: c.layout.rect.x, y: c.layout.rect.y }).toEqual({ x: 4, y: 2 });
+  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 40, height: 20 }); // back fills
+  expect(b.layout.rect).toEqual({ x: 1, y: 1, width: 39, height: 19 });
+  expect(c.layout.rect).toEqual({ x: 2, y: 2, width: 38, height: 18 }); // front, smallest
 });
 
 test('arrange un-zooms a window before positioning it', () => {

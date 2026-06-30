@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md) · **Implements**: jsvision-ui/RD-10 · **Plan**: `plans/tv-behavioral-fidelity/`
 > **Last Updated**: 2026-06-30
-> **Progress**: 5/14 tasks (36%) — Phase 1 ✅ complete
+> **Progress**: 9/14 tasks (64%) — Phase 1 ✅ · Phase 2 ✅ complete
 > **Runtime note**: PA-10 (status release target = item under the release point, TV-exact) corrects AR-88's "same item" paraphrase — recorded in `00-ambiguity-register.md`.
 > **CodeOps Skills Version**: 3.1.0
 
@@ -60,20 +60,21 @@ Commits reference **/gitcm** (commit) or **/gitcmp** (commit + push) — never r
 ## Phase 2 — TV-exact cascade + tile  (AR-89/AR-90 · spec 03-02)
 
 ### 2A — Spec tests (→ RED)
-- [ ] **2.1** Rewrite the desktop **ST-11** in `app-shell.desktop.spec.test.ts` to ST-05 (cascade
-  `(i,i)`/extend-to-corner, un-zoom, 0/1, too-small no-op) + ST-06 (tile partitions the desktop, **n=2
-  stacks**, un-zoom, 0/1, too-small no-op). Confirm RED. Cite AR-89/AR-90/PA-6.
+- [x] **2.1** Rewrote the desktop **ST-11** in `app-shell.desktop.spec.test.ts` to RD-10 ST-05 (cascade
+  `(i,i)`/`W−i×H−i`, un-zoom, 0/1, too-small no-op) + ST-06 (tile partitions the desktop via
+  `assertPartitions`, **n=2 stacks**, n=3 partition, un-zoom, 0/1, too-small no-op). **RED confirmed**
+  (2 failed). Cite AR-89/AR-90/PA-6. *(2026-06-30)*
 
 ### 2B — Implementation (→ GREEN)
-- [ ] **2.2** Port `iSqr`/`mostEqualDivisors`/`dividerLoc`/`calcTileRect` into `desktop/arrange.ts`
-  (private helpers, verbatim from `tdesktop.cpp`). (scope `desktop`)
-- [ ] **2.3** Replace `cascade()` (TV `doCascade`: `(i,i)`/`W−i × H−i`, tileError no-op) and `tile()`
-  (TV `calcTileRect` per window, tileError no-op); drop the AR-87 preset constants. Confirm GREEN. (scope `desktop`)
+- [x] **2.2** Ported `iSqr`/`mostEqualDivisors`/`dividerLoc`/`calcTileRect` into `desktop/arrange.ts`
+  (private helpers, verbatim from `tdesktop.cpp:139-211`). (scope `desktop`) *(2026-06-30)*
+- [x] **2.3** Replaced `cascade()` (TV `doCascade`: `(i,i)`/`W−i×H−i`, tileError no-op) and `tile()`
+  (TV `calcTileRect` per window, tileError no-op); dropped the AR-87 preset constants. GREEN (9/9). (scope `desktop`) *(2026-06-30)*
 
 ### 2C — Impl tests & hardening
-- [ ] **2.4** Impl tests: n=3/4 cell partition exactness + `leftOver` extra-row; cascade un-zoom; the
-  too-small no-op for both; the z-order→cell mapping (flip `pos` if the fixture shows TV front-first).
-  Green. /gitcm.
+- [x] **2.4** Impl tests: n=3 no-remainder split + n=5 `leftOver` extra-row exactness; cascade
+  `(i,i)`/corner-pin; un-zoom; too-small no-op (both). z-order→`pos` mapping (window `i` ⇒ `pos i`)
+  confirmed by the GREEN oracles. ui 297 green. *(2026-06-30)*
 
 ## Phase 3 — Left-grow resize gesture  (AR-91 · spec 03-03)
 
@@ -105,7 +106,7 @@ Commits reference **/gitcm** (commit) or **/gitcmp** (commit + push) — never r
 ## Master Progress Checklist
 
 - [x] Phase 1 — Status press/release (1.1–1.5) ✅ *(2026-06-30)*
-- [ ] Phase 2 — Cascade/tile geometry (2.1–2.4)
+- [x] Phase 2 — Cascade/tile geometry (2.1–2.4) ✅ *(2026-06-30)*
 - [ ] Phase 3 — Left-grow resize (3.1–3.4)
 - [ ] Phase 4 — Demos + final gate (4.1)
 

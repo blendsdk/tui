@@ -38,6 +38,29 @@ function addWindow(
   return w;
 }
 
+/**
+ * Assert a set of window rects exactly partitions the `W×H` desktop: every desktop cell is covered by
+ * exactly one window (no gaps, no overlap) — TV's `calcTileRect` divides the desktop with no remainder.
+ */
+function assertPartitions(windows: Window[], W: number, H: number): void {
+  const cover = new Map<string, number>();
+  for (const w of windows) {
+    const { x, y, width, height } = w.layout.rect;
+    for (let cy = y; cy < y + height; cy++) {
+      for (let cx = x; cx < x + width; cx++) {
+        const key = `${cx},${cy}`;
+        cover.set(key, (cover.get(key) ?? 0) + 1);
+      }
+    }
+  }
+  for (let cy = 0; cy < H; cy++) {
+    for (let cx = 0; cx < W; cx++) {
+      expect(cover.get(`${cx},${cy}`)).toBe(1); // covered exactly once
+    }
+  }
+  expect(cover.size).toBe(W * H); // nothing painted outside the desktop
+}
+
 // ST-06 / AC-6 — desktop fills with the role + pattern; windows paint back-to-front in child order.
 test('ST-06: desktop fills with its pattern; windows paint back-to-front', () => {
   const app = shellApp(30, 12);
@@ -121,8 +144,9 @@ test('ST-10: zoom maximizes then restores the exact prior geometry', () => {
   expect(w.layout.rect).toEqual(original);
 });
 
-// ST-11 / AC-11 — cascade staggers +1row/+2col from top-left; tile packs a near-square grid; N=0/1.
-test('ST-11: cascade staggers; tile packs a grid; un-zoom first; N=0/1 edge cases', () => {
+// RD-10 ST-05 / AC-5 — TV cascade (`tdesktop.cpp:67-78`, supersedes RD-05 AR-87): window i (back→front)
+// at (i,i) sized (W−i, H−i), bottom-right pinned to the desktop corner; un-zoom first; N=0/1; too-small no-op.
+test('RD-10 ST-05: TV cascade — window i at (i,i) size (W−i,H−i); un-zoom; N=0/1; too-small no-op', () => {
   const app = shellApp(40, 20);
   const a = addWindow(app, 'A', { x: 5, y: 5, width: 12, height: 6 });
   const b = addWindow(app, 'B', { x: 8, y: 8, width: 12, height: 6 });
@@ -130,21 +154,66 @@ test('ST-11: cascade staggers; tile packs a grid; un-zoom first; N=0/1 edge case
 
   a.zoom(); // a is zoomed; cascade must un-zoom first
   app.desktop.cascade();
-  expect(a.layout.rect.x).toBe(0); // window 0 at top-left
-  expect(a.layout.rect.y).toBe(0);
-  expect(b.layout.rect.x).toBe(2); // window 1 staggered +2 col / +1 row
-  expect(b.layout.rect.y).toBe(1);
+  // Back window (i=0) fills; front window (i=1) offset (1,1) with the bottom-right pinned to the corner.
+  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 40, height: 20 });
+  expect(b.layout.rect).toEqual({ x: 1, y: 1, width: 39, height: 19 });
 
-  app.desktop.tile(); // 2 windows ⇒ cols=2, rows=1; cell = floor(40/2) × floor(20/1)
-  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 20, height: 20 });
-  expect(b.layout.rect).toEqual({ x: 20, y: 0, width: 20, height: 20 });
-
-  // N=1 fills; N=0 is a no-op (no throw).
+  // N=1 fills (offset 0).
   app.desktop.removeWindow(b);
+  app.desktop.cascade();
+  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 40, height: 20 });
+
+  // N=0 is a no-op (no throw).
+  app.desktop.removeWindow(a);
+  expect(() => app.desktop.cascade()).not.toThrow();
+
+  // Too-small desktop: MIN_WIDTH(10) > W−(n−1) ⇒ leave all rects untouched (TV tileError no-op).
+  const tiny = shellApp(10, 10);
+  const t1 = addWindow(tiny, 'T1', { x: 0, y: 0, width: 10, height: 3 });
+  const t2 = addWindow(tiny, 'T2', { x: 0, y: 0, width: 10, height: 3 });
+  tiny.loop.renderRoot.flush();
+  const before1 = { ...t1.layout.rect };
+  const before2 = { ...t2.layout.rect };
+  tiny.desktop.cascade(); // 10 > 10−(2−1)=9 ⇒ no-op
+  expect(t1.layout.rect).toEqual(before1);
+  expect(t2.layout.rect).toEqual(before2);
+});
+
+// RD-10 ST-06 / AC-6 — TV tile (`tdesktop.cpp:162-214`): cells exactly partition the desktop; n=2 stacks
+// (1 col × 2 rows); un-zoom first; N=0/1; too-small no-op.
+test('RD-10 ST-06: TV tile — cells partition the desktop; n=2 stacks; N=0/1; too-small no-op', () => {
+  const app = shellApp(40, 20);
+  const a = addWindow(app, 'A', { x: 5, y: 5, width: 12, height: 6 });
+  const b = addWindow(app, 'B', { x: 8, y: 8, width: 12, height: 6 });
+  app.loop.renderRoot.flush();
+
+  a.zoom(); // un-zoom first
+  app.desktop.tile(); // n=2 ⇒ mostEqualDivisors = 1 col × 2 rows ⇒ stacked
+  expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 40, height: 10 });
+  expect(b.layout.rect).toEqual({ x: 0, y: 10, width: 40, height: 10 });
+
+  // n=3 ⇒ 1 col × 3 rows; the cells exactly partition the 40×20 desktop (no gap, no overlap).
+  const c = addWindow(app, 'C', { x: 1, y: 1, width: 12, height: 6 });
+  app.desktop.tile();
+  assertPartitions([a, b, c], 40, 20);
+
+  // N=1 fills.
+  app.desktop.removeWindow(b);
+  app.desktop.removeWindow(c);
   app.desktop.tile();
   expect(a.layout.rect).toEqual({ x: 0, y: 0, width: 40, height: 20 });
+
+  // N=0 is a no-op (no throw).
   app.desktop.removeWindow(a);
   expect(() => app.desktop.tile()).not.toThrow();
+
+  // Too-small desktop: ⌊W/cols⌋==0 ⇒ leave rects untouched (n=4 ⇒ cols=2 on a 1-wide desktop).
+  const tiny = shellApp(1, 8);
+  const ts = [0, 1, 2, 3].map((i) => addWindow(tiny, `T${i}`, { x: 0, y: 0, width: 10, height: 3 }));
+  tiny.loop.renderRoot.flush();
+  const before = ts.map((w) => ({ ...w.layout.rect }));
+  tiny.desktop.tile(); // ⌊1/2⌋ == 0 ⇒ no-op
+  ts.forEach((w, i) => expect(w.layout.rect).toEqual(before[i]));
 });
 
 // ST-12 / AC-12 — next/prev cycle focus raising the newly-active; Alt-N focuses+raises window N.
