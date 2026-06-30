@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
 > **Last Updated**: 2026-07-01
-> **Progress**: 18/24 tasks (75%) — Phases 1–5 (Foundation, Text+Label, Button, Validators, Input) complete
+> **Progress**: 21/24 tasks (88%) — Phases 1–6 (Foundation, Text+Label, Button, Validators, Input, Clusters) complete
 > **CodeOps Skills Version**: 3.1.0
 
 ## Overview
@@ -84,12 +84,12 @@ roles change — ui resolves core from `dist/`).
 
 ## Phase 6 — Clusters  (03-06 · AC-6/AC-7 · PA-3/PA-6/PA-9)
 ### 6.1 Spec (→ RED)
-- [ ] **6.1.1** `controls.cluster.spec` (ST-10 CheckGroup `[ ]`/`[X]` + toggle + signal; ST-11 RadioGroup `( )`/`(•)` + `↓` exclusive + index + `clusterSelected`). Cite `tcluster.cpp`/`tcheckbo.cpp`/`tradiobu.cpp`. **RED**.
+- [x] **6.1.1** `controls.cluster.spec` (ST-10 CheckGroup `[ ]`/`[X]` + toggle + signal; ST-11 RadioGroup `( )`/`(•)` + `↓` exclusive + index + `clusterSelected`). Cite `tcluster.cpp`/`tcheckbo.cpp`/`tradiobu.cpp`. **RED**. _(2026-07-01)_
 ### 6.2 Implementation (→ GREEN)
-- [ ] **6.2.1** Implement the internal `Cluster` base (single-column 5-cell box, `↑↓`/Space/hotkey, roles). (scope `controls`)
-- [ ] **6.2.2** Implement `CheckGroup` (`boolean[]`) + `RadioGroup` (`number`, narrow marker PA-9). ST-10/11 GREEN.
+- [x] **6.2.1** Implement the internal `Cluster` base (single-column 5-cell box, `↑↓`/Space/hotkey, roles). (scope `controls`) _(2026-07-01 — TV `drawMultiBox`: icon@col0, mark@col2, label@col5; `movedTo` hook + `setItemEnabled`)_
+- [x] **6.2.2** Implement `CheckGroup` (`boolean[]`) + `RadioGroup` (`number`, narrow marker PA-9 = `•`). ST-10/11 GREEN. _(2026-07-01)_
 ### 6.3 Impl tests
-- [ ] **6.3.1** Impl: disabled-item skip; click-to-item; short/out-of-range bound value; hotkey select. Verify.
+- [x] **6.3.1** Impl: disabled-item skip; click-to-item; short/out-of-range bound value; hotkey select. Verify. _(2026-07-01 — `yarn verify` 8/8 green)_
 
 ## Phase 7 — Focus + demo + final gate  (03-07 · AC-8/AC-11/AC-12/AC-13)
 ### 7.1 Spec (→ RED)
@@ -130,9 +130,9 @@ roles change — ui resolves core from `dist/`).
 - [x] 5.2.1 `Input` _(2026-07-01)_
 - [x] 5.3.1 impl tests + verify _(2026-07-01)_
 ### Phase 6 — Clusters
-- [ ] 6.1.1 Spec RED (ST-10/11)
-- [ ] 6.2.1 `Cluster` base · 6.2.2 `CheckGroup`/`RadioGroup`
-- [ ] 6.3.1 impl tests + verify
+- [x] 6.1.1 Spec RED (ST-10/11) _(2026-07-01)_
+- [x] 6.2.1 `Cluster` base · 6.2.2 `CheckGroup`/`RadioGroup` _(2026-07-01)_
+- [x] 6.3.1 impl tests + verify _(2026-07-01)_
 ### Phase 7 — Focus + demo + gate
 - [ ] 7.1.1 Spec RED (ST-12/13)
 - [ ] 7.2.1 demo + e2e (ST-14) · 7.2.2 DEFERRED.md + no-regression (ST-15/16)
