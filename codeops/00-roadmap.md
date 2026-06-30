@@ -1,7 +1,7 @@
 # Portfolio Roadmap: Ink
 
 > **Status**: Active
-> **Last Updated**: 2026-06-30
+> **Last Updated**: 2026-07-01 (jsvision-ui RD-06 essential controls + validators → ✅ Done)
 > **Features**: 0 / 1 done
 > **CodeOps Skills Version**: 3.0.0
 
@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 6 ✅ Done (RD-01…RD-05, RD-10) · 1 📋 Plan Created (RD-06) · 1 🟡 Stub (RD-11) · 3 ⬜ Backlog (RD-07…09) | 6 / 11 done | 🔄 | 2026-07-01 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 7 ✅ Done (RD-01…RD-06, RD-10) · 1 🟡 Stub (RD-11) · 3 ⬜ Backlog (RD-07…09) | 7 / 11 done | 🔄 | 2026-07-01 |
 
 ## Archived
 
@@ -23,6 +23,13 @@
 
 ## Notes
 
+- 2026-07-01: **jsvision-ui RD-06 (Essential controls + validators) complete** → ✅ Done. Executed all
+  7 phases spec-first (RED→GREEN→impl): `packages/ui/src/controls/` = `Text`/`Label`/`Button`/`Input`/
+  `CheckGroup`/`RadioGroup` (+ internal `Cluster` base) + `filter`/`range`/`lookup` validators; the
+  additive `cpGrayDialog` core theme roles; two additive intra-ui primitives (`ev.emit`/`ev.focusView`
+  + the PF-009 focus-change signal); `examples/controls-demo/` (`demo:controls`). ST-01…ST-16 green;
+  final gate clean (`yarn verify` 8/8, `check:deps`, `lint`, e2e 14/14). One runtime decision PA-15 —
+  TV-faithful `range` `validChars` (`tvtext2.cpp`). jsvision-ui now 7/11 done. Cascaded from **jsvision-ui**.
 - 2026-07-01: **jsvision-ui RD-06 (Essential controls + validators) planned** → 📋 Plan Created
   ([`plans/essential-controls/`](features/jsvision-ui/plans/essential-controls/00-index.md)). 12 docs,
   gate passed (PA-1…PA-14; 3 user choices — the `ev.emit` command primitive, expose-`valid()`-no-trap,
