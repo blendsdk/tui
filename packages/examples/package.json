@@ -17,7 +17,8 @@
     "demo:playground": "tsx keyboard-mouse-playground/main.ts",
     "demo:reactive": "tsx reactive-demo/main.ts",
     "demo:layout": "tsx layout-demo/main.ts",
-    "demo:view": "tsx view-demo/main.ts"
+    "demo:view": "tsx view-demo/main.ts",
+    "demo:events": "tsx event-demo/main.ts"
   },
   "dependencies": {
     "@jsvision/core": "*",
