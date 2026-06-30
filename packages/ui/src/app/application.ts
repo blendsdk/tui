@@ -158,6 +158,17 @@ export function createApplication(opts: ApplicationOptions): Application {
   loop.mount(root);
   desktop.attachLoop(loop);
 
+  // Wire the menu bar's controller to the overlay + loop seam (PA-7). Done after mount so the loop
+  // exists and the overlay has its composed rect for popup positioning.
+  if (opts.menuBar !== undefined) {
+    opts.menuBar.attach(overlay, {
+      emitCommand: (command, arg) => loop.emitCommand(command, arg),
+      isCommandEnabled: (command) => loop.isCommandEnabled(command),
+      focusView: (view) => loop.focusView(view),
+      getFocused: () => loop.getFocused(),
+    });
+  }
+
   return {
     desktop,
     loop,

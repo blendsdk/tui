@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md) · **Implements**: jsvision-ui/RD-05 · **Plan**: `plans/app-shell/`
 > **Last Updated**: 2026-06-30
-> **Progress**: 34/48 tasks (71%)
+> **Progress**: 41/48 tasks (85%)
 > **CodeOps Skills Version**: 3.1.0
 
 ## Overview
@@ -134,17 +134,17 @@ The window manager + window chrome. Heaviest phase (4 sessions). Covers AC-6…A
 Overlay-hosted nested menus driven by a MenuBar-owned controller. Covers AC-16…AC-18 (+ AC-18 status side in P5). (Refs: 03-04.)
 
 ### Session 4A — Spec tests (RED)
-- [ ] T4.1 — `app-shell.menu.spec.test.ts`: **ST-16** (builders + F10/click/Alt+F open), **ST-17** (nested nav), **ST-18** (command emit + enable/disable greying). (07 §spec; AC-16,17,18)
-- [ ] T4.2 — Run tests → menu specs **fail (RED)**.
+- [x] T4.1 — `app-shell.menu.spec.test.ts`: **ST-16** (builders + F10/click/Alt+F open), **ST-17** (nested nav), **ST-18** (command emit + enable/disable greying). (07 §spec; AC-16,17,18) ✅ 2026-06-30
+- [x] T4.2 — Run tests → menu specs **fail (RED)**. ✅ 2026-06-30
 
 ### Session 4B — Implementation (GREEN)
-- [ ] T4.3 — `menu/builders.ts`: `menuBar`/`subMenu`/`item`/`separator` + tilde `~X~` parsing (accelerator char + display column). (03-04; AR-68,77)
-- [ ] T4.4 — `menu/controller.ts`: the nav state machine (open path + highlight indices; ↑↓ skip; Enter activate; ←→ switch; Esc one level; nested sub-popups; item hotkey; save/restore focus). `menu/popup.ts`: `MenuPopup` presentational view (rows; highlighted=menuSelected; disabled greyed). (03-04; AR-68; PA-9)
-- [ ] T4.5 — `menu/menubar.ts`: **flesh out the Phase-1 `MenuBar` skeleton** (PF-12) — pre-process; draw titles; `attach(overlay,seam)`; `onEvent` runs the controller; on open set `overlay.state.visible=true` **then** mount popups into the overlay at absolute rects clamped on-screen + a **full-viewport transparent catcher** as the overlay's first child whose `onEvent` closes the menu on an outside mouse-down; on close unmount them and set `overlay.state.visible=false` (PF-06/PF-10). Barrels + `src/index.ts` re-exports. Run tests → menu specs **GREEN**. (03-04; AR-51,68; PA-2,9,19; PF-10)
+- [x] T4.3 — `menu/builders.ts`: `menuBar`/`subMenu`/`item`/`separator` + tilde `~X~` parsing (accelerator char + display column). (03-04; AR-68,77) ✅ 2026-06-30
+- [x] T4.4 — `menu/controller.ts`: the nav state machine (open path + highlight indices; ↑↓ skip; Enter activate; ←→ switch; Esc one level; nested sub-popups; item hotkey; save/restore focus). `menu/popup.ts`: `MenuPopup` presentational view (rows; highlighted=menuSelected; disabled greyed). (03-04; AR-68; PA-9) ✅ 2026-06-30 (controller exposes `openIndex()` for the bar title highlight; `→` opens a highlighted sub else switches top, `←` closes a nested level else switches top; popup gains an `onPick` row-click seam)
+- [x] T4.5 — `menu/menubar.ts`: **flesh out the Phase-1 `MenuBar` skeleton** (PF-12) — pre-process; draw titles; `attach(overlay,seam)`; `onEvent` runs the controller; on open set `overlay.state.visible=true` **then** mount popups into the overlay at absolute rects clamped on-screen + a **full-viewport transparent catcher** as the overlay's first child whose `onEvent` closes the menu on an outside mouse-down; on close unmount them and set `overlay.state.visible=false` (PF-06/PF-10). Barrels + `src/index.ts` re-exports. Run tests → menu specs **GREEN**. (03-04; AR-51,68; PA-2,9,19; PF-10) ✅ 2026-06-30 (`createApplication` attaches the bar via the loop seam after mount)
 
 ### Session 4C — Impl tests & hardening
-- [ ] T4.6 — `app-shell.menu.impl.test.ts`: tilde parsing; separator/disabled skipping; nested open/close; popup on-screen clamp; click-outside close + focus restore; pre-process consumption (key doesn't reach the focused window while open). (07 §impl)
-- [ ] T4.7 — `yarn verify` + `lint` green; files ≤ 500 lines. **/gitcm** — `feat(menu): nested MenuBar/MenuPopup over an overlay layer — builders, navigation, enable/disable (RD-05)`.
+- [x] T4.6 — `app-shell.menu.impl.test.ts`: tilde parsing; separator/disabled skipping; nested open/close; popup on-screen clamp; click-outside close + focus restore; pre-process consumption (key doesn't reach the focused window while open). (07 §impl) ✅ 2026-06-30 (+ popup-row mouse activation, attach-wires-controller)
+- [x] T4.7 — `yarn verify` + `lint` green; files ≤ 500 lines. **/gitcm** — `feat(menu): nested MenuBar/MenuPopup over an overlay layer — builders, navigation, enable/disable (RD-05)`. ✅ 2026-06-30
 
 ---
 
@@ -216,13 +216,13 @@ StatusLine, the one-frame-per-interaction oracle, demos, packaging finalization,
 - [x] 3.11 Verify + lint + commit ✅ 2026-06-30
 
 ### Phase 4 — Menus
-- [ ] 4.1 Menu spec ST-16,17,18 (RED)
-- [ ] 4.2 Confirm RED
-- [ ] 4.3 `builders.ts` (+ tilde parsing)
-- [ ] 4.4 `controller.ts` + `popup.ts` (nav state machine + presentational popup)
-- [ ] 4.5 `menubar.ts` (pre-process + overlay mount); confirm GREEN
-- [ ] 4.6 Menu impl tests
-- [ ] 4.7 Verify + lint + commit
+- [x] 4.1 Menu spec ST-16,17,18 (RED) ✅ 2026-06-30
+- [x] 4.2 Confirm RED ✅ 2026-06-30
+- [x] 4.3 `builders.ts` (+ tilde parsing) ✅ 2026-06-30
+- [x] 4.4 `controller.ts` + `popup.ts` (nav state machine + presentational popup) ✅ 2026-06-30
+- [x] 4.5 `menubar.ts` (pre-process + overlay mount); confirm GREEN ✅ 2026-06-30
+- [x] 4.6 Menu impl tests ✅ 2026-06-30
+- [x] 4.7 Verify + lint + commit ✅ 2026-06-30
 
 ### Phase 5 — StatusLine + demos + gate
 - [ ] 5.1 Status + packaging spec ST-18(status),19,20,21 (RED)

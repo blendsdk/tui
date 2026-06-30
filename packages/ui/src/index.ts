@@ -51,6 +51,7 @@ export type { Application, ApplicationOptions } from './app/index.js';
 export { Desktop } from './desktop/index.js';
 export type { DesktopLoopSeam } from './desktop/index.js';
 export { Window } from './window/index.js';
-export { MenuBar } from './menu/index.js';
+export { MenuBar, MenuPopup, menuBar, subMenu, item, separator } from './menu/index.js';
+export type { MenuItem, ParsedLabel, TitleLayout, MenuController, MenuLoopSeam } from './menu/index.js';
 export { Commands, StatusLine } from './status/index.js';
 export type { CommandName } from './status/index.js';
