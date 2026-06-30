@@ -2,12 +2,12 @@
  * Window frame — drawing + hit-zone geometry (RD-05 AR-67/AR-74, PA-8).
  *
  * A Window-internal helper (not a `View`): `drawFrame` paints the border, centered title, window
- * number, close box `[■]`, zoom box `[↑]`/`[↓]`, and SE resize corner over a window-local rect;
+ * number, close box `[×]`, zoom box `[↑]`/`[↓]`, and SE resize corner over a window-local rect;
  * `frameZoneAt` classifies a window-local point into the zone its mouse-down means. Border + title
  * colors come from `ctx.role(role).border`/`.title` (the Phase-0 raw-role accessor), so the active
  * (`window`) and inactive (`windowInactive`) frames differ in border/title — not just fg (AR-73/PA-1).
  *
- * Chrome layout (window-local, size w×h): close `[■]` at cols 1–3, zoom `[↑]`/`[↓]` at cols w-4…w-2,
+ * Chrome layout (window-local, size w×h): close `[×]` at cols 1–3, zoom `[↑]`/`[↓]` at cols w-4…w-2,
  * number at col w-6, title centered, SE corner at (w-1, h-1). Boxes are drawn last so they overlay
  * the title; absent flags omit their box. The `.js` extension is required by NodeNext ESM resolution.
  */
@@ -38,7 +38,7 @@ export interface FrameState {
 export type FrameRole = 'window' | 'windowInactive';
 
 /** Glyphs of the chrome affordances (stored verbatim in the buffer; serialize handles fallback). */
-const CLOSE_GLYPH = '■';
+const CLOSE_GLYPH = '×';
 const MAXIMIZE_GLYPH = '↑';
 const RESTORE_GLYPH = '↓';
 const RESIZE_GLYPH = '◢';
@@ -116,7 +116,7 @@ export function drawFrame(ctx: DrawContext, size: Size2D, state: FrameState, rol
     ctx.text(w - 6, 0, String(state.number), titleStyle);
   }
 
-  // Close box [■] top-left and zoom box [↑]/[↓] top-right (only when the affordance exists).
+  // Close box [×] top-left and zoom box [↑]/[↓] top-right (only when the affordance exists).
   if (w >= 8) {
     ctx.text(1, 0, `[${CLOSE_GLYPH}]`, borderStyle);
     ctx.text(w - 4, 0, `[${state.zoomed ? RESTORE_GLYPH : MAXIMIZE_GLYPH}]`, borderStyle);

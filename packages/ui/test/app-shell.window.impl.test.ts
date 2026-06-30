@@ -41,7 +41,7 @@ test('the active window draws a double-line border; the inactive a single-line o
 });
 
 test('frameZoneAt classifies each chrome zone', () => {
-  expect(frameZoneAt(size, { x: 2, y: 0 }, ALL)).toBe('close'); // [■] cols 1–3
+  expect(frameZoneAt(size, { x: 2, y: 0 }, ALL)).toBe('close'); // [×] cols 1–3
   expect(frameZoneAt(size, { x: 17, y: 0 }, ALL)).toBe('zoom'); // [↑] cols w-4…w-2 = 16–18
   expect(frameZoneAt(size, { x: 19, y: 5 }, ALL)).toBe('resize'); // SE corner (w-1,h-1)
   expect(frameZoneAt(size, { x: 8, y: 0 }, ALL)).toBe('title'); // top row, not a box

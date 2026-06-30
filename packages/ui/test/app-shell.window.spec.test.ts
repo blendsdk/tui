@@ -4,7 +4,7 @@
  * Source: RD-05 AC-14/AC-15 → ST-14, ST-15 (codeops/features/jsvision-ui/plans/app-shell/
  * 03-03-window-frame.md). Real Window/Desktop on a composed app (no mocks); the buffer is read
  * before serialize so the original chrome glyphs are asserted. The concrete frame chrome layout
- * (close `[■]` at cols 1–3, zoom `[↑]`/`[↓]` at cols w-4…w-2, SE corner at w-1,h-1, centered title)
+ * (close `[×]` at cols 1–3, zoom `[↑]`/`[↓]` at cols w-4…w-2, SE corner at w-1,h-1, centered title)
  * is the documented 03-03 chrome — both the oracle and the impl derive from it.
  *
  * Trace: RD-05 03-03 · AR-67/AR-73/AR-74 · ST-14, ST-15.
@@ -28,7 +28,7 @@ function row(buf: ReturnType<ReturnType<typeof shellApp>['loop']['renderRoot']['
   return s;
 }
 
-// ST-14 / AC-14 — the frame chrome renders: border, centered title, number, close [■], zoom [↑], SE corner.
+// ST-14 / AC-14 — the frame chrome renders: border, centered title, number, close [×], zoom [↑], SE corner.
 test('ST-14: a window renders its full frame chrome', () => {
   const app = shellApp(30, 10);
   const w = new Window('Editor');
@@ -38,8 +38,8 @@ test('ST-14: a window renders its full frame chrome', () => {
   app.loop.renderRoot.flush();
   const buf = app.loop.renderRoot.buffer();
 
-  // Close box [■] at the top-left (cols 1–3), zoom box [↑] at the top-right (cols w-4…w-2 = 16–18).
-  expect(buf.get(2, 0)?.char).toBe('■');
+  // Close box [×] at the top-left (cols 1–3), zoom box [↑] at the top-right (cols w-4…w-2 = 16–18).
+  expect(buf.get(2, 0)?.char).toBe('×');
   expect(buf.get(17, 0)?.char).toBe('↑'); // restored ⇒ the "maximize" arrow
   // Centered title on the top border.
   expect(row(buf, 0)).toContain('Editor');
