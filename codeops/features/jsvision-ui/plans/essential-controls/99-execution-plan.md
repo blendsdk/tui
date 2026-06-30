@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md)
 > **Last Updated**: 2026-07-01
-> **Progress**: 0/24 tasks (0%)
+> **Progress**: 6/24 tasks (25%) — Phase 1 (Foundation) complete
 > **CodeOps Skills Version**: 3.1.0
 
 ## Overview
@@ -11,9 +11,9 @@
 Build the RD-06 leaf controls + validators on the `@jsvision/ui` spine, **spec-first per component**
 (spec oracles RED → implement GREEN → impl tests), reading each control's `magiblot/tvision` source
 first per the fidelity directive. Seven phases: foundation primitives → Text/Label → Button → Validators
-→ Input → Clusters → demo+gate. One additive intra-ui primitive (`ev.emit`/`ev.focusView` on the
-dispatch envelope), one additive cross-package edit (core control theme roles); the loop/spine are
-**not** re-shaped. Commit via **/gitcm** (commit) or **/gitcmp** (commit+push) — never raw git.
+→ Input → Clusters → demo+gate. Two additive intra-ui primitives (`ev.emit`/`ev.focusView` on the
+dispatch envelope + a per-view focus-change signal, PF-009), one additive cross-package edit (core
+control theme roles); the loop/spine are **not** re-shaped. Commit via **/gitcm** (commit) or **/gitcmp** (commit+push) — never raw git.
 
 **🚨 Update this document after EACH completed task!** Verify command: `yarn verify` (root); iterate with
 `yarn workspace @jsvision/ui test controls.<component>` (+ `yarn build` before ui tests when core theme
@@ -38,15 +38,16 @@ roles change — ui resolves core from `dist/`).
 
 ## Phase 1 — Foundation  (03-01 · PA-1/PA-5/PA-4)
 ### 1.1 Spec (→ RED)
-- [ ] **1.1.1** Write `controls.foundation.spec` (ST-01: a focused stub control's `ev.emit('ok')` reaches a CommandSpy) + extend `color-palette-theme.spec` (ST-02: the new roles deep-equal the `app.h` decode, `encode()` no-throw). Derive the byte values from `app.h` directly. Confirm **RED**.
+- [x] **1.1.1** Write `controls.foundation.spec` (ST-01: a focused stub control's `ev.emit('ok')` reaches a CommandSpy) + extend `color-palette-theme.spec` (ST-02: the new roles deep-equal the `app.h` decode, `encode()` no-throw). Derive the byte values from `app.h` directly. Confirm **RED**. _(2026-07-01 — RED confirmed: ST-01 fails, ST-02 deep-equal + encode fail)_
 
 ### 1.2 Implementation (→ GREEN)
-- [ ] **1.2.1** Add `emit?`/`focusView?` to `DispatchEvent` (`view/types.ts`) + populate from `RouteContext` in `event/dispatch.ts` (PA-1/PA-10). (scope `event`)
-- [ ] **1.2.2** Add the control roles to core `Theme`+`defaultTheme` (`core/.../theme.ts`), decoded from `app.h`; reuse `button`/`buttonFocused`. `yarn build`. (scope `color`) → ST-02 GREEN.
-- [ ] **1.2.3** Create the `controls/` subsystem skeleton + barrel + `src/index.ts` re-exports (PA-4). ST-01 GREEN.
+- [x] **1.2.1** Add `emit?`/`focusView?` to `DispatchEvent` (`view/types.ts`); add `emit`/`focusView` to the `RouteContext` interface (`event/dispatch.ts:23`), source them in `event-loop.ts routeContext()` (`registry.emit`/`focus.focusView`), and enrich the envelope once at the top of `route()` (`const ev2 = { ...ev, emit, focusView }`, used for the mouse branch + all sweeps — the hit-test spread propagates them) (PA-1/PA-10). (scope `event`) _(2026-07-01 — ST-01 GREEN)_
+- [x] **1.2.1b** Add the lazy per-view **focus-change signal** `focusSignal()` to `view/view.ts` and poke it from `focusLeaf` in `event/focus.ts` (additive; PF-009) — the seam `Label`/`Input` bind to for cross-view focus reactivity. (scope `view`/`event`) _(2026-07-01)_
+- [x] **1.2.2** Add the control roles to core `Theme`+`defaultTheme` (`core/.../theme.ts`), decoded from `app.h`; reuse `button`/`buttonFocused`. `yarn build`. (scope `color`) → ST-02 GREEN. _(2026-07-01)_
+- [x] **1.2.3** Create the `controls/` subsystem skeleton + barrel + `src/index.ts` re-exports (PA-4). ST-01 GREEN. _(2026-07-01 — barrel + staged explicit-named re-export section)_
 
 ### 1.3 Impl tests
-- [ ] **1.3.1** Impl: `ev.emit`/`focusView` `undefined` on a bare envelope (optional-chain safe); roles present in `defaultTheme`. Full verify.
+- [x] **1.3.1** Impl: `ev.emit`/`focusView` `undefined` on a bare envelope (optional-chain safe); roles present in `defaultTheme`. Full verify. _(2026-07-01 — `yarn verify` 8/8 green, no regression)_
 
 ## Phase 2 — Text + Label  (03-02 · AC-1/AC-2 · PA-10/PA-14)
 ### 2.1 Spec (→ RED)
@@ -95,7 +96,7 @@ roles change — ui resolves core from `dist/`).
 - [ ] **7.1.1** `controls.focus.spec` (ST-12 Tab cycle skipping `Text`) + `controls.packaging.spec` (ST-13). **RED** (focus) / packaging green-on-write. 
 ### 7.2 Implementation + demo (→ GREEN)
 - [ ] **7.2.1** Build `controls-demo/` + `demo:controls` script + `controls-demo.e2e` (ST-14). (scope `examples`)
-- [ ] **7.2.2** Add the Phase-1 deferred items surfaced here (modal focus-trap, multi-column cluster) to `requirements/DEFERRED.md` (ST-15). Confirm ST-16 (no regression) by rerunning the existing golden/spec suites.
+- [ ] **7.2.2** Verify the RD-06 deferred items are present + correctly targeted in `requirements/DEFERRED.md` — DEF-16 (modal focus-trap), DEF-17 (multi-column cluster), DEF-18 (Text center/right), DEF-19 (hardware caret), DEF-01/02/03 (Input selection·clipboard / `picture` / `MultiCheckGroup`) (ST-15; all already registered). Confirm ST-16 (no regression) by rerunning the existing golden/spec suites.
 ### 7.3 Final gate
 - [ ] **7.3.1** Full gate: `yarn verify` (core + ui + examples), `yarn check:deps`, `yarn lint`, `demo:controls` e2e. /gitcmp.
 
@@ -106,11 +107,12 @@ roles change — ui resolves core from `dist/`).
 > Mark each `[x]` with a timestamp immediately on completion; bump the Progress header; never batch.
 
 ### Phase 1 — Foundation
-- [ ] 1.1.1 Spec RED (ST-01/02)
-- [ ] 1.2.1 `ev.emit`/`focusView` envelope
-- [ ] 1.2.2 core theme roles (from `app.h`)
-- [ ] 1.2.3 `controls/` skeleton + re-exports
-- [ ] 1.3.1 impl tests + verify
+- [x] 1.1.1 Spec RED (ST-01/02) _(2026-07-01)_
+- [x] 1.2.1 `ev.emit`/`focusView` envelope _(2026-07-01)_
+- [x] 1.2.1b focus-change signal (PF-009) _(2026-07-01)_
+- [x] 1.2.2 core theme roles (from `app.h`) _(2026-07-01)_
+- [x] 1.2.3 `controls/` skeleton + re-exports _(2026-07-01)_
+- [x] 1.3.1 impl tests + verify _(2026-07-01)_
 ### Phase 2 — Text + Label
 - [ ] 2.1.1 Spec RED (ST-03/04)
 - [ ] 2.2.1 `Text` · 2.2.2 `Label`
@@ -154,7 +156,7 @@ Phase 7 (focus + demo + gate)                  [needs all controls]
 ## Success Criteria
 1. ✅ All 7 phases complete; ST-01…ST-16 green (spec oracles immutable).
 2. ✅ `yarn verify` / `check:deps` / `lint` clean; no regression (ST-16).
-3. ✅ One additive cross-package edit (control theme roles); one additive intra-ui primitive (`ev.emit`/`focusView`); loop/spine not re-shaped.
+3. ✅ One additive cross-package edit (control theme roles); two additive intra-ui primitives (`ev.emit`/`focusView` + the PF-009 focus-change signal); loop/spine not re-shaped.
 4. ✅ Every control's geometry verified against its TV source (JSDoc + commit cites).
 5. ✅ Deferred sub-scope registered in `DEFERRED.md`; no dead code; files ≤ 500 lines.
 6. ✅ Post-completion re-analysis (handled by exec_plan).

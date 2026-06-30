@@ -103,9 +103,11 @@ export function createFocusManager(getRoot: () => View | null): FocusManager {
     if (old !== null) {
       old.state.focused = false;
       old.invalidate();
+      old.focusTick?.set(undefined); // poke observers of the old view's focus (PF-009; no-op if none)
     }
     view.state.focused = true;
     view.invalidate();
+    view.focusTick?.set(undefined); // poke observers of the new view's focus (PF-009; no-op if none)
   };
 
   /**

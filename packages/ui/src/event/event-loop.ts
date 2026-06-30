@@ -206,6 +206,9 @@ class EventLoopImpl implements EventLoop {
       keymap: this.keymap,
       focusedLeaf: this.focus.focusedLeafIn(scope),
       emitCommand: (name, arg) => this.registry.emit(name, arg),
+      // RD-06 PA-1/PA-10 — sourced onto every routed envelope as `ev.emit` / `ev.focusView`.
+      emit: (name, arg) => this.registry.emit(name, arg),
+      focusView: (view) => this.focus.focusView(view),
       deliver: (view, ev) => this.deliver(view, ev),
       // The built-in Tab handler runs inside the active dispatch tick, so it calls the focus
       // manager's pure mutation directly (no nested runTick) — the tick's flush paints (PA-11).

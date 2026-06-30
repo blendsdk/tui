@@ -9,8 +9,8 @@
  * **under its parent's** scope at mount, so disposing any subtree disposes every descendant's
  * computations and runs their `onCleanup` — leak-free by construction.
  */
-import type { Owner } from '../reactive/index.js';
-import { runWithOwner, untrack, createRoot, effect, onCleanup, getOwner } from '../reactive/index.js';
+import type { Owner, Signal } from '../reactive/index.js';
+import { runWithOwner, untrack, createRoot, effect, onCleanup, getOwner, signal } from '../reactive/index.js';
 import { TuiError } from '@jsvision/core';
 import type { Rect, Size2D, LayoutProps } from '../layout/index.js';
 import type { DrawContext, ViewState, DispatchEvent } from './types.js';
@@ -59,6 +59,26 @@ export abstract class View {
   preProcess = false;
   /** Participate in the post-process sweep (after the focused chain) (AR-51, PA-2). */
   postProcess = false;
+
+  /**
+   * @internal Reactive focus-change tick (RD-06 PF-009). Lazily created by {@link focusSignal} the
+   * first time a view's focus is observed; the focus manager pokes it on every focus flip. Stays
+   * `undefined` (zero cost) for views nobody observes.
+   */
+  focusTick?: Signal<void>;
+
+  /**
+   * Subscribe to this view's focus changes (RD-06 PF-009). Reading the returned signal inside a
+   * `bind`/`effect` re-runs that effect on every focus flip (the manager pokes `focusTick`), letting
+   * one view react to **another** view's focus — `Label` repaints on its link's focus, `Input` runs
+   * its blocking validator on its own focus-loss. The signal uses `equals: () => false`, so even a
+   * same-value poke notifies. Lazy: the backing signal is created on first call.
+   *
+   * @returns A signal that ticks whenever this view gains or loses focus.
+   */
+  focusSignal(): Signal<void> {
+    return (this.focusTick ??= signal(undefined, { equals: () => false }));
+  }
 
   // --- Internal wiring (RT-1/RT-2/RT-3) ---------------------------------------------------------
   // Public-but-internal: it crosses the module boundary to the render root, so it is `public`

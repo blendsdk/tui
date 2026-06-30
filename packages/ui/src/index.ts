@@ -55,3 +55,7 @@ export { MenuBar, MenuPopup, menuBar, subMenu, item, separator } from './menu/in
 export type { MenuItem, ParsedLabel, TitleLayout, MenuController, MenuLoopSeam } from './menu/index.js';
 export { Commands, StatusLine, statusLine, statusItem } from './status/index.js';
 export type { CommandName, StatusItem, StatusLoopSeam } from './status/index.js';
+
+// Essential controls (RD-06) — leaf widgets + validators (`src/controls/`). Explicit named
+// re-exports, per the layout convention (AC-18 / ST-13). The list grows one phase at a time
+// (Text/Label → Button → validators → Input → clusters) as each control lands.

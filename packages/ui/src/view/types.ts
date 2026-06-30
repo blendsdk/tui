@@ -7,6 +7,9 @@
 import type { Style, Theme, CapabilityProfile, Logger, InputEvent } from '@jsvision/core';
 import type { Size2D } from '../layout/index.js';
 import type { Point } from './geometry.js';
+// Type-only (erased at runtime) — `DispatchEvent.focusView` targets a `View`. A type-only cycle with
+// `view.ts` (which imports the contract types here) is safe; no runtime import edge is created.
+import type { View } from './view.js';
 
 /**
  * View state flags drawn-against in RD-03. `focused`/`disabled` are driven by RD-04 (the event
@@ -96,4 +99,15 @@ export interface DispatchEvent {
   handled: boolean;
   /** Mouse/wheel coordinates translated to view-local cells (AR-50, AR-63); absent for keys/commands. */
   readonly local?: Point;
+  /**
+   * Raise a typed command onto the current dispatch tick (RD-06 PA-1). Present when a `RouteContext`
+   * is active (always, during real dispatch); `undefined` only in bare unit-constructed envelopes, so
+   * controls call it optional-chained (`ev.emit?.(…)`).
+   */
+  readonly emit?: (command: string, arg?: unknown) => void;
+  /**
+   * Focus another view (RD-06 PA-10) — used by `Label` to focus its link. Same source/availability
+   * as {@link emit}; a non-focusable target is a no-op (the focus manager guards it).
+   */
+  readonly focusView?: (view: View) => void;
 }

@@ -29,6 +29,13 @@ export interface RouteContext {
   readonly focusedLeaf: View | null;
   /** Raise a command and enqueue it onto the active tick, unless disabled (AR-52, PA-3). */
   emitCommand(name: string, arg?: unknown): void;
+  /**
+   * Raise a command from within a control's `onEvent` (RD-06 PA-1). Sourced onto every routed
+   * envelope as `ev.emit`; identical effect to {@link emitCommand} (enqueue onto the active tick).
+   */
+  emit(name: string, arg?: unknown): void;
+  /** Focus a view from within a control's `onEvent` (RD-06 PA-10). Sourced onto `ev.focusView`. */
+  focusView(view: View): void;
   /** Deliver an envelope to a view's `onEvent`, isolating a throwing handler (AR-66). */
   deliver(view: View, ev: DispatchEvent): void;
   /** Built-in Tab focus traversal — advance focus (PA-10; wired by Phase 3). */
@@ -108,25 +115,31 @@ export function route(ev: DispatchEvent, ctx: RouteContext): void {
     return;
   }
 
+  // Single enrichment point (RD-06 PA-1/PA-10): `route()` is the one path every dispatched event
+  // passes through before reaching a view, so source `emit`/`focusView` onto ONE fresh envelope here
+  // and route the mouse branch + every sweep through it. A fresh object respects the `readonly`
+  // envelope fields; the `hit-test.ts` `{ ...ev2, local }` spread propagates both to mouse-locals.
+  const ev2: DispatchEvent = { ...ev, emit: ctx.emit, focusView: ctx.focusView };
+
   // Mouse/wheel skip the 3-phase focus path → hit-test (03-03).
   if (inner.type === 'mouse' || inner.type === 'wheel') {
-    ctx.hitTestRoute(ev);
+    ctx.hitTestRoute(ev2);
     return;
   }
 
   // Phase 1 — pre-process sweep (root→down within scopeRoot).
   for (const view of collectSweep(scopeRoot, 'preProcess')) {
-    ctx.deliver(view, ev);
-    if (ev.handled) return;
+    ctx.deliver(view, ev2);
+    if (ev2.handled) return;
   }
   // Phase 2 — focused leaf + chain bubble (leaf→scopeRoot, clamped).
   for (const view of focusChain(ctx.focusedLeaf, scopeRoot)) {
-    ctx.deliver(view, ev);
-    if (ev.handled) return;
+    ctx.deliver(view, ev2);
+    if (ev2.handled) return;
   }
   // Phase 3 — post-process sweep.
   for (const view of collectSweep(scopeRoot, 'postProcess')) {
-    ctx.deliver(view, ev);
-    if (ev.handled) return;
+    ctx.deliver(view, ev2);
+    if (ev2.handled) return;
   }
 }
