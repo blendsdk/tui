@@ -60,12 +60,8 @@ interface Level {
   popup: MenuPopup;
 }
 
-/** Minimum popup width (cells) so a short menu is still readable. */
-const POPUP_MIN_WIDTH = 8;
-/** Popup chrome width added to the widest item: left/right border + 1-cell inner margins. */
-const POPUP_CHROME_WIDTH = 4;
-/** Extra columns a `sub` row reserves for its ` ▸` indicator. */
-const SUB_INDICATOR_WIDTH = 2;
+/** Minimum popup width (cells) — Turbo Vision's `TMenuBox::getRect` floor (`w = 10`). */
+const POPUP_MIN_WIDTH = 10;
 /** A safe fallback viewport when the overlay has no rect yet (never reached once composed). */
 const FALLBACK_VIEWPORT: Rect = { x: 0, y: 0, width: 80, height: 24 };
 
@@ -106,14 +102,26 @@ function firstSelectable(items: readonly MenuItem[]): number {
   return index === -1 ? 0 : index;
 }
 
-/** The widest item content (incl. the `sub` indicator), for the popup width. */
-function widestItem(items: readonly MenuItem[]): number {
-  let max = 0;
-  for (const node of items) {
-    if (node.kind === 'separator') continue;
-    const width = parseTilde(node.title).text.length + (node.kind === 'sub' ? SUB_INDICATOR_WIDTH : 0);
-    if (width > max) max = width;
-  }
+/**
+ * One item's width contribution, per Turbo Vision's `TMenuBox::getRect`: the display name plus 6
+ * chrome cells (outer blank gutter + border + one inner pad, on each side), plus 3 for a submenu's
+ * ` ►` cascade marker or `key.length + 2` for a right-aligned shortcut. Separators contribute 0.
+ *
+ * @param node A menu item.
+ * @returns Its required popup width in cells.
+ */
+function itemWidth(node: MenuItem): number {
+  if (node.kind === 'separator') return 0;
+  let width = parseTilde(node.title).text.length + 6;
+  if (node.kind === 'sub') width += 3;
+  else if (node.key !== undefined) width += node.key.length + 2;
+  return width;
+}
+
+/** The popup width: the widest item's contribution, floored at {@link POPUP_MIN_WIDTH} (TV getRect). */
+function popupWidth(items: readonly MenuItem[]): number {
+  let max = POPUP_MIN_WIDTH;
+  for (const node of items) max = Math.max(max, itemWidth(node));
   return max;
 }
 
@@ -158,10 +166,11 @@ export function createMenuController(tops: readonly MenuItem[], overlay: Group, 
   /** Build, position, and mount a popup over `items` at the anchor; push it as the new deepest level. */
   function pushLevel(items: readonly MenuItem[], anchorX: number, anchorY: number): void {
     const popup = new MenuPopup();
+    popup.castsShadow = true; // TV sfShadow — the menu box casts a drop-shadow over what's behind it
     popup.items = items;
     popup.highlight = firstSelectable(items);
     popup.isEnabled = isEnabled;
-    const width = Math.max(POPUP_MIN_WIDTH, widestItem(items) + POPUP_CHROME_WIDTH);
+    const width = popupWidth(items);
     const height = items.length + 2; // top + bottom border
     popup.layout = { position: 'absolute', rect: clampRect(anchorX, anchorY, width, height) };
     popup.onPick = (row) => pickRow(popup, row);

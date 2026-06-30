@@ -7,7 +7,7 @@
  * Trace: RD-05 03-04 · AR-68/AR-77 · PA-2/PA-9/PF-06/PF-10.
  */
 import { test, expect } from 'vitest';
-import { resolveCapabilities } from '@jsvision/core';
+import { resolveCapabilities, defaultTheme } from '@jsvision/core';
 import type { KeyEvent, MouseEvent } from '@jsvision/core';
 import { View, Group } from '../src/view/index.js';
 import type { DrawContext, DispatchEvent } from '../src/view/index.js';
@@ -202,4 +202,78 @@ test('a MenuBar is inert until attached; createApplication attaches it', () => {
   expect(bare.controller).toBeNull(); // unattached
   const { bar } = menuApp();
   expect(bar.controller).not.toBeNull(); // createApplication attached it
+});
+
+// --- TV-faithful box shape & size (TMenuBox::getRect / frameLine) --------------------------------
+
+/** One composed buffer row of a popup, as a string (popup is in the full-viewport overlay = absolute). */
+function popupRow(app: ReturnType<typeof menuApp>['app'], popup: MenuPopup, row: number): string {
+  const r = popup.layout.rect ?? { x: 0, y: 0, width: 0, height: 0 };
+  const buf = app.loop.renderRoot.buffer();
+  let s = '';
+  for (let x = 0; x < r.width; x += 1) s += buf.get(r.x + x, r.y + row)?.char ?? ' ';
+  return s;
+}
+
+test('popup width follows TV getRect: name + 6, +key+2 for a shortcut, floored at 10', () => {
+  // "Tools" (5) + 6 + "Ctrl+K" (6) + 2 = 19; a bare item floors at 10.
+  const bar = menuBar([subMenu('~T~', [item('~T~ools', 'tools', 'Ctrl+K'), item('~A~', 'a')])]);
+  const app = createApplication({ caps, menuBar: bar, viewport: { width: 40, height: 12 } });
+  const root = app.desktop.parent as Group;
+  const overlay = root.children.find((c) => c.layout.position === 'absolute') as Group;
+  app.loop.renderRoot.flush();
+  app.loop.dispatch(key('t', { alt: true }));
+  const popup = popups(overlay)[0];
+  expect(popup.layout.rect?.width).toBe(19); // widest item drives the box
+  expect(popup.layout.rect?.height).toBe(2 + 2); // items + top/bottom border
+});
+
+test('popup draws the TV box: gutter + inset single-line frame, padded text, ├─┤ separator, ► sub, right-aligned key', () => {
+  const { app, overlay } = menuApp();
+  app.loop.dispatch(key('f10')); // open File: Ok / separator / More(sub)
+  const file = popups(overlay)[0];
+  const w = file.layout.rect?.width ?? 0;
+
+  const top = popupRow(app, file, 0);
+  expect(top[0]).toBe(' '); // blank gutter column (TV inset)
+  expect(top[1]).toBe('┌'); // border one column in
+  expect(top[w - 2]).toBe('┐');
+  expect(top[w - 1]).toBe(' '); // right gutter
+
+  const ok = popupRow(app, file, 1); // first item row
+  expect(ok[1]).toBe('│'); // side border
+  expect(ok.slice(3)).toContain('Ok'); // text padded to col 3 (gutter+border+pad)
+
+  const sep = popupRow(app, file, 2); // separator joins the borders with tees
+  expect(sep[1]).toBe('├');
+  expect(sep[w - 2]).toBe('┤');
+
+  const more = popupRow(app, file, 3); // a submenu row shows the ► cascade marker near the right border
+  expect(more).toContain('►');
+  expect(more[w - 4]).toBe('►');
+});
+
+test('the menu box casts a TV drop-shadow over what is behind it (sfShadow)', () => {
+  const { app, overlay } = menuApp({ width: 40, height: 12 });
+  app.loop.dispatch(key('f10')); // open File
+  const file = popups(overlay)[0];
+  expect(file.castsShadow).toBe(true);
+  const r = file.layout.rect ?? { x: 0, y: 0, width: 0, height: 0 };
+  // One column right of the box, one row down from its top edge, is darkened to the shadow role.
+  const cell = app.loop.renderRoot.buffer().get(r.x + r.width, r.y + 1);
+  expect(cell?.bg).toBe(defaultTheme.shadow.bg);
+});
+
+test('an item key shortcut is drawn right-aligned (TV size.x-3-len)', () => {
+  const bar = menuBar([subMenu('~F~', [item('E~x~it', 'quit', 'Alt-X')])]);
+  const app = createApplication({ caps, menuBar: bar, viewport: { width: 40, height: 12 } });
+  const root = app.desktop.parent as Group;
+  const overlay = root.children.find((c) => c.layout.position === 'absolute') as Group;
+  app.loop.renderRoot.flush();
+  app.loop.dispatch(key('f', { alt: true }));
+  const popup = popups(overlay)[0];
+  const w = popup.layout.rect?.width ?? 0;
+  const rowText = popupRow(app, popup, 1);
+  // "Alt-X" ends at col w-4 (right border at w-2, one pad at w-3).
+  expect(rowText.slice(w - 3 - 'Alt-X'.length, w - 3)).toBe('Alt-X');
 });
