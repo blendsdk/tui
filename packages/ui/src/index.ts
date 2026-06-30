@@ -43,3 +43,11 @@ export type { Point, ViewState, DrawContext, ThemeRoleName, RenderRoot, RenderRo
 // convention. Grows per phase.
 export { createEventLoop } from './event/index.js';
 export type { EventLoop, EventLoopOptions, CommandEvent, AppEvent, DispatchEvent } from './event/index.js';
+
+// App shell (RD-05) — Application/Desktop/Window/MenuBar/StatusLine. Explicit named re-exports, per
+// the layout convention. Grows per phase (Phase 1: Commands + the Desktop/MenuBar/StatusLine skeletons).
+export { Desktop } from './desktop/index.js';
+export type { DesktopLoopSeam } from './desktop/index.js';
+export { MenuBar } from './menu/index.js';
+export { Commands, StatusLine } from './status/index.js';
+export type { CommandName } from './status/index.js';
