@@ -51,6 +51,23 @@ test('Desktop shadows are off by default (the backdrop keeps the desktop role)',
   expect(app.loop.renderRoot.buffer().get(12, 3)?.bg).toBe(defaultTheme.desktop.bg);
 });
 
+test('a front window casts its shadow ON TOP of the window behind it (z-order layering)', () => {
+  const app = shellApp(40, 12);
+  app.desktop.shadow = true;
+  // Back window A (cols 10..34, rows 4..10), then a front window B (cols 2..13, rows 1..6) whose
+  // 1-cell shadow falls to its right — landing on A's interior at (14, 5).
+  addWindow(app, 'A', { x: 10, y: 4, width: 25, height: 7 });
+  addWindow(app, 'B', { x: 2, y: 1, width: 12, height: 6 }); // added last ⇒ front, painted over A
+  app.loop.renderRoot.flush();
+  const buf = app.loop.renderRoot.buffer();
+
+  // (14,5) is inside back window A but outside front window B. With correct z-ordered shadows, B's
+  // shadow is drawn AFTER A composes, so the cell is the shadow color — not A's interior background
+  // (which is what the old draw-all-shadows-first approach left there).
+  expect(buf.get(14, 5)?.bg).toBe(defaultTheme.shadow.bg);
+  expect(buf.get(14, 5)?.bg).not.toBe(defaultTheme.windowInactive.bg);
+});
+
 test('drag-move clamps the title row to the top edge', () => {
   const app = shellApp(40, 12);
   const w = addWindow(app, 'W', { x: 5, y: 5, width: 12, height: 5 });

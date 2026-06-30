@@ -11,7 +11,7 @@
  *
  * Phase 5 composes the **full** tree each flush; the dirty set + partial recompose land in Phase 6.
  */
-import { ScreenBuffer, serialize, defaultTheme, createLogger } from '@jsvision/core';
+import { ScreenBuffer, serialize, defaultTheme, createLogger, Attr } from '@jsvision/core';
 import type { Theme, CapabilityProfile, Logger } from '@jsvision/core';
 import { createRoot, getOwner } from '../reactive/index.js';
 import type { Rect, Size2D } from '../layout/index.js';
@@ -20,6 +20,7 @@ import type { ViewHost } from './view.js';
 import { Group } from './group.js';
 import type { Point } from './geometry.js';
 import { intersect } from './geometry.js';
+import { themeRoleToStyle } from './theme-style.js';
 import { makeDrawContext } from './draw-context.js';
 import { reflow } from './reflow.js';
 import type { RenderRootOptions } from './types.js';
@@ -55,6 +56,37 @@ export interface RenderRoot {
  * partial recompose is safe.
  */
 type ComposeContext = { origin: Point; clip: Rect; order: number };
+
+/**
+ * Paint a Turbo Vision-style drop-shadow on the cells just below and to the right of `rect`
+ * (absolute), clipped to `clip`. Only the cell colors change (the glyph + its width are preserved),
+ * matching core's shadow. Drawn in z-order by the compose walker — a later sibling's shadow falls
+ * over an earlier one — so a front window's shadow lands correctly on the windows behind it.
+ *
+ * @param buffer The shared compose buffer.
+ * @param rect   The shadow-caster's absolute rect.
+ * @param clip   The parent's absolute clip (the shadow never escapes the caster's container).
+ * @param theme  The active theme (for the `shadow` role colors).
+ */
+function drawDropShadow(buffer: ScreenBuffer, rect: Rect, clip: Rect, theme: Theme): void {
+  const style = themeRoleToStyle(theme.shadow);
+  const attrs = style.attrs ?? Attr.none;
+  const clipRight = clip.x + clip.width;
+  const clipBottom = clip.y + clip.height;
+  const darken = (absX: number, absY: number): void => {
+    if (absX < clip.x || absX >= clipRight || absY < clip.y || absY >= clipBottom) return;
+    const cell = buffer.get(absX, absY);
+    if (cell) {
+      cell.fg = style.fg;
+      cell.bg = style.bg;
+      cell.attrs = attrs;
+    }
+  };
+  // Right edge (rows 0..h-1, offset down by 1) + bottom edge (cols 0..w-1, offset right by 1) — the
+  // classic 1-cell L-shaped shadow. Matches the DrawContext.shadow geometry.
+  for (let row = 0; row < rect.height; row += 1) darken(rect.x + rect.width, rect.y + row + 1);
+  for (let col = 0; col < rect.width; col += 1) darken(rect.x + col + 1, rect.y + rect.height);
+}
 
 function composeView(
   buffer: ScreenBuffer,
@@ -97,6 +129,9 @@ function composeView(
         width: child.bounds.width,
         height: child.bounds.height,
       };
+      // Cast the child's shadow (in z-order, under the parent's clip) before painting the child, so a
+      // later (front) sibling's shadow falls over the earlier (back) siblings already composed.
+      if (child.castsShadow) drawDropShadow(buffer, childRect, clip, theme);
       composeView(buffer, child, childOrigin, intersect(clip, childRect), theme, logger, cache, counter);
     }
   }

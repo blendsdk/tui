@@ -41,6 +41,13 @@ export abstract class View {
   /** Optional intrinsic-size seam for `auto` sizing (AR-33). */
   measure?(available: Size2D): Size2D;
 
+  /**
+   * When true, the compose walker paints a Turbo Vision-style drop-shadow on the cells just
+   * below and to the right of this view's rect, in z-order (a later sibling's shadow falls over an
+   * earlier one). Default `false`. The `Desktop` sets it per-window from its `shadow` flag.
+   */
+  castsShadow = false;
+
   // --- RD-04 dispatch surface (additive; defaults preserve RD-03 behavior) ----------------------
   /**
    * Focus eligibility (TV `ofSelectable`): a view is focusable iff
