@@ -214,7 +214,11 @@ export function createHost(options: HostOptions): Host {
     if (!streams) return;
     const out = serialize(next, prev, { caps });
     if (out) streams.output.write(out);
-    prev = next;
+    // Snapshot the rendered frame: callers may pass a single LIVE buffer they keep mutating in place
+    // (e.g. the UI loop's `renderRoot.buffer()`), so aliasing it as `prev` would diff the next frame
+    // against itself — an empty diff that freezes the screen. `lastBuffer` may stay a live reference:
+    // the resume path full-repaints it against `null`, so it should reflect the latest screen state.
+    prev = next.clone();
     lastBuffer = next;
   }
 

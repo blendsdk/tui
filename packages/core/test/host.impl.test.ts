@@ -181,6 +181,23 @@ test('orchestrator: an unchanged frame re-render writes nothing (empty diff)', a
   expect(output.data.length).toBe(afterFirst + leaveMode(caps({ altScreen: true })).length);
 });
 
+test('orchestrator: a reused live buffer mutated in place still renders the next frame (no freeze)', async () => {
+  // Regression: the UI loop hands `render` a single LIVE buffer (`renderRoot.buffer()`) and mutates
+  // it in place each frame. The host must SNAPSHOT `prev` — aliasing the buffer would diff the next
+  // frame against itself (an empty diff) and freeze the screen after the first paint.
+  const { host, output } = harness();
+  await host.start();
+  const live = new ScreenBuffer(8, 2, { fg: 'default', bg: 'default' });
+  live.set(1, 0, 'A', { fg: 'default', bg: 'default' });
+  host.render(live);
+  const afterFirst = output.data.length;
+  live.set(1, 0, 'B', { fg: 'default', bg: 'default' }); // mutate the SAME instance the host kept
+  host.render(live); // must emit B's damage, not an empty diff
+  await host.stop();
+  const secondFrameBytes = output.data.length - afterFirst - leaveMode(caps({ altScreen: true })).length;
+  expect(secondFrameBytes).toBeGreaterThan(0);
+});
+
 test('orchestrator: render before start is a no-op (no throw, no write)', () => {
   const { host, output } = harness();
   const buf = new ScreenBuffer(4, 1, { fg: 'default', bg: 'default' });
