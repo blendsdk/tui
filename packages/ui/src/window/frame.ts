@@ -20,16 +20,16 @@
  * Chrome layout (window-local, size w×h): close `[×]` at cols 2–4, zoom `[↑]`/`[↕]` at cols w-5…w-3,
  * number at col w-7, title centered + truncated to ≤ w-10 (−6 for the boxes, −4 for the number), grips
  * `└─` at cols (0,1) and `─┘` at cols (w-2, w-1) of row h-1. Boxes are drawn last so they overlay the
- * title. NOTE: the left grip is drawn for visual fidelity; TV's left-grow resize gesture
- * (`dmDragGrowLeft`) is not yet wired — only the SE corner resizes. The `.js` extension is required by
- * NodeNext ESM resolution.
+ * title. Both grips are live: the SE corner (`resize`) grows the bottom-right (TV `dmDragGrow`), the
+ * SW grip cells (`resize-left`) grow the bottom-left with the right edge anchored (TV `dmDragGrowLeft`,
+ * RD-10 AR-91). The `.js` extension is required by NodeNext ESM resolution.
  */
 import type { Style } from '@jsvision/core';
 import type { DrawContext, Point } from '../view/index.js';
 import type { Size2D } from '../layout/index.js';
 
 /** A frame hit-zone — what a mouse-down at a window-local point means. */
-export type FrameZone = 'close' | 'zoom' | 'resize' | 'title' | 'interior' | 'border';
+export type FrameZone = 'close' | 'zoom' | 'resize' | 'resize-left' | 'title' | 'interior' | 'border';
 
 /** The window flags that gate which affordances exist (a disabled affordance is not a hit-zone). */
 export interface WindowFlags {
@@ -175,9 +175,10 @@ export function frameZoneAt(size: Size2D, local: Point, flags: WindowFlags): Fra
   const { width: w, height: h } = size;
   const { x, y } = local;
 
-  // SE resize corner takes precedence over the bottom-right border. (TV also resizes from the
-  // bottom-left grip via `dmDragGrowLeft`; that left-grow gesture is not yet wired — the left grip is
-  // drawn but its cells fall through to the `border` zone below.)
+  // Bottom-row resize grips take precedence over the border. The SW grip cells (0,1) grow the
+  // left+bottom edges (TV `dmDragGrowLeft`, `mouse.x <= 1`); the SE corner grows the bottom-right (TV
+  // `dmDragGrow`). Both gate on `resizable`, so a fixed window's bottom row falls through to `border`.
+  if (flags.resizable && y === h - 1 && x <= 1) return 'resize-left';
   if (flags.resizable && x === w - 1 && y === h - 1) return 'resize';
 
   // The top border row: close box (cols 2–4), zoom box (cols w-5…w-3), else the draggable title.

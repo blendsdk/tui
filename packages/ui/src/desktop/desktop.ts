@@ -14,7 +14,7 @@ import { Group } from '../view/index.js';
 import type { DrawContext, DispatchEvent, View, Point } from '../view/index.js';
 import { Window } from '../window/index.js';
 import { Commands } from '../status/index.js';
-import { applyMove, applyResize } from './gestures.js';
+import { applyMove, applyResize, applyResizeLeft, MIN_WIDTH, MIN_HEIGHT } from './gestures.js';
 import type { Gesture } from './gestures.js';
 import { cascade, tile, nextWindow, prevWindow, windowByNumber } from './arrange.js';
 
@@ -169,6 +169,17 @@ export class Desktop extends Group {
   }
 
   /**
+   * Begin a left-grow resize gesture (TV `dmDragGrowLeft`, RD-10 AR-91): anchor the right edge + top
+   * and capture the pointer, so the captured drag grows the bottom-left corner.
+   */
+  beginResizeLeft(w: Window): void {
+    if (!w.resizable) return;
+    const rect = w.layout.rect ?? { x: 0, y: 0, width: MIN_WIDTH, height: MIN_HEIGHT };
+    this.gesture = { kind: 'resize-left', target: w, anchorRight: rect.x + rect.width - 1, originY: rect.y };
+    this.loop?.setCapture(this);
+  }
+
+  /**
    * Handle a captured gesture move/up (drag-move / drag-resize) and the WM `CommandEvent`s + Alt-N
    * key (post-process). A captured event is delivered directly to this view with desktop-local coords.
    */
@@ -178,7 +189,8 @@ export class Desktop extends Group {
     if (this.gesture !== null && inner.type === 'mouse') {
       if ((inner.kind === 'move' || inner.kind === 'drag') && ev.local !== undefined) {
         if (this.gesture.kind === 'move') applyMove(this.gesture, ev.local, this.bounds.width, this.bounds.height);
-        else applyResize(this.gesture, ev.local);
+        else if (this.gesture.kind === 'resize') applyResize(this.gesture, ev.local);
+        else applyResizeLeft(this.gesture, ev.local);
         ev.handled = true;
         return;
       }

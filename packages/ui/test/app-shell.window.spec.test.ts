@@ -14,8 +14,11 @@
  */
 import { test, expect } from 'vitest';
 import { resolveCapabilities, defaultTheme } from '@jsvision/core';
+import type { MouseEvent } from '@jsvision/core';
 import { createApplication } from '../src/app/index.js';
 import { Window } from '../src/window/index.js';
+import { frameZoneAt } from '../src/window/frame.js';
+import type { WindowFlags } from '../src/window/frame.js';
 
 const caps = resolveCapabilities({ env: {}, platform: 'linux', override: { colorDepth: 'truecolor' } }).profile;
 
@@ -82,6 +85,47 @@ test('ST-14: a zoom-box click maximizes the window to the desktop', () => {
   // Zoom box at window-local (17,0) → abs (2+17, 1+0) = (19,1) → 1-based (20,2).
   app.loop.dispatch({ type: 'mouse', kind: 'down', button: 0, x: 20, y: 2 });
   expect(w.layout.rect).toEqual({ x: 0, y: 0, width: app.desktop.bounds.width, height: app.desktop.bounds.height });
+});
+
+/** A 1-based SGR mouse event of the given kind at absolute 0-based (x, y). */
+function mouse(kind: MouseEvent['kind'], x: number, y: number): MouseEvent {
+  return { type: 'mouse', kind, button: 0, x: x + 1, y: y + 1 };
+}
+
+// RD-10 ST-07 / AC-7 — the bottom-left grip resizes left+bottom edges with the right edge anchored,
+// floored at MIN_WIDTH=10 (TV `dmDragGrowLeft`, `tframe.cpp:117-122`/`193`).
+test('RD-10 ST-07: bottom-left grip moves left+bottom edges, right anchored, floored at 10×3', () => {
+  const app = shellApp(40, 16);
+  const w = new Window('W');
+  w.layout.rect = { x: 10, y: 2, width: 14, height: 8 };
+  app.desktop.addWindow(w);
+  app.loop.renderRoot.flush();
+
+  // SW grip at window-local (0, h-1) → abs (10, 9). Right edge anchored at x+width-1 = 23.
+  app.loop.dispatch(mouse('down', 10, 9));
+  app.loop.dispatch(mouse('drag', 6, 12)); // left to x=6, bottom to y=12
+  expect(w.layout.rect).toEqual({ x: 6, y: 2, width: 18, height: 11 }); // right fixed at 23 ⇒ width 23-6+1
+
+  // Drag the left edge right past the minimum → width floored at 10, x clamped to anchorRight-9 = 14.
+  app.loop.dispatch(mouse('drag', 20, 5));
+  expect(w.layout.rect.x).toBe(14);
+  expect(w.layout.rect.width).toBe(10);
+  app.loop.dispatch(mouse('up', 20, 5));
+});
+
+// RD-10 ST-08 / AC-8 — `frameZoneAt` classifies the SW grip cells as `resize-left` on a resizable
+// window, the SE corner as `resize`, and the SW cells as `border` on a non-resizable window.
+test('RD-10 ST-08: frameZoneAt — SW grip = resize-left (resizable), SE = resize, border otherwise', () => {
+  const size = { width: 20, height: 6 }; // h-1 = 5, w-1 = 19
+  const resizable: WindowFlags = { movable: true, resizable: true, zoomable: true, closable: true };
+  const fixed: WindowFlags = { movable: true, resizable: false, zoomable: true, closable: true };
+
+  expect(frameZoneAt(size, { x: 0, y: 5 }, resizable)).toBe('resize-left');
+  expect(frameZoneAt(size, { x: 1, y: 5 }, resizable)).toBe('resize-left');
+  expect(frameZoneAt(size, { x: 19, y: 5 }, resizable)).toBe('resize'); // SE corner
+  // A non-resizable window: the SW grip cells fall through to the plain border zone.
+  expect(frameZoneAt(size, { x: 0, y: 5 }, fixed)).toBe('border');
+  expect(frameZoneAt(size, { x: 1, y: 5 }, fixed)).toBe('border');
 });
 
 // ST-15 / AC-15 — the active (top, focused) window themes via the `window` role; the background one

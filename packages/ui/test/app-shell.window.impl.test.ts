@@ -8,6 +8,7 @@
  */
 import { test, expect } from 'vitest';
 import { resolveCapabilities } from '@jsvision/core';
+import type { MouseEvent } from '@jsvision/core';
 import { Group } from '../src/view/index.js';
 import type { DrawContext } from '../src/view/index.js';
 import { createApplication } from '../src/app/index.js';
@@ -16,6 +17,11 @@ import { Window, frameZoneAt } from '../src/window/index.js';
 const caps = resolveCapabilities({ env: {}, platform: 'linux', override: { colorDepth: 'truecolor' } }).profile;
 const ALL = { movable: true, resizable: true, zoomable: true, closable: true };
 const size = { width: 20, height: 6 };
+
+/** A 1-based SGR mouse event of the given kind at absolute 0-based (x, y). */
+function mouse(kind: MouseEvent['kind'], x: number, y: number): MouseEvent {
+  return { type: 'mouse', kind, button: 0, x: x + 1, y: y + 1 };
+}
 
 test('the active window draws a double-line border; the inactive a single-line one (Turbo Vision)', () => {
   const app = createApplication({ caps, viewport: { width: 40, height: 10 } });
@@ -53,6 +59,41 @@ test('frameZoneAt gates zones behind the window flags', () => {
   expect(frameZoneAt(size, { x: 2, y: 0 }, { ...ALL, closable: false })).toBe('title'); // no close box
   expect(frameZoneAt(size, { x: 17, y: 0 }, { ...ALL, zoomable: false })).toBe('title'); // no zoom box
   expect(frameZoneAt(size, { x: 19, y: 5 }, { ...ALL, resizable: false })).toBe('border'); // no resize corner
+  expect(frameZoneAt(size, { x: 0, y: 5 }, { ...ALL, resizable: false })).toBe('border'); // no SW grip
+});
+
+test('left-grow keeps the top edge fixed while the bottom grows, then releases capture on up', () => {
+  const app = createApplication({ caps, viewport: { width: 40, height: 16 } });
+  const w = new Window('W');
+  w.layout.rect = { x: 10, y: 2, width: 14, height: 8 };
+  app.desktop.addWindow(w);
+  app.loop.renderRoot.flush();
+
+  // Grab the SW grip (abs (10,9)) and drag down-left: top stays at y=2, height grows like the SE corner.
+  app.loop.dispatch(mouse('down', 10, 9));
+  app.loop.dispatch(mouse('drag', 8, 14));
+  expect(w.layout.rect).toEqual({ x: 8, y: 2, width: 16, height: 13 }); // anchorRight=23, top fixed
+  app.loop.dispatch(mouse('up', 8, 14));
+
+  // After release the capture is gone — a stray drag no longer resizes the window.
+  const settled = { ...w.layout.rect };
+  app.loop.dispatch(mouse('drag', 0, 0));
+  expect(w.layout.rect).toEqual(settled);
+});
+
+test('the SW grip of a non-resizable window is inert (no left-grow gesture begins)', () => {
+  const app = createApplication({ caps, viewport: { width: 40, height: 16 } });
+  const w = new Window('W');
+  w.resizable = false;
+  w.layout.rect = { x: 10, y: 2, width: 14, height: 8 };
+  app.desktop.addWindow(w);
+  app.loop.renderRoot.flush();
+  const before = { ...w.layout.rect };
+
+  // A press on the SW grip cells falls through to `border` ⇒ no gesture; the drag leaves the rect intact.
+  app.loop.dispatch(mouse('down', 10, 9));
+  app.loop.dispatch(mouse('drag', 4, 14));
+  expect(w.layout.rect).toEqual(before);
 });
 
 test('the window content child is inset by the 1-cell border (padding:1)', () => {

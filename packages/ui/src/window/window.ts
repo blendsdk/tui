@@ -30,8 +30,10 @@ export interface WindowManager {
   activeWindow(): Window | null;
   /** Begin a drag-move gesture (PA-5/PA-10). */
   beginMove(w: Window, grabLocal: Point): void;
-  /** Begin a drag-resize gesture (PA-5/PA-10). */
+  /** Begin a drag-resize gesture from the SE corner (PA-5/PA-10). */
   beginResize(w: Window): void;
+  /** Begin a left-grow resize gesture from the SW grip — right edge anchored (RD-10 AR-91). */
+  beginResizeLeft(w: Window): void;
 }
 
 /** Default restored size for a window with no explicit rect (degenerate guard). */
@@ -144,6 +146,7 @@ export class Window extends Group {
       else if (zone === 'zoom') this.zoom();
       else if (zone === 'title' && this.movable) this.manager.beginMove(this, local);
       else if (zone === 'resize' && this.resizable) this.manager.beginResize(this);
+      else if (zone === 'resize-left' && this.resizable) this.manager.beginResizeLeft(this);
     }
     ev.handled = true;
   }

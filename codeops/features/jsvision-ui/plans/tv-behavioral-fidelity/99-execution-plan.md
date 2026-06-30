@@ -3,7 +3,7 @@
 > **Document**: 99-execution-plan.md
 > **Parent**: [Index](00-index.md) · **Implements**: jsvision-ui/RD-10 · **Plan**: `plans/tv-behavioral-fidelity/`
 > **Last Updated**: 2026-06-30
-> **Progress**: 9/14 tasks (64%) — Phase 1 ✅ · Phase 2 ✅ complete
+> **Progress**: 13/14 tasks (93%) — Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ complete
 > **Runtime note**: PA-10 (status release target = item under the release point, TV-exact) corrects AR-88's "same item" paraphrase — recorded in `00-ambiguity-register.md`.
 > **CodeOps Skills Version**: 3.1.0
 
@@ -79,21 +79,21 @@ Commits reference **/gitcm** (commit) or **/gitcmp** (commit + push) — never r
 ## Phase 3 — Left-grow resize gesture  (AR-91 · spec 03-03)
 
 ### 3A — Spec tests (→ RED)
-- [ ] **3.1** Add ST-07 (`applyResizeLeft`/end-to-end drag: right edge fixed, left+bottom move, floor
-  10×3) + ST-08 (`frameZoneAt` `resize-left` for SW grip, `resize` for SE, `border` when not resizable)
-  in `app-shell.window.spec.test.ts` / a gestures impl test. Confirm RED.
+- [x] **3.1** Added ST-07 (end-to-end SW-grip drag via the loop: right edge fixed, left+bottom move,
+  floor 10×3) + ST-08 (`frameZoneAt` `resize-left` for SW grip, `resize` for SE, `border` when not
+  resizable) in `app-shell.window.spec.test.ts`. **RED confirmed** (2 failed). *(2026-06-30)*
 
 ### 3B — Implementation (→ GREEN)
-- [ ] **3.2** Extend the `Gesture` union with `resize-left` + `applyResizeLeft` (`gestures.ts`); add the
-  `'resize-left'` `FrameZone` + `frameZoneAt` branch + remove the "left grip not wired" caveat
-  (`frame.ts`). (scope `window`)
-- [ ] **3.3** Wire `Window.onEvent` (`resize-left`→`beginResizeLeft`), the `WindowManager`/`DesktopLoopSeam`
+- [x] **3.2** Extended the `Gesture` union with `resize-left` + `applyResizeLeft` (`gestures.ts`); added
+  the `'resize-left'` `FrameZone` + `frameZoneAt` SW branch + removed the "left grip not wired" caveat
+  (`frame.ts`). The lower clamp mirrors `applyResize` (width-floor only — PA-11). (scope `window`) *(2026-06-30)*
+- [x] **3.3** Wired `Window.onEvent` (`resize-left`→`beginResizeLeft`), the `WindowManager`/`DesktopLoopSeam`
   method, and `Desktop.beginResizeLeft` + the captured-move dispatch branch (`window.ts`/`desktop.ts`).
-  Confirm GREEN. (scope `window`/`desktop`)
+  GREEN (6/6). (scope `window`/`desktop`) *(2026-06-30)*
 
 ### 3C — Impl tests & hardening
-- [ ] **3.4** Impl tests: left-clamp reachability bound; height grows like SE; a non-resizable window's
-  SW cells are `border`; capture released on up. Green. /gitcm.
+- [x] **3.4** Impl tests: top edge fixed + height grows like SE; capture released on up (a stray drag is
+  inert); a non-resizable window's SW grip is inert (`border`, no gesture). ui 301 green. *(2026-06-30)*
 
 ## Phase 4 — Demos + final gate
 
@@ -107,7 +107,7 @@ Commits reference **/gitcm** (commit) or **/gitcmp** (commit + push) — never r
 
 - [x] Phase 1 — Status press/release (1.1–1.5) ✅ *(2026-06-30)*
 - [x] Phase 2 — Cascade/tile geometry (2.1–2.4) ✅ *(2026-06-30)*
-- [ ] Phase 3 — Left-grow resize (3.1–3.4)
+- [x] Phase 3 — Left-grow resize (3.1–3.4) ✅ *(2026-06-30)*
 - [ ] Phase 4 — Demos + final gate (4.1)
 
 **Definition of done:** RD-10 AC-1…AC-11 met; ST-01…ST-09 + the rewritten ST-11/status oracles green;
