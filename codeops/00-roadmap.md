@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 6 ✅ Done (RD-01…RD-05, RD-10) · 4 ⬜ Backlog (RD-06…09) | 6 / 10 done | 🔄 | 2026-06-30 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 6 ✅ Done (RD-01…RD-05, RD-10) · 1 ✏️ RD Drafted (RD-06) · 1 🟡 Stub (RD-11) · 3 ⬜ Backlog (RD-07…09) | 6 / 11 done | 🔄 | 2026-06-30 |
 
 ## Archived
 
@@ -23,6 +23,14 @@
 
 ## Notes
 
+- 2026-06-30: **jsvision-ui RD-06 (Essential controls + validators) drafted** → ✏️ RD Drafted; **RD-11
+  (Containers, scrolling & lists) stubbed** as its sibling. `add_requirement` **split** Phase-1 controls
+  (AR-93): RD-06 = leaf controls + validators (Text/Label/Button/Input/CheckGroup/RadioGroup + filter/
+  range/lookup), demoable via headless `demo:controls`; ScrollBar/Scroller/ListView/Dialog reserved in
+  the RD-11 stub. AR-93…AR-102; one additive cross-package edit (faithful cpGrayDialog control theme
+  roles on core). Deferred-tracked → RD-07: Input selection+clipboard, picture/mask validator,
+  MultiCheckGroup. jsvision-ui now 6/11 done (RD-06 drafted). Next: `make_plan RD-06`. Cascaded from the
+  **jsvision-ui** row.
 - 2026-06-30: **RD-10 TV behavioral-fidelity SHIPPED** → ✅ Done. All 4 phases executed spec-first via
   `exec_plan --auto-commit`: status emit-on-release + pointer capture (additive `statusSelected` role;
   PA-10 = item-under-release), TV-exact cascade + tile (`tdesktop.cpp` algorithms ported verbatim,

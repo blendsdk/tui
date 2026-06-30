@@ -1,7 +1,7 @@
 # jsvision UI — Requirements Documents
 
 > **Project**: `@jsvision/ui` — a reimagined Turbo Vision-style widget framework for terminal (TUI) applications in TypeScript, built on the `@jsvision/core` engine.
-> **Status**: Draft (RD-01…RD-05 shipped; RD-10 — TV behavioral-fidelity completion — drafted; RD-06…RD-09 widget tiers in backlog — see the roadmap)
+> **Status**: Draft (RD-01…RD-05 + RD-10 shipped; RD-06 — essential controls + validators — drafted, with RD-11 — containers/scrolling/lists — stubbed as its sibling; RD-07…RD-09 widget tiers in backlog — see the roadmap)
 > **Created**: 2026-06-29
 > **Architecture**: TypeScript (ESM-only, NodeNext, `strict`), zero runtime dependencies; the **disciplined hybrid** model — a retained widget tree with fine-grained signal reactivity (no virtual DOM). Lives in `packages/ui/`.
 > **CodeOps Skills Version**: 2.0.0
@@ -56,7 +56,9 @@ map and the programming-model decision.
 | **RD-03** | [View/Group spine](RD-03-view-group-spine.md) | Retained `View`/`Group` tree, stateless clipped `DrawContext`, theme-role resolution; closes the reactive seam (per-view scope + `bind` + coalescing scheduler) and owns the layout reflow pass. Logic-deferred `onEvent`/focus → RD-04 | RD-01, RD-02 |
 | **RD-04** | [Event loop + focus + modality + commands](RD-04-event-loop.md) | The host-agnostic dispatch mechanism: `EventLoop` with pure `dispatch(event)`, faithful 3-phase dispatch, the per-group `current` focus chain (Tab/click), top-most-first mouse hit-testing, a typed command layer (registry + key→command keymap), and async modality (`execView`/`endModal`). Drives RD-03's `RenderRoot` one frame per input tick. Concrete `Application`/`run()`/shell → RD-05 | RD-03 (RD-01, RD-02) |
 | **RD-05** | [App shell](RD-05-app-shell.md) | The integration keystone: `Application`/`run()` (real `createHost` ↔ `dispatch` wiring + lifecycle, quit→exit code, guaranteed restore), the `Desktop` window manager (z-order raise · drag · free-resize · zoom · cascade/tile · Alt-N), `Window`/`Frame` (chrome + active/inactive theming), full nested `MenuBar`/`MenuPopup`, and a static `StatusLine`. Composes RD-04's `EventLoop`. `ScrollBar`/`Scroller` + leaf controls → RD-06 | RD-04 (RD-01, RD-02, RD-03) |
-| RD-06…RD-09 | *(backlog — see roadmap)* | Essential controls (+ ScrollBar/Scroller), high-value controls, editor, files package | per phase |
+| **RD-06** | [Essential controls + validators](RD-06-essential-controls.md) | The Tier-1 **leaf controls** + the validator model: `Text`, `Label`, `Button`, `Input`, `CheckGroup`, `RadioGroup` (+ internal `Cluster` base) + validators `filter`/`range`/`lookup`. Adds the faithful `cpGrayDialog` control theme roles to core. Selection+clipboard, `picture`/mask, `MultiCheckGroup` deferred (tracked → RD-07) | RD-05 (RD-04, RD-03, core) |
+| **RD-11** | [Containers, scrolling & lists](RD-11-containers-scrolling-lists.md) | 🟡 **Stub** (sibling of RD-06, split per AR-93; authored later): `ScrollBar`, `Scroller`, `ListView` (+ `ListBox`), and the rich `Dialog` (hosts RD-06 controls via `execView`) | RD-06, RD-05 |
+| RD-07…RD-09 | *(backlog — see roadmap)* | High-value controls (History/Tree/ComboBox/Tabs/Table/Progress + the RD-06-deferred completions), editor family, files package | per phase |
 | **RD-10** | [TV behavioral fidelity](RD-10-tv-behavioral-fidelity.md) | Completes RD-05's TV fidelity for the four **behaviors** the drawing pass (`1caa188`) deferred: status-line press-feedback + emit-on-release, TV-exact cascade + tile geometry (supersedes AR-87), and the functional left-grow resize gesture. Behavior-only; one additive `statusSelected` core role | RD-05 |
 
 ## Dependency Graph
@@ -82,7 +84,14 @@ RD-02 Layout engine ──┤   (UI-independent; pure box-tree → integer rects
                       │               window manager: raise/drag/resize/zoom/cascade/tile; full
                       │               nested menus; static status line; quit→exit; restore-on-exit.
                       ▼               ScrollBar/Scroller + leaf controls → RD-06)
-            … widgets (RD-06+) — controls, ScrollBar/Scroller, high-value, editor, files …
+            RD-06 Essential controls + validators (leaf controls Text/Label/Button/Input/
+                      │              CheckGroup/RadioGroup + filter/range/lookup validators + the
+                      │              faithful cpGrayDialog control theme roles; demoable in a Window)
+                      ▼
+            RD-11 Containers, scrolling & lists (ScrollBar/Scroller/ListView/Dialog —
+                      │              Dialog hosts RD-06 controls via execView; split from RD-06 per AR-93)
+                      ▼
+            … widgets (RD-07+) — high-value controls, editor, files …
 ```
 
 RD-01 and RD-02 are the two independent, UI-independent pillars at the root (either can
@@ -98,7 +107,8 @@ without re-shaping it.
 |-------|-----------|-------------|
 | **0 — Spine pillars** | RD-01 (reactive core), RD-02 (layout engine) | The two UI-independent pillars; either can go first. |
 | **0 — Spine** | RD-03…RD-05 | View/Group, event loop/focus/modality, app shell. |
-| **1+ — Widgets** | RD-06… | Controls, then high-value, then editor/files. |
+| **1 — Essential controls** | RD-06 → RD-11 | Leaf controls + validators (RD-06), then containers/scrolling/lists + Dialog (RD-11). |
+| **2+ — Widgets** | RD-07… | High-value controls, then editor/files. |
 | **Fidelity** | RD-10 | Behavior-only completion of RD-05's TV fidelity; independent of the widget tiers — may run before or after RD-06+. |
 
 (Full phasing in the [roadmap](../plans/00-roadmap.md) and [component map](../plans/tui-ui/01-component-map.md).)
