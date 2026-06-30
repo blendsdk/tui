@@ -34,7 +34,7 @@ foundation RDs of the same number.
 | RD-07 | High-value controls | — | — | Backlog | ⬜ | 2026-06-29 | Phase 2. History/Tree/ComboBox/Tabs/Table/Progress/Surface. Demo: **clone `tvdemo`** (north-star). |
 | RD-08 | Editor family | — | — | Backlog | ⬜ | 2026-06-29 | Phase 3 (XL gap-buffer). Editor/Memo/EditWindow/Indicator/Terminal. Demo: `tvedit`. |
 | RD-09 | Files package `@jsvision/files` | — | — | Backlog | ⬜ | 2026-06-29 | Phase R. Relocated fs-bound dialogs: FileDialog/FileList/DirList/ChDir. Demo: `tvdir`. |
-| RD-10 | TV behavioral fidelity — status press/release · cascade · tile · left-grow resize | [RD-10](requirements/RD-10-tv-behavioral-fidelity.md) | — | RD Drafted | ✏️ | 2026-06-30 | Fidelity. Completes RD-05's TV fidelity for the 4 **behaviors** the drawing pass (commit `1caa188`) deferred. **Drafted**: 5 user choices AR-88…AR-92 — status **emit-on-release** + green held-highlight (supersedes emit-on-press); **TV-exact cascade** (+1/+1, extend-to-corner) + **tile** (`mostEqualDivisors`/`dividerLoc`/`leftOver`, n=2 stacks) **superseding AR-87**; functional **left-grow resize** (`dmDragGrowLeft`); placed as RD-10 (RD-06…09 reserved for widgets). 11 AC; one additive core role (`statusSelected`). Independent of the widget tiers — may run before/after RD-06. |
+| RD-10 | TV behavioral fidelity — status press/release · cascade · tile · left-grow resize | [RD-10](requirements/RD-10-tv-behavioral-fidelity.md) | [tv-behavioral-fidelity](plans/tv-behavioral-fidelity/00-index.md) | Plan Created | 📋 | 2026-06-30 | Fidelity. Completes RD-05's TV fidelity for the 4 **behaviors** the drawing pass (commit `1caa188`) deferred. **Drafted**: 5 user choices AR-88…AR-92 — status **emit-on-release** + green held-highlight (supersedes emit-on-press); **TV-exact cascade** (+1/+1, extend-to-corner) + **tile** (`mostEqualDivisors`/`dividerLoc`/`leftOver`, n=2 stacks) **superseding AR-87**; functional **left-grow resize** (`dmDragGrowLeft`); placed as RD-10 (RD-06…09 reserved for widgets). 11 AC; one additive core role (`statusSelected`). **Planned** ([plan](plans/tv-behavioral-fidelity/00-index.md)): 4 phases / 10 sessions / 14 tasks / ~12–19 h, spec-first (ST-01…ST-09 + rewritten desktop ST-11 + status emit oracles); PA-1…PA-9 (8 dominant/source-determined + 1 user — too-small-desktop ⇒ TV `tileError` no-op); GATE PASSED. Independent of the widget tiers — may run before/after RD-06. |
 
 ## Notes
 
@@ -303,6 +303,16 @@ foundation RDs of the same number.
   truncation. `yarn verify` (823 tests) + `lint` clean; 3 spec/impl oracles updated to the faithful
   values. **Four behavioral items deferred** (status emit-on-release, cascade/tile geometry, left-grow
   resize) → captured as **RD-10**.
+- **2026-06-30** — **RD-10 (TV behavioral fidelity) planned** → stage `Plan Created` 📋.
+  `make_plan` authored [`plans/tv-behavioral-fidelity/`](plans/tv-behavioral-fidelity/00-index.md) (9
+  docs): register (PA-1…PA-9 over inherited AR-88…AR-92, ✅ GATE PASSED), index, requirements
+  (Source: RD-10), current-state (each behavior's `file:line`), three component specs (status
+  press/release · cascade+tile geometry · left-grow resize), testing strategy (ST-01…ST-09 + the
+  rewritten desktop ST-11 + status emit oracles), and a 4-phase / 10-session / 14-task / ~12–19 h
+  spec-first execution plan. One user plan-decision (PA-6: too-small desktop ⇒ TV `tileError` no-op,
+  superseding AR-87's clamp-overflow); the rest dominant/source-determined (TV `tdesktop.cpp`/
+  `tstatusl.cpp`/`tframe.cpp` algorithms ported verbatim). One additive cross-package edit
+  (`statusSelected` core role); the loop is composed, not re-shaped. Cascaded to the portfolio row.
 - **2026-06-30** — **RD-10 (TV behavioral fidelity) drafted** → stage `RD Drafted` ✏️.
   `add_requirement` authored `requirements/RD-10-tv-behavioral-fidelity.md` + register **AR-88…AR-92**
   (all user choices). Captures the four behaviors the drawing pass deferred: (1) status-line
@@ -314,7 +324,7 @@ foundation RDs of the same number.
   (`dmDragGrowLeft`, the already-drawn bottom-left grip). Placed as **RD-10** (RD-06…09 reserved for
   the widget tiers — AR-92); 11 AC; M complexity. README index + dependency note synced; cascaded to
   the portfolio roadmap.
-- **Recommended next:** **RD-10** (TV behavioral-fidelity completion — small/M, finishes the
-  just-shipped drawing pass; `make_plan` → preflight → exec_plan) **or** **RD-06** (essential controls
-  + validators — Text/Label/Button/Input/Check/Radio/ListView/Dialog + `ScrollBar`/`Scroller`). RD-10
-  and RD-06 are independent.
+- **Recommended next:** **RD-10 exec_plan** — the plan is created
+  ([`plans/tv-behavioral-fidelity/`](plans/tv-behavioral-fidelity/00-index.md)); optionally `preflight`
+  it first, then `exec_plan tv-behavioral-fidelity` (spec-first). **RD-06** (essential controls +
+  validators) remains the alternative track — independent of RD-10.

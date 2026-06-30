@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 5 ✅ Done (RD-01…RD-05) · 1 ✏️ RD Drafted (RD-10) · 4 ⬜ Backlog (RD-06…09) | 5 / 10 done | 🔄 | 2026-06-30 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 5 ✅ Done (RD-01…RD-05) · 1 📋 Plan Created (RD-10) · 4 ⬜ Backlog (RD-06…09) | 5 / 10 done | 🔄 | 2026-06-30 |
 
 ## Archived
 
@@ -23,6 +23,12 @@
 
 ## Notes
 
+- 2026-06-30: **RD-10 TV behavioral-fidelity planned** → 📋 Plan Created
+  ([`plans/tv-behavioral-fidelity/`](features/jsvision-ui/plans/tv-behavioral-fidelity/00-index.md)).
+  4 phases / 10 sessions / 14 tasks / ~12–19 h, spec-first; PA-1…PA-9 over inherited AR-88…AR-92
+  (GATE PASSED). TV `tdesktop.cpp`/`tstatusl.cpp`/`tframe.cpp` algorithms ported verbatim; one user
+  plan-choice (too-small desktop ⇒ TV `tileError` no-op). One additive cross-package edit
+  (`statusSelected` role). Cascaded from the **jsvision-ui** row. Next: `exec_plan tv-behavioral-fidelity`.
 - 2026-06-30: **RD-10 TV behavioral-fidelity drafted** → ✏️ RD Drafted ([RD-10](features/jsvision-ui/requirements/RD-10-tv-behavioral-fidelity.md)).
   Follows the shipped TV **drawing**-fidelity pass (commit `1caa188` — desktop/window/menu/status colors,
   glyphs, geometry, hotkeys corrected against `magiblot/tvision`; 823 tests + lint green). RD-10 captures
