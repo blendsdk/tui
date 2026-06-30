@@ -50,6 +50,7 @@ export { createApplication } from './app/index.js';
 export type { Application, ApplicationOptions } from './app/index.js';
 export { Desktop } from './desktop/index.js';
 export type { DesktopLoopSeam } from './desktop/index.js';
+export { Window } from './window/index.js';
 export { MenuBar } from './menu/index.js';
 export { Commands, StatusLine } from './status/index.js';
 export type { CommandName } from './status/index.js';
