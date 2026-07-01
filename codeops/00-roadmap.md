@@ -1,7 +1,7 @@
 # Portfolio Roadmap: Ink
 
 > **Status**: Active
-> **Last Updated**: 2026-07-01 (jsvision-ui RD-11 containers/scrolling/lists → 🔄 Executing — Phase 5 kitchen-sink complete)
+> **Last Updated**: 2026-07-01 (jsvision-ui RD-11 containers/scrolling/lists → ✅ Done — all 6 phases shipped, DEF-16 Shipped)
 > **Features**: 0 / 1 done
 > **CodeOps Skills Version**: 3.0.0
 
@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 7 ✅ Done (RD-01…RD-06, RD-10) · 1 🔄 Executing (RD-11 — Phase 5 ✓) · 3 ⬜ Backlog (RD-07…09) | 7 / 11 done | 🔄 | 2026-07-01 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 8 ✅ Done (RD-01…RD-06, RD-10, RD-11) · 3 ⬜ Backlog (RD-07…09) | 8 / 11 done | 🔄 | 2026-07-01 |
 
 ## Archived
 
@@ -23,6 +23,12 @@
 
 ## Notes
 
+- 2026-07-01: **jsvision-ui RD-11 (Containers, scrolling & lists) complete** → ✅ Done — all 6 phases
+  shipped spec-first: `packages/ui/src/{scroll,list,dialog}/` (`ScrollBar`·`Scroller`·`ListView<T>`/
+  `ListBox`·`Dialog` + OK/Cancel/Yes/No helpers), 4 Containers kitchen-sink stories + the dogfooding
+  `ListBox` navigator + `demo:containers`. ST-01…16 green (incl. fidelity ST-14 + packaging ST-15);
+  final gate clean (verify 8/8, e2e, check:deps, lint, `gate` PASSED). **DEF-16 Shipped** (Dialog
+  `valid()` close-gate). PA-16…19 runtime decisions. Cascaded from **jsvision-ui**.
 - 2026-07-01: **jsvision-ui RD-11 (Containers, scrolling & lists) executing** → 🔄 Executing — Phase 0
   (foundations) complete: six decoded core theme roles (ST-13) + `Commands.ok/cancel/yes/no` + the
   `attachModalHost` loop seam (PA-1) + `scroll/`·`list/`·`dialog/` skeletons; verify + check:deps green.

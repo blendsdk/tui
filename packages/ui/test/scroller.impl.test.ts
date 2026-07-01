@@ -59,7 +59,11 @@ function hosted(scroller: Scroller, w: number, h: number): ReturnType<typeof cre
 
 // Content smaller than the viewport ⇒ the owned bar is disabled (max==min): its track draws all ▓.
 test('content smaller than the viewport ⇒ a disabled ▓ bar', () => {
-  const scroller = new Scroller({ content: new LetterRows(3), extent: { width: 10, height: 3 }, scrollbars: 'vertical' });
+  const scroller = new Scroller({
+    content: new LetterRows(3),
+    extent: { width: 10, height: 3 },
+    scrollbars: 'vertical',
+  });
   const rr = createRenderRoot({ width: 10, height: 5 }, { caps });
   rr.mount(scroller);
   // vbar in the rightmost column (x=9), height 5: arrows @ rows 0/4, disabled ▓ track @ rows 1..3.
@@ -78,7 +82,11 @@ test("'both' reserves the right column + bottom row for the two bars", () => {
 
 // pageStep = viewport − 1 (TV setLimit): PgDn on a height-6 viewport moves 5.
 test('PgDn steps by viewport − 1', () => {
-  const scroller = new Scroller({ content: new LetterRows(30), extent: { width: 10, height: 30 }, scrollbars: 'vertical' });
+  const scroller = new Scroller({
+    content: new LetterRows(30),
+    extent: { width: 10, height: 30 },
+    scrollbars: 'vertical',
+  });
   const loop = hosted(scroller, 10, 6);
   loop.dispatch(key('pagedown'));
   expect(scroller.delta.y).toBe(5); // viewport 6 − 1
@@ -86,7 +94,11 @@ test('PgDn steps by viewport − 1', () => {
 
 // Thumb-drag maps the axis position to a proportional delta, scrolling the content.
 test('dragging the owned bar scrolls the content', () => {
-  const scroller = new Scroller({ content: new LetterRows(20), extent: { width: 10, height: 20 }, scrollbars: 'vertical' });
+  const scroller = new Scroller({
+    content: new LetterRows(20),
+    extent: { width: 10, height: 20 },
+    scrollbars: 'vertical',
+  });
   const loop = hosted(scroller, 10, 10);
   // vbar in col 9 (0-based), thumb at row 1 for value 0. Grab (1-based x=10,y=2) → drag to row 4 (y=5).
   loop.dispatch(mouse('down', 10, 2));
@@ -100,7 +112,11 @@ test('dragging the owned bar scrolls the content', () => {
 // Wheel over the owned bar scrolls (TV's wheel lives on the scrollbar; PF-007 keeps wheel top-most,
 // so it must be over the bar column, not the content) and clamps at 0 / max.
 test('wheel over the bar scrolls the content and clamps', () => {
-  const scroller = new Scroller({ content: new LetterRows(20), extent: { width: 10, height: 20 }, scrollbars: 'vertical' });
+  const scroller = new Scroller({
+    content: new LetterRows(20),
+    extent: { width: 10, height: 20 },
+    scrollbars: 'vertical',
+  });
   const loop = hosted(scroller, 10, 5);
   const barX = 10; // 1-based x of the rightmost column (col 9)
   loop.dispatch(wheel('down', barX, 3)); // +3·arrowStep

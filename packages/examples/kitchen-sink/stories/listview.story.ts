@@ -13,11 +13,48 @@ import type { Story, StoryContext } from '../story.js';
 
 /** ~40 fruit names — enough to overflow the viewport so the scroll bar + virtualization show. */
 const ITEMS = [
-  'Apple', 'Apricot', 'Avocado', 'Banana', 'Blackberry', 'Blueberry', 'Boysenberry', 'Cantaloupe',
-  'Cherry', 'Clementine', 'Coconut', 'Cranberry', 'Currant', 'Date', 'Dragonfruit', 'Elderberry',
-  'Fig', 'Gooseberry', 'Grape', 'Grapefruit', 'Guava', 'Honeydew', 'Jackfruit', 'Kiwi', 'Kumquat',
-  'Lemon', 'Lime', 'Lychee', 'Mango', 'Mulberry', 'Nectarine', 'Orange', 'Papaya', 'Passionfruit',
-  'Peach', 'Pear', 'Persimmon', 'Pineapple', 'Plum', 'Pomegranate', 'Raspberry', 'Strawberry',
+  'Apple',
+  'Apricot',
+  'Avocado',
+  'Banana',
+  'Blackberry',
+  'Blueberry',
+  'Boysenberry',
+  'Cantaloupe',
+  'Cherry',
+  'Clementine',
+  'Coconut',
+  'Cranberry',
+  'Currant',
+  'Date',
+  'Dragonfruit',
+  'Elderberry',
+  'Fig',
+  'Gooseberry',
+  'Grape',
+  'Grapefruit',
+  'Guava',
+  'Honeydew',
+  'Jackfruit',
+  'Kiwi',
+  'Kumquat',
+  'Lemon',
+  'Lime',
+  'Lychee',
+  'Mango',
+  'Mulberry',
+  'Nectarine',
+  'Orange',
+  'Papaya',
+  'Passionfruit',
+  'Peach',
+  'Pear',
+  'Persimmon',
+  'Pineapple',
+  'Plum',
+  'Pomegranate',
+  'Raspberry',
+  'Strawberry',
 ];
 
 export const listViewStory: Story = {
@@ -38,7 +75,9 @@ export const listViewStory: Story = {
     g.add(at(list, 1, 1, listW, listH));
 
     const echoX = listW + 3;
-    g.add(at(new Text(() => `focused: #${focused()} = ${ITEMS[focused()] ?? '—'}`), echoX, 1, ctx.width - echoX - 1, 1));
+    g.add(
+      at(new Text(() => `focused: #${focused()} = ${ITEMS[focused()] ?? '—'}`), echoX, 1, ctx.width - echoX - 1, 1),
+    );
     g.add(
       at(
         new Text(() => {

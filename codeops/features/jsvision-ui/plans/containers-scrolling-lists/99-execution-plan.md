@@ -2,7 +2,7 @@
 
 > **Implements**: jsvision-ui/RD-11 · **Feature**: jsvision-ui · **Plan**: containers-scrolling-lists
 > **CodeOps Skills Version**: 3.1.0
-> **Progress**: 31 / 34 tasks (91%) · **Last Updated**: 2026-07-01 (Phase 5 kitchen-sink complete)
+> **Progress**: 34 / 34 tasks (100%) · **Last Updated**: 2026-07-01 (COMPLETE — final gate clean, DEF-16 Shipped)
 
 Spec-first per component (spec oracles RED → implement → GREEN → impl tests → verify). Every TV-derived
 component (Phases 1–4) carries the **NON-NEGOTIABLE fidelity gate**: a `[ ] BEFORE-decode` task (GATE 1,
@@ -68,9 +68,10 @@ gate also runs `yarn test:e2e` + `yarn check:deps` + `yarn lint`.
 
 
 ### Final — Full acceptance gate
-- [ ] **G.1** `ST-15` packaging complete (all symbols exported, files ≤500 lines) + `fidelity.spec.test.ts` ST-14 green.
-- [ ] **G.2** Full `yarn verify` + `yarn test:e2e` + `yarn check:deps` + `yarn lint` green; `yarn gate` (informational).
-- [ ] **G.3** Update the roadmap (RD-11 → Done) + `DEFERRED.md` (DEF-16 → Shipped) + CLAUDE.md project structure (+ `demo:containers`); techdocs if applicable.
+- [x] **G.1** `ST-15` packaging complete (all symbols exported, files ≤500 lines) + `fidelity.spec.test.ts` ST-14 green. <!-- 2026-07-01: 5 ST-14 + 5 ST-15 green -->
+- [x] **G.2** Full `yarn verify` + `yarn test:e2e` + `yarn check:deps` + `yarn lint` green; `yarn gate` (informational). <!-- 2026-07-01: verify 8/8, e2e, check:deps, lint clean, gate PASSED -->
+- [x] **G.3** Update the roadmap (RD-11 → Done) + `DEFERRED.md` (DEF-16 → Shipped) + CLAUDE.md project structure (+ `demo:containers`); techdocs if applicable. <!-- 2026-07-01 -->
+
 
 ---
 

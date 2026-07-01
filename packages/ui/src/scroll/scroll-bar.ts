@@ -100,7 +100,12 @@ export class ScrollBar extends View {
     this.arrowStep = opts.arrowStep ?? 1;
     this.vertical = (opts.orientation ?? 'vertical') === 'vertical';
     // Repaint when the position changes externally (the owner scrolls, or a bound signal write).
-    this.onMount(() => this.bind(() => this.value(), () => undefined));
+    this.onMount(() =>
+      this.bind(
+        () => this.value(),
+        () => undefined,
+      ),
+    );
   }
 
   /**

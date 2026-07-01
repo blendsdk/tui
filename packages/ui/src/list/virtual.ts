@@ -29,7 +29,8 @@ export function clampIndex(index: number, range: number): number {
 export function keepVisible(focused: number, topItem: number, viewportRows: number, range: number): number {
   if (viewportRows <= 0) return 0;
   let top = topItem;
-  if (focused < top) top = focused; // TV: item < topItem ⇒ topItem = item
+  if (focused < top)
+    top = focused; // TV: item < topItem ⇒ topItem = item
   else if (focused >= top + viewportRows) top = focused - viewportRows + 1; // ⇒ topItem = item - size.y + 1
   const maxTop = Math.max(0, range - viewportRows);
   return Math.min(maxTop, Math.max(0, top));

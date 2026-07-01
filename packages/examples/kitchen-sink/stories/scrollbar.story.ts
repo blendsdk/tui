@@ -27,8 +27,24 @@ export const scrollBarStory: Story = {
     g.add(at(vBar, 1, 1, 1, Math.max(6, ctx.height - 4)));
     g.add(at(hBar, 4, 1, Math.max(20, ctx.width - 8), 1));
 
-    g.add(at(new Text(() => `vertical value = ${vpos()}   ·   horizontal value = ${hpos()}   (0–100)`), 4, 4, ctx.width - 6, 1));
-    g.add(at(new Text('Click the arrows / page area, or drag the ■ thumb. Wheel over the vertical bar scrolls ±3.'), 4, 6, ctx.width - 6, 1));
+    g.add(
+      at(
+        new Text(() => `vertical value = ${vpos()}   ·   horizontal value = ${hpos()}   (0–100)`),
+        4,
+        4,
+        ctx.width - 6,
+        1,
+      ),
+    );
+    g.add(
+      at(
+        new Text('Click the arrows / page area, or drag the ■ thumb. Wheel over the vertical bar scrolls ±3.'),
+        4,
+        6,
+        ctx.width - 6,
+        1,
+      ),
+    );
     return g;
   },
 };

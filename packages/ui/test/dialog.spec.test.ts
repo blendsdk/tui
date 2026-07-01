@@ -10,7 +10,7 @@
  */
 import { test, expect } from 'vitest';
 import { resolveCapabilities, defaultTheme } from '@jsvision/core';
-import type { KeyEvent, MouseEvent as CoreMouseEvent } from '@jsvision/core';
+import type { KeyEvent } from '@jsvision/core';
 import { Group, createRenderRoot } from '../src/view/index.js';
 import { createEventLoop } from '../src/event/index.js';
 import { signal } from '../src/reactive/index.js';
@@ -22,9 +22,6 @@ const caps = resolveCapabilities({ env: {}, platform: 'linux', override: { color
 
 function key(k: string): KeyEvent {
   return { type: 'key', key: k, ctrl: false, alt: false, shift: false };
-}
-function mouse(kind: 'down' | 'up', x: number, y: number): CoreMouseEvent {
-  return { type: 'mouse', kind, button: 0, x, y };
 }
 
 /** Mount a dialog under a root, open it modally, and return the loop + the execView promise. */

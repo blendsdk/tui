@@ -82,7 +82,11 @@ test('ST-03: Scroller clips oversized content and reveals lower rows on scroll, 
 test('ST-04: scrollbars mode auto-owns the right bars', () => {
   const bars = (s: Scroller): ScrollBar[] => s.children.filter((c): c is ScrollBar => c instanceof ScrollBar);
 
-  const vertical = new Scroller({ content: new LetterRows(20), extent: { width: 10, height: 20 }, scrollbars: 'vertical' });
+  const vertical = new Scroller({
+    content: new LetterRows(20),
+    extent: { width: 10, height: 20 },
+    scrollbars: 'vertical',
+  });
   const none = new Scroller({ content: new LetterRows(20), extent: { width: 10, height: 20 }, scrollbars: 'none' });
   const both = new Scroller({ content: new LetterRows(20), extent: { width: 30, height: 20 }, scrollbars: 'both' });
   for (const s of [vertical, none, both]) {

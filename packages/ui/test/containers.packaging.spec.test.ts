@@ -18,7 +18,20 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { Commands } from '@jsvision/ui';
+import {
+  Commands,
+  ScrollBar,
+  Scroller,
+  ListView,
+  ListBox,
+  Dialog,
+  okButton,
+  cancelButton,
+  yesButton,
+  noButton,
+  okCancelButtons,
+  yesNoButtons,
+} from '@jsvision/ui';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -32,6 +45,26 @@ function tsFiles(dir: string): string[] {
   }
   return out;
 }
+
+// ST-15 / AC-14 — every RD-11 public symbol is importable from `@jsvision/ui` (the published surface):
+// the container components (classes) + the standard-button helpers (factory functions).
+test('ST-15: ScrollBar/Scroller/ListView/ListBox/Dialog are exported classes', () => {
+  for (const cls of [ScrollBar, Scroller, ListView, ListBox, Dialog]) {
+    expect(typeof cls).toBe('function'); // a constructable class
+  }
+  // Dialog extends the app-shell Window; ListBox extends ListView (the documented hierarchy).
+  expect(Object.getPrototypeOf(ListBox.prototype)).toBe(ListView.prototype);
+});
+
+test('ST-15: the standard-button helpers are exported factory functions', () => {
+  for (const fn of [okButton, cancelButton, yesButton, noButton]) {
+    const btn = fn();
+    expect(btn).toBeTruthy(); // returns a Button instance
+  }
+  const [ok, cancel] = okCancelButtons();
+  const [yes, no] = yesNoButtons();
+  for (const btn of [ok, cancel, yes, no]) expect(btn).toBeTruthy();
+});
 
 // ST-15 / AC-14 / PA-12 — the four standard terminating commands are on the `Commands` set, values
 // equal to their keys (the existing convention).

@@ -98,7 +98,18 @@ function stepScroller(): void {
 
 /** Step 3 — a `ListBox` navigated by ↑↓ then jumped by type-ahead + selected. */
 function stepListView(): void {
-  const items = signal(['Apple', 'Apricot', 'Banana', 'Grape', 'Grapefruit', 'Kiwi', 'Mango', 'Orange', 'Pear', 'Plum']);
+  const items = signal([
+    'Apple',
+    'Apricot',
+    'Banana',
+    'Grape',
+    'Grapefruit',
+    'Kiwi',
+    'Mango',
+    'Orange',
+    'Pear',
+    'Plum',
+  ]);
   const focused = signal(0);
   const selected = signal(-1);
   const list = new ListBox({ items, focused, selected, typeAhead: true });

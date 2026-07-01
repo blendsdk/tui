@@ -9,7 +9,19 @@
  *
  * The `.js` extension in import specifiers is required by NodeNext ESM resolution.
  */
-import { Group, Dialog, Button, Label, Input, Text, signal, range, okButton, cancelButton, Commands } from '@jsvision/ui';
+import {
+  Group,
+  Dialog,
+  Button,
+  Label,
+  Input,
+  Text,
+  signal,
+  range,
+  okButton,
+  cancelButton,
+  Commands,
+} from '@jsvision/ui';
 import { at } from '../story.js';
 import type { Story, StoryContext } from '../story.js';
 
@@ -44,7 +56,15 @@ export const dialogStory: Story = {
 
     g.add(at(new Button('~O~pen dialog…', { command: 'containers.dialog.open', onClick: openDialog }), 1, 1, 16, 2));
     g.add(at(new Text(() => result()), 1, 4, ctx.width - 2, 1));
-    g.add(at(new Text('Set Age to 200, press OK → vetoed (focus returns to Age). Fix it → OK resolves.'), 1, 6, ctx.width - 2, 1));
+    g.add(
+      at(
+        new Text('Set Age to 200, press OK → vetoed (focus returns to Age). Fix it → OK resolves.'),
+        1,
+        6,
+        ctx.width - 2,
+        1,
+      ),
+    );
     return g;
   },
 };

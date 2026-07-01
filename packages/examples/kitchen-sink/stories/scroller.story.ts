@@ -24,7 +24,15 @@ export const scrollerStory: Story = {
   build(ctx: StoryContext) {
     const content = new Group();
     for (let i = 0; i < CONTENT_LINES; i += 1) {
-      content.add(at(new Text(`Line ${String(i + 1).padStart(2, '0')} — the quick brown fox jumps over the lazy dog.`), 0, i, CONTENT_WIDTH, 1));
+      content.add(
+        at(
+          new Text(`Line ${String(i + 1).padStart(2, '0')} — the quick brown fox jumps over the lazy dog.`),
+          0,
+          i,
+          CONTENT_WIDTH,
+          1,
+        ),
+      );
     }
 
     const extent = { width: CONTENT_WIDTH, height: CONTENT_LINES };
@@ -35,7 +43,15 @@ export const scrollerStory: Story = {
     const vpW = Math.min(CONTENT_WIDTH, Math.max(24, ctx.width - 24));
     const vpH = Math.max(6, ctx.height - 4);
     g.add(at(scroller, 1, 1, vpW, vpH));
-    g.add(at(new Text('Focus the viewport (Tab), then ↑↓ / PgUp / PgDn / Home / End — or drag the bar / wheel.'), 1, ctx.height - 1, ctx.width - 2, 1));
+    g.add(
+      at(
+        new Text('Focus the viewport (Tab), then ↑↓ / PgUp / PgDn / Home / End — or drag the bar / wheel.'),
+        1,
+        ctx.height - 1,
+        ctx.width - 2,
+        1,
+      ),
+    );
     return g;
   },
 };
