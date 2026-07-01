@@ -8,6 +8,11 @@
  * The `.js` extension in import specifiers is required by NodeNext ESM resolution.
  */
 import type { Story } from '../story.js';
+import { reactiveStory } from './reactive.story.js';
+import { layoutStory } from './layout.story.js';
+import { viewStory } from './view.story.js';
+import { eventsStory } from './events.story.js';
+import { shellStory } from './shell.story.js';
 import { textStory } from './text.story.js';
 import { labelStory } from './label.story.js';
 import { buttonStory } from './button.story.js';
@@ -15,8 +20,13 @@ import { inputStory } from './input.story.js';
 import { checkGroupStory } from './checkgroup.story.js';
 import { radioGroupStory } from './radiogroup.story.js';
 
-/** Every registered story, in navigator order. */
+/** Every registered story, in navigator order (Foundations RD-01…05, then Controls RD-06). */
 export const STORIES: readonly Story[] = [
+  reactiveStory,
+  layoutStory,
+  viewStory,
+  eventsStory,
+  shellStory,
   textStory,
   labelStory,
   buttonStory,

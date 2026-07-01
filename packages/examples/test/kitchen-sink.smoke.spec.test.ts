@@ -13,7 +13,7 @@
  */
 import { test, expect } from 'vitest';
 import { resolveCapabilities } from '@jsvision/core';
-import { createRenderRoot } from '@jsvision/ui';
+import { createRenderRoot, createRoot } from '@jsvision/ui';
 import { STORIES } from '../kitchen-sink/stories/index.js';
 import { at } from '../kitchen-sink/story.js';
 
@@ -46,9 +46,13 @@ test('story ids are unique (the shell uses them as menu command names)', () => {
 // The core smoke oracle: each story builds + mounts + draws without throwing, and paints something.
 for (const story of STORIES) {
   test(`story "${story.id}" mounts headlessly and paints`, () => {
-    const view = at(story.build({ caps, width: WIDTH, height: HEIGHT }), 0, 0, WIDTH, HEIGHT);
-    const rr = createRenderRoot({ width: WIDTH, height: HEIGHT }, { caps });
-    expect(() => rr.mount(view)).not.toThrow();
-    expect(paintedCells(rr.buffer().rows()), `${story.id} painted nothing`).toBeGreaterThan(0);
+    // Build inside a disposable owner (as the shell does) so any story computeds/effects are owned.
+    createRoot((dispose) => {
+      const view = at(story.build({ caps, width: WIDTH, height: HEIGHT }), 0, 0, WIDTH, HEIGHT);
+      const rr = createRenderRoot({ width: WIDTH, height: HEIGHT }, { caps });
+      expect(() => rr.mount(view)).not.toThrow();
+      expect(paintedCells(rr.buffer().rows()), `${story.id} painted nothing`).toBeGreaterThan(0);
+      dispose();
+    });
   });
 }

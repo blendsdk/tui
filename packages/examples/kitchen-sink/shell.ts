@@ -21,6 +21,7 @@ import {
   Group,
   Text,
   View,
+  createRoot,
   type DispatchEvent,
   type DrawContext,
 } from '@jsvision/ui';
@@ -164,6 +165,15 @@ export function createShowcase(caps: CapabilityProfile): Showcase {
   app.desktop.addWindow(canvas);
 
   let currentIndex = -1; // -1 = the welcome screen
+  // Disposes the reactive owner of the currently-shown story's build() (its signals/computeds/
+  // effects), so swapping stories never leaks reactive computations. `null` on the welcome screen.
+  let disposeStory: (() => void) | null = null;
+
+  /** Tear down the previous story's reactive graph before showing the next content. */
+  function disposePrevious(): void {
+    disposeStory?.();
+    disposeStory = null;
+  }
 
   /** Swap the canvas to a new content view, set its title, and focus its first control. */
   function showView(view: View, title: string): void {
@@ -177,6 +187,7 @@ export function createShowcase(caps: CapabilityProfile): Showcase {
 
   /** Show a story: a blurb header + its live build() body, filling the canvas interior. */
   function showStory(story: Story): void {
+    disposePrevious();
     currentIndex = STORIES.indexOf(story);
     const iw = canvas.layout.rect.width - 2; // interior (1-cell border each side)
     const ih = canvas.layout.rect.height - 2;
@@ -186,13 +197,20 @@ export function createShowcase(caps: CapabilityProfile): Showcase {
     holder.add(at(new Text(`${chip}${story.blurb}`), 0, 0, iw, 2)); // 2 rows so long blurbs don't clip
     const bodyW = iw;
     const bodyH = Math.max(1, ih - 3);
-    const body = story.build({ caps, width: bodyW, height: bodyH });
-    holder.add(at(body, 0, 3, bodyW, bodyH));
+    // Build inside a disposable owner so any signal/computed/effect the story creates is torn down
+    // when we navigate away (disposed in disposePrevious), not leaked across swaps.
+    let body: Group;
+    createRoot((dispose) => {
+      disposeStory = dispose;
+      body = story.build({ caps, width: bodyW, height: bodyH });
+    });
+    holder.add(at(body!, 0, 3, bodyW, bodyH));
     showView(holder, `${story.category} / ${story.title}`);
   }
 
   /** Show the welcome/index catalog. */
   function showWelcome(): void {
+    disposePrevious();
     currentIndex = -1;
     const iw = canvas.layout.rect.width - 2;
     const ih = canvas.layout.rect.height - 2;
