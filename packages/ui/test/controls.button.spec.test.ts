@@ -4,8 +4,11 @@
  * Source: jsvision-ui RD-06 AC-3 → ST-05/ST-06 (essential-controls/07-testing-strategy.md).
  * TV source: `tbutton.cpp:66-275` (drawState shadow `▄`/`█`/`▀`, state→role, activate) +
  * `tvtext1.cpp` glyphs. Real `View`/`RenderRoot`/`EventLoop` over fixed `caps`; buffers read
- * pre-serialize. The shadow oracle asserts the TV block-glyph shadow (PF-007), in the `shadow`
- * role (darkGray/black, TV `getColor(8)` per 03-03). Expectations derive from the TV geometry +
+ * pre-serialize. The label is centered with NO `[ ]` brackets — TV's `markers` are `showMarkers`-only
+ * (monochrome), off on a color palette (`tbutton.cpp:154-158`). The shadow oracle asserts the TV
+ * block-glyph shadow (PF-007) in the `buttonShadow` role — TV `cShadow = getColor(8)` resolves
+ * `cpButton[8]=0x0F` → cpGrayDialog slot 15 → `cpAppColor[0x2E]=0x70` = black-on-lightGray, the dialog
+ * background with black ink (NOT the window drop-shadow). Expectations derive from the TV geometry +
  * theme roles, never from the implementation.
  */
 import { test, expect } from 'vitest';
@@ -35,27 +38,29 @@ class CommandSpy extends View {
   }
 }
 
-// ST-05 / AC-3 — a `[ OK ]` button draws the TV block-glyph shadow and picks its face role per state.
-// Geometry (width 8, height 2): col 0 pad, `[`@1, " OK "@2..5, `]`@6, shadow col 7; bottom row shadow.
-test('ST-05: Button draws [ OK ] with the ▄/█/▀ block-glyph shadow and the hotkey accent', () => {
+// ST-05 / AC-3 — an OK button draws the TV block-glyph shadow and picks its face role per state.
+// Geometry (width 8, height 2): TV drawState → s=7, T=0; l = (s - 2 - 1)/2 = 2, indent i=1, so "OK"
+// centers at cols 3..4. NO brackets (showMarkers off). Shadow: `▄`@col 7 row 0, `▀` across cols 2..7
+// on the bottom row, all in the `buttonShadow` role (0x70 black-on-lightGray).
+test('ST-05: Button draws a centered OK (no brackets) with the ▄/█/▀ block-glyph shadow + accent', () => {
   const btn = new Button('~O~K', { default: true });
   const rr = createRenderRoot({ width: 8, height: 2 }, { caps });
   rr.mount(btn);
   const buf = rr.buffer();
 
-  // Brackets + centered title.
-  expect(buf.get(1, 0)?.char).toBe('[');
-  expect(buf.get(6, 0)?.char).toBe(']');
+  // Centered title, no `[ ]` markers (color palette): cols 1 and 6 are plain face padding.
   expect(buf.get(3, 0)?.char).toBe('O');
   expect(buf.get(4, 0)?.char).toBe('K');
+  expect(buf.get(1, 0)?.char).toBe(' ');
+  expect(buf.get(6, 0)?.char).toBe(' ');
   // Hotkey 'O' accented in buttonShortcut; the rest in buttonDefault (default + unfocused).
   expect(buf.get(3, 0)?.fg).toBe(defaultTheme.buttonShortcut.fg);
   expect(buf.get(4, 0)?.fg).toBe(defaultTheme.buttonDefault.fg);
 
-  // TV block-glyph shadow in the `shadow` role: right column `▄` (top), bottom row `▀` across.
+  // TV block-glyph shadow in the `buttonShadow` role: right column `▄` (top), bottom row `▀` across.
   expect(buf.get(7, 0)?.char).toBe('▄');
-  expect(buf.get(7, 0)?.fg).toBe(defaultTheme.shadow.fg);
-  expect(buf.get(7, 0)?.bg).toBe(defaultTheme.shadow.bg);
+  expect(buf.get(7, 0)?.fg).toBe(defaultTheme.buttonShadow.fg);
+  expect(buf.get(7, 0)?.bg).toBe(defaultTheme.buttonShadow.bg);
   expect(buf.get(2, 1)?.char).toBe('▀');
   expect(buf.get(7, 1)?.char).toBe('▀');
 });

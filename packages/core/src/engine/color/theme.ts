@@ -61,6 +61,14 @@ export interface Theme {
   readonly buttonDisabled: ThemeRole;
   /** Button `~hotkey~` accent (slot 14, `0x2E` yellow-on-green). */
   readonly buttonShortcut: ThemeRole;
+  /**
+   * Button drop-shadow blocks (`▄`/`█`/`▀`). TV `TButton::drawState` draws them in `getColor(8)`,
+   * which resolves `cpButton[8]=0x0F` → `cpGrayDialog` slot 15 → `cpAppColor[0x2E]=0x70` =
+   * black-on-lightGray — the dialog's own background with black ink, so the block glyphs paint the
+   * shadow onto the grey field. This is NOT the window drop-shadow ({@link shadow}, darkGray-on-black).
+   * (`tbutton.cpp:41` `cpButton` / `:121` `cShadow = getColor(8)` / `:143-146` shadow glyphs)
+   */
+  readonly buttonShadow: ThemeRole;
   /** Cluster (check/radio) item normal (slot 16, `0x30` black-on-cyan). */
   readonly clusterNormal: ThemeRole;
   /** Cluster focused item (slot 17, `0x3F` white-on-cyan). */
@@ -127,6 +135,7 @@ export const defaultTheme: Theme = {
   buttonDefault: { fg: PALETTE.brightCyan, bg: PALETTE.green },
   buttonDisabled: { fg: PALETTE.darkGray, bg: PALETTE.lightGray },
   buttonShortcut: { fg: PALETTE.yellow, bg: PALETTE.green },
+  buttonShadow: { fg: PALETTE.black, bg: PALETTE.lightGray },
   clusterNormal: { fg: PALETTE.black, bg: PALETTE.cyan },
   clusterSelected: { fg: PALETTE.white, bg: PALETTE.cyan },
   clusterShortcut: { fg: PALETTE.yellow, bg: PALETTE.cyan },

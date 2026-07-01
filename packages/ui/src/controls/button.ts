@@ -1,14 +1,17 @@
 /**
  * `Button` — a focusable command button (Turbo Vision `TButton`, RD-06 AC-3/PA-1/PA-7/PA-8).
  *
- * Draws `[ text ]` with TV's block-glyph drop-shadow and activates on click / `Space` (focused) /
+ * Draws the label with TV's block-glyph drop-shadow and activates on click / `Space` (focused) /
  * `Alt-<hotkey>`, and — when `default` — on `Enter` if unconsumed; activation emits a typed command
- * (`ev.emit`) and/or calls `onClick`. Faithful to `TButton::drawState` (`tbutton.cpp:102-164`): the
- * `▄`(0xDC)/`█`(0xDB)/`▀`(0xDF) shadow (`shadows = "\xDC\xDB\xDF"`, `tbutton.cpp:116/143-146`) drawn
- * down the right column and across the bottom row in the shadow role (TV `getColor(8)` ≈ darkGray/black,
- * 03-03), and the state→role mapping (`tbutton.cpp:107-118`). The 100 ms press animation
- * (`tbutton.cpp:231`) and the focus/default end-markers (`showMarkers`) are out of v1 (cosmetic, PA-8);
- * the hardware caret is deferred (DEF-19). The `.js` extension is required by NodeNext resolution.
+ * (`ev.emit`) and/or calls `onClick`. Faithful to `TButton::drawState` (`tbutton.cpp:102-165`): the
+ * label is centered (no brackets — the `[ ]` `markers` only appear when `showMarkers` is on, i.e. the
+ * monochrome palette, `tbutton.cpp:154-158`), with the `▄`(0xDC)/`█`(0xDB)/`▀`(0xDF) shadow
+ * (`shadows = "\xDC\xDB\xDF"`, `tbutton.cpp:116/143-146`) drawn down the right column and across the
+ * bottom row in the `buttonShadow` role — TV `cShadow = getColor(8)` = `cpButton[8]=0x0F` →
+ * cpGrayDialog slot 15 → `cpAppColor[0x2E]=0x70` = black-on-lightGray, the dialog's own background with
+ * black ink (NOT the window drop-shadow). The pressed state shifts the face right one cell and drops
+ * the shadow (`down` branch, `tbutton.cpp:130-135`), and the state→role mapping is `tbutton.cpp:107-118`.
+ * The hardware caret is deferred (DEF-19). The `.js` extension is required by NodeNext resolution.
  */
 import { View } from '../view/index.js';
 import type { DrawContext, DispatchEvent } from '../view/index.js';
@@ -82,7 +85,8 @@ export class Button extends View {
   }
 
   /**
-   * Paint `[ text ]` with the state face role + the TV block-glyph drop-shadow.
+   * Paint the centered label with the state face role + the TV block-glyph drop-shadow, mirroring
+   * `TButton::drawState` for the color palette (`showMarkers` off → no `[ ]` brackets).
    *
    * @param ctx The clipped, view-local paint context.
    */
@@ -97,43 +101,58 @@ export class Button extends View {
           : 'button'; // TV "normal"
     const face = ctx.color(faceRole);
     const accent = ctx.color('buttonShortcut');
-    const shadow = ctx.color('shadow');
+    const shadow = ctx.color('buttonShadow'); // TV cShadow = getColor(8) = 0x70 (black-on-lightGray)
+    const down = this.pressed;
     const { width: w, height: h } = ctx.size;
-    if (w < 2 || h < 1) return;
-    const s = w - 1; // shadow column index
-    const titleRow = Math.max(0, Math.floor(h / 2) - 1);
+    if (w < 2 || h < 2) return; // TV needs ≥2 rows: content row(s) + the bottom shadow row
+    const s = w - 1; // last column index
+    const titleRow = Math.floor(h / 2) - 1; // TV T = size.y/2 - 1
+    const bottomFill = down ? ' ' : '▀'; // shadows[2] up; blank when pressed (no shadow)
 
-    // Content rows (all but the bottom shadow row): the button face + the right shadow column.
+    // Content rows y = 0..h-2 (all but the bottom shadow row).
     for (let y = 0; y <= h - 2; y += 1) {
-      ctx.fillRect(0, y, w, 1, ' ', face);
-      ctx.text(s, y, y === 0 ? '▄' : '█', shadow); // shadows[0]/[1]
-      if (y === titleRow) this.drawTitle(ctx, y, s, face, accent);
+      ctx.fillRect(0, y, w, 1, ' ', face); // moveChar(0,' ',cButton,size.x)
+      ctx.text(0, y, ' ', shadow); // putAttribute(0,cShadow): col 0 → shadow (grey on a grey dialog)
+      let titleIndent: number;
+      if (down) {
+        ctx.text(1, y, ' ', shadow); // putAttribute(1,cShadow): pressed shifts the face right one cell
+        titleIndent = 2;
+      } else {
+        ctx.text(s, y, y === 0 ? '▄' : '█', shadow); // shadows[0]/[1] down the right column
+        titleIndent = 1;
+      }
+      if (y === titleRow) this.drawTitle(ctx, y, s, titleIndent, face, accent);
     }
-    // Bottom shadow row: two leading spaces then `▀` across (tbutton.cpp:161-162).
+    // Bottom shadow row: two leading spaces then the fill across cols 2..s (tbutton.cpp:162-163).
     const by = h - 1;
     ctx.fillRect(0, by, Math.min(2, w), 1, ' ', shadow);
-    if (s - 1 > 0) ctx.fillRect(2, by, s - 1, 1, '▀', shadow); // shadows[2], cols 2..s
+    if (s - 1 > 0) ctx.fillRect(2, by, s - 1, 1, bottomFill, shadow);
   }
 
   /**
-   * Draw the bracketed, centered title on `row`: `[` at col 1, `]` at col `s-1`, the label centered
-   * in the inner region with its `~hotkey~` run accented.
+   * Draw the centered label on `row` (TV `drawTitle`, `tbutton.cpp:71-99`): with `l =
+   * (s - textWidth - 1) / 2` clamped to ≥ 1, place the `~hotkey~`-accented runs starting at column
+   * `indent + l`. No brackets — TV's `[ ]` markers are `showMarkers`-only (monochrome).
+   *
+   * @param ctx    The clipped, view-local paint context.
+   * @param row    The title row (view-local y).
+   * @param s      The last column index (`width - 1`).
+   * @param indent TV's `i` — 1 normally, 2 when pressed (the face shifts right).
+   * @param face   The resolved face style for non-hotkey glyphs.
+   * @param accent The resolved `buttonShortcut` style for the `~hotkey~` glyph.
    */
   protected drawTitle(
     ctx: DrawContext,
     row: number,
     s: number,
+    indent: number,
     face: ReturnType<DrawContext['color']>,
     accent: ReturnType<DrawContext['color']>,
   ): void {
-    ctx.text(1, row, '[', face);
-    ctx.text(s - 1, row, ']', face);
-    const innerStart = 2;
-    const innerWidth = s - 1 - innerStart; // cols 2..s-2
     const textW = stringWidth(this.parsed.text);
-    const start = innerStart + Math.max(0, Math.floor((innerWidth - textW) / 2));
+    const l = Math.max(1, Math.floor((s - textW - 1) / 2));
     for (const seg of tildeSegments(this.raw)) {
-      ctx.text(start + seg.col, row, seg.text, seg.hot ? accent : face);
+      ctx.text(indent + l + seg.col, row, seg.text, seg.hot ? accent : face);
     }
   }
 

@@ -130,6 +130,8 @@ const CONTROL_ROLE_SLOTS = {
   buttonDefault: 11,
   buttonDisabled: 13,
   buttonShortcut: 14,
+  // `buttonShadow` = TV `cShadow = getColor(8)`: `cpButton[8]=0x0F` → cpGrayDialog slot 15 → 0x70.
+  buttonShadow: 15,
   clusterNormal: 16,
   clusterSelected: 17,
   clusterShortcut: 18,
