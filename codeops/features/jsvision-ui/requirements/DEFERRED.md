@@ -4,7 +4,7 @@
 > was intentionally deferred (cut from a v1 RD scope but meant to be revisited), so nothing is lost
 > between RDs. Created 2026-06-30 at the user's request (amends AR-99 — the per-RD "Won't Have / Deferred"
 > tables remain the **authoritative** source; this doc aggregates them and adds stable `DEF-NN` ids).
-> **Last Updated**: 2026-07-01 (RD-06 planning added DEF-16…DEF-18)
+> **Last Updated**: 2026-07-01 (DEF-19 corrected — audit found no `Input` caret is rendered at all)
 > **CodeOps Skills Version**: 3.1.0
 
 **How to use:** when a future RD is drafted, scan this register for items whose **Intended owner** is
@@ -35,7 +35,7 @@ that RD (or "unassigned"), pull them into its scope, and flip the row's **Status
 | **DEF-16** | **Input modal focus-trap on invalid** (TV `valid()`-gate vetoes leaving an invalid blocking field) | RD-06 plan · PA-2 | **RD-11** (Dialog's modal `valid()` sweep) | Deferred (RD-06 exposes `valid()`+`invalid`, no trap) |
 | **DEF-17** | **Multi-column cluster layout** (TV `TCluster` flows `size.y` rows per column + `←`/`→` nav) | RD-06 plan · PA-6 | unassigned (on real need) | Deferred (RD-06 is single-column) |
 | **DEF-18** | **`Text` center/right alignment** (TV `TStaticText` leading-`0x03` center marker) | RD-06 plan · PA-14 | unassigned (optional) | Deferred (RD-06 is word-wrap left-aligned) |
-| **DEF-19** | **Hardware-caret positioning** for the focused `Input` (terminal `CSI row;col H`; needs a `View`→host caret seam — none exists today) | RD-06 plan · PF-002 | **RD-07** (host design pass) | Deferred (logical caret rendered in the buffer; no seam yet) |
+| **DEF-19** | **Visible text cursor for the focused `Input`** — *no caret is shown today.* Two parts: **(a)** an in-buffer **logical** caret cell at `curPos − firstPos + 1` when focused (the RD-06 plan `03-05-input.md` specified this, but `Input.draw` renders none — implementable now, **no new infra**); **(b)** the real terminal **hardware/blinking** caret (`CSI row;col H` via `cursor.show()/to()`), which needs a `View`→host caret seam (`RenderRoot`/`EventLoop`/`host.render(buffer)` carry no caret). | RD-06 plan · PF-002 · audit 2026-07-01 | **RD-07** (host design pass); part (a) pullable sooner | Deferred — **correction**: the prior "logical caret rendered in the buffer" note was inaccurate; **neither** caret is rendered yet |
 
 > `unassigned` = no gated RD owns it yet; pull it into the first RD that needs it (this register is the
 > safety net). The `RD-07`-targeted rows (DEF-01…DEF-03) are also mirrored in RD-06's Deferred table +

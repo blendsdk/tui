@@ -102,26 +102,56 @@ terminal-matrix.json       RD-03 cross-terminal evidence (appended by the probe 
 ## Turbo Vision fidelity (NON-NEGOTIABLE)
 
 > `@jsvision/ui` is a faithful re-creation of Borland Turbo Vision. **Do not reimagine the
-> drawing.** For any component, widget, or chrome that has a Turbo Vision counterpart, you MUST
-> first read the original source and replicate **their** geometry, glyphs, sizing, layout, and
-> hit-zones exactly.
+> drawing. Decode, don't design.** These components already exist in C++ — the job is careful
+> transcription + verification, **not** invention. For any component, widget, or chrome with a Turbo
+> Vision counterpart you MUST review and decode the original C++ **BOTH BEFORE AND AFTER**
+> implementing it, and replicate **their** geometry, glyphs, sizing, layout, hit-zones, and colors
+> exactly. The canonical gate + copy-paste plan checklist live in
+> [`codeops/tv-fidelity-gate.md`](codeops/tv-fidelity-gate.md).
 
 - **Source of truth:** the original Turbo Vision (magiblot/tvision) checked out at
   `/home/gevik/workdir/github/tvision` — `source/tvision/t*.cpp` (drawing/sizing),
-  `source/tvision/tvtext1.cpp` (the `frameChars`/glyph tables), `include/tvision/*.h` (geometry).
-- **Process for every TV-derived component** (before writing or changing its draw/size/layout code):
-  1. Locate the original class (e.g. `TMenuBox`, `TMenuBar`, `TFrame`, `TButton`, `TScrollBar`,
-     `TWindow`, `TDialog`) and read its `draw()`, sizing (`getRect`/`sizeLimits`), `getItemRect`,
-     and the glyph tables it uses.
-  2. Replicate the **exact** column math, frame/gutter insets, padding, fill characters, markers,
-     and hit-zones. Convert CP437 byte glyphs to their Unicode equivalents (mind East-Asian
-     ambiguous-width — see the close-glyph note: prefer unambiguous-narrow code points).
-  3. Cite the original file(s) in the code's JSDoc and in the commit message.
+  `source/tvision/tvtext1.cpp` (the `frameChars`/glyph tables + `cpAppColor`), `include/tvision/*.h`
+  + `include/tvision/app.h`/`dialogs.h` (geometry + the `cpX` palette definitions).
+
+- **GATE 1 — BEFORE writing/changing any draw/size/layout code.** Open the original class (e.g.
+  `TMenuBox`, `TFrame`, `TButton`, `TInputLine`, `TScrollBar`, `TWindow`, `TDialog`) and decode:
+  1. Its `draw()` + sizing (`getRect`/`sizeLimits`/`getItemRect`) — the exact column math, frame/gutter
+     insets, padding, fill characters, `markers`/`shadows`/`specialChars`, and hit-zones.
+  2. **Every color via the full `getColor(N)` palette chain** — resolve `N` through the view's local
+     palette (`cpButton`/`cpInputLine`/…) → owner palette (`cpGrayDialog`/…) → `cpAppColor` → the
+     attribute byte `0xHL` (high nibble = bg, low nibble = fg). Color indirection — not glyphs — is
+     where fidelity silently breaks (the RD-06 `TButton` shadow shipped wrong because `getColor(8)`
+     was guessed as "darkGray/black" instead of decoded to `0x70` black-on-lightGray).
+  3. Watch for **mode-gated features** the color path enables/disables — e.g. `showMarkers` (the
+     `[ ]` brackets) is monochrome-only; on a color palette a `TButton` has **no** brackets.
+  Convert CP437 byte glyphs to Unicode (mind East-Asian ambiguous width — prefer unambiguous-narrow
+  code points). **Cite the exact `file:line` of every decoded fact in the code's JSDoc.**
+
+- **GATE 2 — AFTER implementing (a component is NOT "done" until this passes).** Re-open the same
+  `.cpp` and **diff our rendered output against the decode**, cell by cell: glyphs, column math,
+  hit-zones, and every resolved color. Record the decode (especially any `getColor` palette
+  resolution) in the code/commit. If they disagree, our code is wrong — fix it against the source.
+
+- **The C++ source outranks our own spec tests (TV-derived components only).** A `*.spec.test.ts`
+  can encode a *mis-decode* — the ST-05 button oracle asserted the phantom `[ ]` brackets. So for a
+  TV-derived component, if a spec oracle disagrees with a faithful C++ decode, **the spec test is the
+  defect**: fix it against the source (a deliberate, narrow exception to "spec tests are immutable",
+  scoped to fidelity oracles). Cite the `.cpp` when correcting the oracle.
+
 - **No invention.** If the original is unclear or a detail isn't covered, surface it and ask —
   never substitute your own design for theirs. This is proven (the RD-05 menu box matched
-  `tmenubox.cpp` 1:1); every component from here on out honors the same rule.
-- This governs **drawing/geometry**. Behavior the original couldn't have (truecolor, reactive
-  binding, async modality) may extend TV, but the visual shapes/sizes must still match.
+  `tmenubox.cpp` 1:1).
+- This governs **drawing/geometry/color**. Behavior the original couldn't have (truecolor, reactive
+  binding, async modality) may extend TV, but the visual shapes/sizes/colors must still match.
+
+- **Plan-flow enforcement (make_plan / exec_plan).** For every TV-derived component:
+  - **make_plan** MUST give the component's spec doc (`03-NN-*.md`) a "TV decode (GATE 1)" section
+    citing the original `file:line` (draw + sizing + the `getColor` chain), and MUST add the two
+    gate tasks from [`codeops/tv-fidelity-gate.md`](codeops/tv-fidelity-gate.md) to
+    `99-execution-plan.md`: `[ ] BEFORE-decode …` and `[ ] AFTER-diff …`.
+  - **exec_plan** MUST NOT mark a TV-derived component `[x]` until its AFTER-diff task is done and
+    the decode (incl. palette resolution) is recorded in the code/commit.
 
 ## Special rules
 
