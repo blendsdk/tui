@@ -7,4 +7,6 @@
  *
  * The `.js` extension in import specifiers is required by NodeNext ESM resolution.
  */
-export {};
+export { Dialog } from './dialog.js';
+export type { DialogOptions } from './dialog.js';
+export { okButton, cancelButton, yesButton, noButton, okCancelButtons, yesNoButtons } from './buttons.js';

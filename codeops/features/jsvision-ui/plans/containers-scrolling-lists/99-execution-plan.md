@@ -2,7 +2,7 @@
 
 > **Implements**: jsvision-ui/RD-11 · **Feature**: jsvision-ui · **Plan**: containers-scrolling-lists
 > **CodeOps Skills Version**: 3.1.0
-> **Progress**: 21 / 34 tasks (62%) · **Last Updated**: 2026-07-01 (Phase 3 ListView/ListBox complete)
+> **Progress**: 27 / 34 tasks (79%) · **Last Updated**: 2026-07-01 (Phase 4 Dialog complete)
 
 Spec-first per component (spec oracles RED → implement → GREEN → impl tests → verify). Every TV-derived
 component (Phases 1–4) carries the **NON-NEGOTIABLE fidelity gate**: a `[ ] BEFORE-decode` task (GATE 1,
@@ -52,12 +52,13 @@ gate also runs `yarn test:e2e` + `yarn check:deps` + `yarn lint`.
 
 
 ### Phase 4 — Dialog + standard buttons  ·  [03-05](03-05-dialog.md)  (TV `tdialog.cpp`/`tgroup.cpp`)  · depends on P0 seam + RD-06
-- [ ] **P4.1** `[ ] BEFORE-decode` — re-open `tdialog.cpp`+`tgroup.cpp`; record TWindow-frame reuse, `wfMove|wfClose`, `valid()` (cmCancel bypass + child sweep), command constants.
-- [ ] **P4.2** (spec) `dialog.spec.test.ts` ST-09/10/11/12 — RED.
-- [ ] **P4.3a** Generalize the shared frame chrome for Dialog (PF-001, **edits existing files**): widen `FrameRole` to include `'dialog'`; add `closable`/`zoomable` to `FrameState` + gate the close/zoom icon draws on them (TV `TFrame` gates on `wfClose`/`wfZoom`); add a decoded `icon` field to the core `dialog` theme role. `Dialog.draw` calls the shared `drawFrame(...)` with the `dialog` role — DRY. (No new frame drawer.)
-- [ ] **P4.3** Implement `dialog/dialog.ts` (`Dialog extends Window`: `dialog` role draw via P4.3a, flags PA-6, `attachModalHost`, **postProcess terminating-command catch gated on `isCommandEnabled`** (PF-007) → `valid()`-gate → `endModal`, the `valid()` child sweep PA-7/DEF-16, **and an `onEvent` override routing the frame close-zone + Esc → cancel→`valid()`-bypass→`endModal`, not `super`/`this.close()`**, PF-002) + `dialog/buttons.ts` (standard-button helpers PA-13). GREEN ST-09/10/11/12.
-- [ ] **P4.4** Impl tests: PA-1 non-host guard, children-without-valid treated valid, nested modal LIFO; **frame close `[×]`-click AND Esc each resolve `execView` to `cancel` (no hang) + bypass `valid()`** (PF-002); a disabled terminating command is ignored by the catch (PF-007); the `dialog` frame shows the close box + **no** zoom box (PF-001).
-- [ ] **P4.5** `[ ] AFTER-diff` — re-open `tdialog.cpp`+`tgroup.cpp`, confirm frame role/flags/valid-bypass/sweep/constants; record. Verify.
+- [x] **P4.1** `[x] BEFORE-decode` — re-open `tdialog.cpp`+`tgroup.cpp`; record TWindow-frame reuse, `wfMove|wfClose`, `valid()` (cmCancel bypass + child sweep), command constants. <!-- 2026-07-01: decode in dialog.ts JSDoc; +cFrame/cTitle decode for PA-19 -->
+- [x] **P4.2** (spec) `dialog.spec.test.ts` ST-09/10/11/12 — RED. <!-- 2026-07-01 -->
+- [x] **P4.3a** Generalize the shared frame chrome for Dialog (PF-001, **edits existing files**): widen `FrameRole` to include `'dialog'`; add `closable`/`zoomable` to `FrameState` + gate the close/zoom icon draws on them (TV `TFrame` gates on `wfClose`/`wfZoom`); add a decoded `icon` field to the core `dialog` theme role. `Dialog.draw` calls the shared `drawFrame(...)` with the `dialog` role — DRY. (No new frame drawer.) <!-- 2026-07-01; +PA-19: dialog role corrected to TV-faithful white/white/brightGreen -->
+- [x] **P4.3** Implement `dialog/dialog.ts` (`Dialog extends Window`: `dialog` role draw via P4.3a, flags PA-6, `attachModalHost`, **postProcess terminating-command catch gated on `isCommandEnabled`** (PF-007) → `valid()`-gate → `endModal`, the `valid()` child sweep PA-7/DEF-16, **and an `onEvent` override routing the frame close-zone + Esc → cancel→`valid()`-bypass→`endModal`, not `super`/`this.close()`**, PF-002) + `dialog/buttons.ts` (standard-button helpers PA-13). GREEN ST-09/10/11/12. <!-- 2026-07-01 -->
+- [x] **P4.4** Impl tests: PA-1 non-host guard, children-without-valid treated valid, nested modal LIFO; **frame close `[×]`-click AND Esc each resolve `execView` to `cancel` (no hang) + bypass `valid()`** (PF-002); a disabled terminating command is ignored by the catch (PF-007); the `dialog` frame shows the close box + **no** zoom box (PF-001). <!-- 2026-07-01: 6 dialog impl + 3 modalhost impl green -->
+- [x] **P4.5** `[x] AFTER-diff` — re-open `tdialog.cpp`+`tgroup.cpp`, confirm frame role/flags/valid-bypass/sweep/constants; record. Verify. <!-- 2026-07-01: GATE-2 in dialog.ts; verify 414 ui green -->
+
 
 ### Phase 5 — Kitchen-sink stories + Navigator + demo  ·  [03-06](03-06-kitchen-sink.md)
 - [ ] **P5.1** Stories `containers/scrollbar`·`scroller`·`listview`·`dialog` (+ `stories/index.ts`); optional `StoryContext.execView` for the Dialog story. Smoke test (ST-16) green.

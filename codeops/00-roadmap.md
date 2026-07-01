@@ -1,7 +1,7 @@
 # Portfolio Roadmap: Ink
 
 > **Status**: Active
-> **Last Updated**: 2026-07-01 (jsvision-ui RD-11 containers/scrolling/lists → 🔄 Executing — Phase 3 ListView/ListBox complete)
+> **Last Updated**: 2026-07-01 (jsvision-ui RD-11 containers/scrolling/lists → 🔄 Executing — Phase 4 Dialog complete)
 > **Features**: 0 / 1 done
 > **CodeOps Skills Version**: 3.0.0
 
@@ -13,7 +13,7 @@
 
 | Feature | Roadmap | Stage Summary | Progress | Status | Last Updated |
 |---------|---------|---------------|----------|--------|--------------|
-| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 7 ✅ Done (RD-01…RD-06, RD-10) · 1 🔄 Executing (RD-11 — Phase 3 ✓) · 3 ⬜ Backlog (RD-07…09) | 7 / 11 done | 🔄 | 2026-07-01 |
+| jsvision-ui | [→](features/jsvision-ui/00-roadmap.md) | 7 ✅ Done (RD-01…RD-06, RD-10) · 1 🔄 Executing (RD-11 — Phase 4 ✓) · 3 ⬜ Backlog (RD-07…09) | 7 / 11 done | 🔄 | 2026-07-01 |
 
 ## Archived
 

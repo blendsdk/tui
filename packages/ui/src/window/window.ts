@@ -118,7 +118,15 @@ export class Window extends Group {
     drawFrame(
       ctx,
       ctx.size,
-      { title: this.title(), number: this.number, active, zoomed: this.isZoomed(), resizable: this.resizable },
+      {
+        title: this.title(),
+        number: this.number,
+        active,
+        zoomed: this.isZoomed(),
+        resizable: this.resizable,
+        closable: this.closable,
+        zoomable: this.zoomable,
+      },
       role,
     );
   }

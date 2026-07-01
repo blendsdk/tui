@@ -77,3 +77,13 @@ export { ScrollBar, Scroller } from './scroll/index.js';
 export type { ScrollBarOptions, ScrollerOptions, ScrollbarsMode } from './scroll/index.js';
 export { ListView, ListBox } from './list/index.js';
 export type { ListViewOptions, ListBoxOptions } from './list/index.js';
+export {
+  Dialog,
+  okButton,
+  cancelButton,
+  yesButton,
+  noButton,
+  okCancelButtons,
+  yesNoButtons,
+} from './dialog/index.js';
+export type { DialogOptions } from './dialog/index.js';

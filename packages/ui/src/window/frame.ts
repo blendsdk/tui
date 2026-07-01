@@ -47,10 +47,17 @@ export interface FrameState {
   zoomed: boolean;
   /** Whether the window can be resized — gates the SE drag grip (TV draws it only for `wfGrow`). */
   resizable: boolean;
+  /** Whether the window can be closed — gates the close `[×]` box (TV `wfClose`). Default `true`. */
+  closable?: boolean;
+  /** Whether the window can be zoomed — gates the zoom `[↑]`/`[↕]` box (TV `wfZoom`). Default `true`. */
+  zoomable?: boolean;
 }
 
-/** The theme role the frame is drawn in. */
-export type FrameRole = 'window' | 'windowInactive';
+/**
+ * The theme role the frame is drawn in — an active/inactive window or a `dialog` (RD-11 PA-19). The
+ * role must carry `border`/`title`/`icon`; the `dialog` role now does (core theme, PA-19).
+ */
+export type FrameRole = 'window' | 'windowInactive' | 'dialog';
 
 /** Glyphs of the chrome affordances (stored verbatim in the buffer; serialize handles fallback). */
 const CLOSE_GLYPH = '×';
@@ -141,14 +148,22 @@ export function drawFrame(ctx: DrawContext, size: Size2D, state: FrameState, rol
   }
 
   // Close box [×] (cols 2–4) and zoom box [↑]/[↕] (cols w-5…w-3) — ONLY on the active window (TV gates
-  // both on `sfActive`). The brackets are frame-colored; the inner glyph takes the icon accent.
+  // the icons on `sfActive`), and each further gated on its flag (TV gates close on `wfClose`, zoom on
+  // `wfZoom`; a Dialog is closable but NOT zoomable, so it shows the close box and NO zoom box, PA-6).
+  // Default `true` preserves the window behaviour (both boxes). Brackets frame-colored; inner glyph accent.
+  const closable = state.closable ?? true;
+  const zoomable = state.zoomable ?? true;
   if (state.active && w >= 8) {
-    ctx.text(2, 0, '[', borderStyle);
-    ctx.text(3, 0, CLOSE_GLYPH, iconStyle);
-    ctx.text(4, 0, ']', borderStyle);
-    ctx.text(w - 5, 0, '[', borderStyle);
-    ctx.text(w - 4, 0, state.zoomed ? RESTORE_GLYPH : MAXIMIZE_GLYPH, iconStyle);
-    ctx.text(w - 3, 0, ']', borderStyle);
+    if (closable) {
+      ctx.text(2, 0, '[', borderStyle);
+      ctx.text(3, 0, CLOSE_GLYPH, iconStyle);
+      ctx.text(4, 0, ']', borderStyle);
+    }
+    if (zoomable) {
+      ctx.text(w - 5, 0, '[', borderStyle);
+      ctx.text(w - 4, 0, state.zoomed ? RESTORE_GLYPH : MAXIMIZE_GLYPH, iconStyle);
+      ctx.text(w - 3, 0, ']', borderStyle);
+    }
   }
 
   // Drag grips (TV `dragLeftIcon`/`dragIcon`): only on the active, resizable window, overlay both

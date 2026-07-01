@@ -40,7 +40,15 @@ export interface Theme {
    * (TV draws no title-bar icons on a passive window) but present for shape symmetry with {@link window}.
    */
   readonly windowInactive: ThemeRole & { readonly border: Color; readonly title: Color; readonly icon: Color };
-  readonly dialog: ThemeRole & { readonly border: Color; readonly title: Color };
+  /**
+   * The gray dialog chrome (`cpGrayDialog`). `border`/`title` are the frame lines + title, `icon` the
+   * close-box `[×]` inner-glyph accent — decoded from TV `TFrame` in a gray dialog: active `cFrame =
+   * 0x0503` → lines `getColor(3)` = `cpFrame[2]`→gray slot 2→`cpAppColor[33]=0x7f` **white-on-lightGray**;
+   * icon `getColor(5)`→slot 3→`cpAppColor[34]=0x7a` **brightGreen-on-lightGray**; title `getColor(4)=0x7f`
+   * white (RD-11 PA-19; `tframe.cpp:60`, `dialogs.h:80`, `app.h`). The generalized `drawFrame` reads
+   * `icon` for the dialog role just as it reads `window.icon`.
+   */
+  readonly dialog: ThemeRole & { readonly border: Color; readonly title: Color; readonly icon: Color };
   readonly button: ThemeRole;
   readonly buttonFocused: ThemeRole;
   // --- jsvision-ui RD-06 essential-controls roles (the `cpGrayDialog` control palette) -----------
@@ -159,7 +167,14 @@ export const defaultTheme: Theme = {
     title: PALETTE.lightGray,
     icon: PALETTE.lightGray,
   },
-  dialog: { fg: PALETTE.black, bg: PALETTE.lightGray, border: PALETTE.black, title: PALETTE.black },
+  // Gray dialog frame decoded TV-faithful (PA-19): white lines/title, brightGreen icon accent.
+  dialog: {
+    fg: PALETTE.black,
+    bg: PALETTE.lightGray,
+    border: PALETTE.white,
+    title: PALETTE.white,
+    icon: PALETTE.brightGreen,
+  },
   button: { fg: PALETTE.black, bg: PALETTE.green },
   buttonFocused: { fg: PALETTE.white, bg: PALETTE.green, hotkey: PALETTE.yellow },
   // RD-06 control roles — decoded from `cpAppColor[cpGrayDialog[slot]]` (app.h:142 / dialogs.h:80).
